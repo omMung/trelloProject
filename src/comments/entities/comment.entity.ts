@@ -1,3 +1,5 @@
+import { Card } from 'src/cards/entities/card.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity({
@@ -28,4 +31,10 @@ export class Comment {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+  user: User[];
+
+  @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
+  card: Card[];
 }

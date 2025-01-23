@@ -10,6 +10,7 @@ import { Member } from 'src/members/entities/member.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { JoinMember } from 'src/card-members/entities/card-member.entity';
 import { Alarm } from 'src/alarms/entities/alarm.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Entity({
   name: 'User',

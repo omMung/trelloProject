@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { CheckList } from 'src/checklists/entities/checklist.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  ManyToOne,
+} from 'typeorm';
 
 @Entity({
   name: 'CheckItem',
@@ -21,4 +28,7 @@ export class CheckItem {
 
   @Column('boolean', { nullable: false })
   status: boolean;
+
+  @ManyToOne(() => CheckList, (checkList) => checkList.id)
+  checkList: CheckList[];
 }
