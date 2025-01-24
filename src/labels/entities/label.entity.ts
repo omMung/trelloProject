@@ -1,11 +1,5 @@
 import { CardLabel } from 'src/card-labels/entities/card-label.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity({
   name: 'Label',
@@ -23,6 +17,6 @@ export class Label {
   @Column('varchar', { nullable: false })
   title: string;
 
-  @OneToMany(() => CardLabel, (cardLabel) => cardLabel.id)
-  cardLabel: CardLabel[];
+  @OneToMany(() => CardLabel, (cardLabel) => cardLabel.label)
+  cardLabels: CardLabel[];
 }
