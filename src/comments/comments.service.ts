@@ -11,16 +11,17 @@ export class CommentsService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  async createComment(cardId: number, userId: number, content: string) {
+  async createComment(cardId: number, content: string, userId: number) {
     await this.commentRepository.save({
       card_id: cardId,
-      user_id: userId,
       content: content,
+      user_id: userId,
     });
   }
-
-  findAll() {
-    return `This action returns all comments`;
+  async getCommentByCardId(cardId: number) {
+    return await this.commentRepository.findBy({
+      card_id: cardId,
+    });
   }
 
   findOne(id: number) {

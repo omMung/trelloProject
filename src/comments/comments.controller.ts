@@ -23,12 +23,17 @@ export class CommentsController {
     @Param('cardId') cardId: number,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    await this.commentsService.createComment(cardId, createCommentDto.content); //user.id
+    await this.commentsService.createComment(
+      cardId,
+      createCommentDto.content,
+      1,
+    );
+    // await this.commentsService.createComment(cardId, createCommentDto.content, user.id);
   }
 
   @Get(':cardId')
   async findAllComment(@Param('cardId') cardId: number) {
-    return await this.commentsService.findAllComment(cardId);
+    return await this.commentsService.getCommentByCardId(cardId);
   }
 
   @Get(':id')
