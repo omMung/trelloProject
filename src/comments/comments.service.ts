@@ -1,6 +1,7 @@
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import _ from 'lodash';
 
 import { Comment } from './entities/comment.entity';
 
@@ -11,28 +12,42 @@ export class CommentsService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  async createComment(cardId: number, content: string, userId: number) {
+  async createComment(cardId: number, userId: number, content: string) {
     await this.commentRepository.save({
-      card_id: cardId,
+      cardId: cardId,
+      userId: userId,
       content: content,
-      user_id: userId,
     });
   }
   async getCommentByCardId(cardId: number) {
     return await this.commentRepository.findBy({
-      card_id: cardId,
+      cardId: cardId,
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
+  // findOne(id: number) {
+  //   return `This action returns a #${id} comment`;
+  // }
+
+  async updateComment(id: number, userId: number, content: string) {
+    await this.verifyComment(id, userId);
+    await this.commentRepository.update({ id }, { content });
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
+  async deleteComment(id: number, userId: number) {
+    await this.verifyComment(id, userId);
+    await this.commentRepository.delete({ id });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  private async verifyComment(id: number, userId: number) {
+    const comment = await this.commentRepository.findOneBy({
+      id,
+    });
+
+    if (_.isNil(comment) || comment.userId !== userId) {
+      throw new NotFoundException(
+        '댓글을 찾을 수 없거나 수정/삭제할 권한이 없습니다.',
+      );
+    }
   }
 }

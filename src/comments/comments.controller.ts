@@ -10,7 +10,6 @@ import {
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { RemoveCommentDto } from './dto/remove-comment.dto';
 // import { userInfo } from 'os'; 유저 엔티티에서 정보를 가져와야 한다.
 
 @Controller('comments')
@@ -25,8 +24,8 @@ export class CommentsController {
   ) {
     await this.commentsService.createComment(
       cardId,
-      createCommentDto.content,
       1,
+      createCommentDto.content,
     );
     // await this.commentsService.createComment(cardId, createCommentDto.content, user.id);
   }
@@ -36,10 +35,10 @@ export class CommentsController {
     return await this.commentsService.getCommentByCardId(cardId);
   }
 
-  @Get(':id')
-  async findOneComment(@Param('id') id: number) {
-    return await this.commentsService.findOneComment(+id);
-  }
+  // @Get(':id')
+  // async findOneComment(@Param('id') id: number) {
+  //   return await this.commentsService.findOneComment(+id);
+  // }
 
   @Patch(':id')
   async updateComment(
@@ -47,15 +46,14 @@ export class CommentsController {
     @Param('id') id: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    await this.commentsService.updateComment(+id, updateCommentDto); //user.id
+    await this.commentsService.updateComment(+id, 1, updateCommentDto.content); //user.id
   }
 
   @Delete(':id')
   async deleteComment(
     // @userInfo() user: User,
     @Param('id') id: number,
-    @Body() removeCommentDto: RemoveCommentDto,
   ) {
-    await this.commentsService.deleteComment(+id, removeCommentDto);
+    await this.commentsService.deleteComment(+id, 1);
   }
 }
