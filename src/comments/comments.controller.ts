@@ -1,34 +1,56 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { RemoveCommentDto } from './dto/remove-comment.dto';
+// import { userInfo } from 'os'; 유저 엔티티에서 정보를 가져와야 한다.
 
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  @Post(':cardId')
+  async createComment(
+    // @userInfo() user: User,
+    @Param('cardId') cardId: number,
+    @Body() createCommentDto: CreateCommentDto,
+  ) {
+    await this.commentsService.createComment(cardId, createCommentDto.content); //user.id
   }
 
-  @Get()
-  findAll() {
-    return this.commentsService.findAll();
+  @Get(':cardId')
+  async findAllComment(@Param('cardId') cardId: number) {
+    return await this.commentsService.findAllComment(cardId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentsService.findOne(+id);
+  async findOneComment(@Param('id') id: number) {
+    return await this.commentsService.findOneComment(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(+id, updateCommentDto);
+  async updateComment(
+    // @userInfo() user: User,
+    @Param('id') id: number,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ) {
+    await this.commentsService.updateComment(+id, updateCommentDto); //user.id
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentsService.remove(+id);
+  async deleteComment(
+    // @userInfo() user: User,
+    @Param('id') id: number,
+    @Body() removeCommentDto: RemoveCommentDto,
+  ) {
+    await this.commentsService.deleteComment(+id, removeCommentDto);
   }
 }

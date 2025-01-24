@@ -27,7 +27,7 @@ import { Label } from './labels/entities/label.entity';
 import { List } from './lists/entities/list.entity';
 import { Member } from './members/entities/member.entity';
 import { User } from './users/entities/user.entity';
-import Joi from 'joi';
+// import Joi from 'joi';
 
 const typeOrmModuleOptions = {
   useFactory: async (
