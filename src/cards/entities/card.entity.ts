@@ -5,7 +5,7 @@ import {
   Column,
   OneToOne,
   OneToMany,
-  ManyToOne,
+  ManyToOne, JoinColumn,
 } from 'typeorm';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { CardsService } from '../cards.service';
@@ -59,7 +59,8 @@ export class Card {
 
   @OneToMany(() => CardLabel, (cardLabel) => cardLabel.id)
   cardLabel: CardLabel[];
-
+  
   @ManyToOne(() => List, (list) => list.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "listId"})
   list: List[];
 }

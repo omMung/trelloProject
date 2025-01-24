@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToOne,
-  ManyToOne,
+  ManyToOne, JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -22,8 +22,10 @@ export class JoinMember {
   cardId: number;
 
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "userId"})
   user: User[];
 
   @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "cardId"})
   card: Card[];
 }

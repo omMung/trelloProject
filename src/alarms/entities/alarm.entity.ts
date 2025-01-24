@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  ManyToOne,
+  ManyToOne, JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -28,8 +28,10 @@ export class Alarm {
   status: boolean;
 
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "userId"})
   user: User[];
 
   @ManyToOne(() => Card, (card) => card.id)
+  @JoinColumn({name: "cardId"})
   card: Card[];
 }

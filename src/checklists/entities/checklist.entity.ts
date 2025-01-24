@@ -6,7 +6,7 @@ import {
   Column,
   OneToOne,
   ManyToOne,
-  OneToMany,
+  OneToMany, JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -26,6 +26,7 @@ export class CheckList {
   title: string;
 
   @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "cardId"})
   card: Card[];
 
   @OneToMany(() => CheckItem, (checkItem) => checkItem.id)

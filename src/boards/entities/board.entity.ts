@@ -9,9 +9,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
+  OneToMany, JoinColumn,
 } from 'typeorm';
-
+enum Visibility {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+}
 @Entity({
   name: 'Board',
 })
@@ -22,16 +25,17 @@ export class Board {
   @Column('int', { nullable: false })
   userId: number;
 
-  @Column('enum', { default: false })
-  visibility: Enumerator;
+  @Column({ type: 'enum', enum: Visibility })
+  visibility: Visibility;
 
+  
   @IsString()
   @Column('varchar', {})
   color: String;
 
   @IsString()
   @Column('varchar', { length: 10, nullable: false })
-  title: number;
+  title: String;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -40,6 +44,7 @@ export class Board {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "userId"})
   user: User[];
 
   @OneToMany(() => List, (list) => list.id)

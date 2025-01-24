@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToOne,
-  ManyToOne,
+  ManyToOne, JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -22,8 +22,10 @@ export class CardLabel {
   cardId: number;
 
   @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "cardId"})
   card: Card[];
 
   @ManyToOne(() => Label, (label) => label.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "labelId"})
   label: Label[];
 }

@@ -4,7 +4,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToOne,
-  ManyToOne,
+  ManyToOne, JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -30,5 +30,6 @@ export class CheckItem {
   status: boolean;
 
   @ManyToOne(() => CheckList, (checkList) => checkList.id, { onDelete: 'CASCADE' })
+  @JoinColumn({name: "checkListId"})
   checkList: CheckList[];
 }
