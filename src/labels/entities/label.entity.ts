@@ -17,6 +17,6 @@ export class Label {
   @Column('varchar', { nullable: false })
   title: string;
 
-  @OneToMany(() => CardLabel, (cardLabel) => cardLabel.id)
-  cardLabel: CardLabel[];
+  @OneToMany(() => CardLabel, (cardLabel) => cardLabel.label)
+  cardLabels: CardLabel[];
 }

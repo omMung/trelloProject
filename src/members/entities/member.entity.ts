@@ -21,11 +21,11 @@ export class Member {
   @Column('int', { nullable: false })
   boardId: number;
 
-  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user: User[];
+  @ManyToOne(() => User, (user) => user.members, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_Id' })
+  user: User;
 
-  @ManyToOne(() => Board, (board) => board.id, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'board_id' })
+  @ManyToOne(() => Board, (board) => board.member, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'board_Id' })
   board: Board;
 }

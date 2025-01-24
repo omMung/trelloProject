@@ -33,10 +33,10 @@ export class List {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Board, (board) => board.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Board, (board) => board.list, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 
-  @OneToMany(() => Card, (card) => card.id)
-  card: Card[];
+  @OneToMany(() => Card, (card) => card.list)
+  cards: Card[];
 }
