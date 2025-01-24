@@ -27,32 +27,21 @@ import { Label } from './labels/entities/label.entity';
 import { List } from './lists/entities/list.entity';
 import { Member } from './members/entities/member.entity';
 import { User } from './users/entities/user.entity';
-// import Joi from 'joi';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import Joi from 'joi';
 
 const typeOrmModuleOptions = {
   useFactory: async (
     configService: ConfigService,
   ): Promise<TypeOrmModuleOptions> => ({
-    type: 'mysql', //분리 추천??
+    namingStrategy: new SnakeNamingStrategy(),
+    type: 'mysql',
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     username: configService.get('DB_USERNAME'),
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
-    entities: [
-      Alarm,
-      Board,
-      CardLabel,
-      JoinMember,
-      Card,
-      CheckItem,
-      CheckList,
-      Comment,
-      Label,
-      List,
-      Member,
-      User,
-    ],
+    entities: [__dirname + '/**/entities/*.{ts,js}'],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
@@ -63,10 +52,10 @@ const typeOrmModuleOptions = {
     ConfigModule.forRoot({
       isGlobal: true,
       // validationSchema: Joi.object({
-      //   DB_HOST: Joi.string().required(),
-      //   DB_PORT: Joi.number().required(),
       //   DB_USERNAME: Joi.string().required(),
       //   DB_PASSWORD: Joi.string().required(),
+      //   DB_HOST: Joi.string().required(),
+      //   DB_PORT: Joi.number().required(),
       //   DB_NAME: Joi.string().required(),
       //   DB_SYNC: Joi.boolean().required(),
       // }),

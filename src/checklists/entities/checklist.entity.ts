@@ -6,7 +6,8 @@ import {
   Column,
   OneToOne,
   ManyToOne,
-  OneToMany, JoinColumn,
+  OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -25,10 +26,10 @@ export class CheckList {
   @Column('varchar', { nullable: false })
   title: string;
 
-  @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "cardId"})
-  card: Card[];
+  @ManyToOne(() => Card, (card) => card.checkList, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'card_id' })
+  card: Card;
 
-  @OneToMany(() => CheckItem, (checkItem) => checkItem.id)
-  checkItem: CheckItem[];
+  @OneToMany(() => CheckItem, (checkItem) => checkItem.checkList)
+  checkItems: CheckItem[];
 }

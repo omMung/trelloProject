@@ -3,8 +3,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -29,7 +29,9 @@ export class CheckItem {
   @Column('boolean', { nullable: false })
   status: boolean;
 
-  @ManyToOne(() => CheckList, (checkList) => checkList.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "checkListId"})
-  checkList: CheckList[];
+  @ManyToOne(() => CheckList, (checkList) => checkList.checkItems, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'checkList_id' })
+  checkList: CheckList;
 }

@@ -4,8 +4,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -21,11 +21,11 @@ export class CardLabel {
   @Column('int', { nullable: false })
   cardId: number;
 
-  @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "cardId"})
-  card: Card[];
+  @ManyToOne(() => Card, (card) => card.cardLabel, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'card_id' })
+  card: Card;
 
-  @ManyToOne(() => Label, (label) => label.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "labelId"})
-  label: Label[];
+  @ManyToOne(() => Label, (label) => label.cardLabels, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'label_id' })
+  label: Label;
 }
