@@ -29,6 +29,6 @@ export class CheckItem {
   @Column('boolean', { nullable: false })
   status: boolean;
 
-  @ManyToOne(() => CheckList, (checkList) => checkList.id)
+  @ManyToOne(() => CheckList, (checkList) => checkList.id, { onDelete: 'CASCADE' })
   checkList: CheckList[];
 }

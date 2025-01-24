@@ -30,6 +30,6 @@ export class Alarm {
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User[];
 
-  @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Card, (card) => card.id)
   card: Card[];
 }

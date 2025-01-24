@@ -21,9 +21,9 @@ export class CardLabel {
   @Column('int', { nullable: false })
   cardId: number;
 
-  @ManyToOne(() => Card, (card) => card.id)
+  @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
   card: Card[];
 
-  @ManyToOne(() => Label, (label) => label.id)
+  @ManyToOne(() => Label, (label) => label.id, { onDelete: 'CASCADE' })
   label: Label[];
 }

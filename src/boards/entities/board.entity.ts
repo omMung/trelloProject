@@ -39,12 +39,12 @@ export class Board {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User[];
 
-  @OneToMany(() => List, (list) => list.id, { onDelete: 'CASCADE' })
+  @OneToMany(() => List, (list) => list.id)
   list: List[];
 
-  @OneToMany(() => Member, (member) => member.id, { onDelete: 'CASCADE' })
+  @OneToMany(() => Member, (member) => member.id)
   member: Member[];
 }

@@ -28,8 +28,6 @@ export class CheckList {
   @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
   card: Card[];
 
-  @OneToMany(() => CheckItem, (checkItem) => checkItem.id, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => CheckItem, (checkItem) => checkItem.id)
   checkItem: CheckItem[];
 }
