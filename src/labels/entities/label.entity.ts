@@ -1,11 +1,5 @@
 import { CardLabel } from 'src/card-labels/entities/card-label.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity({
   name: 'Label',

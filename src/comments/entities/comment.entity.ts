@@ -7,7 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -33,10 +34,10 @@ export class Comment {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "userId"})
-  user: User[];
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "cardId"})
-  card: Card[];
+  @JoinColumn({ name: 'card_id' })
+  card: Card;
 }

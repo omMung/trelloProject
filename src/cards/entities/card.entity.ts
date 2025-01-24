@@ -5,7 +5,8 @@ import {
   Column,
   OneToOne,
   OneToMany,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { CardsService } from '../cards.service';
@@ -45,22 +46,22 @@ export class Card {
   @Column('date', { nullable: true })
   dueDate: Date;
 
-  @OneToMany(() => Alarm, (alarm) => alarm.id)
+  @OneToMany(() => Alarm, (alarm) => alarm.card)
   alarm: Alarm[];
 
-  @OneToMany(() => Comment, (comment) => comment.id)
+  @OneToMany(() => Comment, (comment) => comment.card)
   comment: Comment[];
 
-  @OneToMany(() => JoinMember, (joinMember) => joinMember.id)
+  @OneToMany(() => JoinMember, (joinMember) => joinMember.card)
   joinMember: JoinMember[];
 
-  @OneToMany(() => CheckList, (checkList) => checkList.id)
+  @OneToMany(() => CheckList, (checkList) => checkList.card)
   checkList: CheckList[];
 
-  @OneToMany(() => CardLabel, (cardLabel) => cardLabel.id)
+  @OneToMany(() => CardLabel, (cardLabel) => cardLabel.card)
   cardLabel: CardLabel[];
-  
-  @ManyToOne(() => List, (list) => list.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "listId"})
-  list: List[];
+
+  @ManyToOne(() => List, (list) => list.card, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'list_id' })
+  list: List;
 }
