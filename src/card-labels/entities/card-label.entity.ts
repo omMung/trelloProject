@@ -25,7 +25,7 @@ export class CardLabel {
   @JoinColumn({ name: 'card_id' })
   card: Card;
 
-  @ManyToOne(() => Label, (label) => label.cardLabel, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Label, (label) => label.cardLabels, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'label_id' })
   label: Label;
 }

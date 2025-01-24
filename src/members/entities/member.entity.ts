@@ -16,16 +16,16 @@ export class Member {
   id: number;
 
   @Column('int', { nullable: false })
-  userId: number;
-
-  @Column('int', { nullable: false })
   boardId: number;
 
+  @Column('int', { nullable: false })
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.members, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_Id' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => Board, (board) => board.member, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'board_Id' })
+  @JoinColumn({ name: 'board_id' })
   board: Board;
 }
