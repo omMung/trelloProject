@@ -29,7 +29,7 @@ export class CheckItem {
   @Column('boolean', { nullable: false })
   status: boolean;
 
-  @ManyToOne(() => CheckList, (checkList) => checkList.checkItem, {
+  @ManyToOne(() => CheckList, (checkList) => checkList.checkItems, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'checkList_id' })

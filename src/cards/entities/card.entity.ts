@@ -61,7 +61,7 @@ export class Card {
   @OneToMany(() => CardLabel, (cardLabel) => cardLabel.card)
   cardLabel: CardLabel[];
 
-  @ManyToOne(() => List, (list) => list.card, { onDelete: 'CASCADE' })
+  @ManyToOne(() => List, (list) => list.cards, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'list_id' })
   list: List;
 }
