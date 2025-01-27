@@ -97,3 +97,158 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+```
+trelloProject
+├─ .eslintrc.js
+├─ .prettierrc
+├─ nest-cli.json
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ src
+│  ├─ alarms
+│  │  ├─ alarms.controller.spec.ts
+│  │  ├─ alarms.controller.ts
+│  │  ├─ alarms.module.ts
+│  │  ├─ alarms.service.spec.ts
+│  │  ├─ alarms.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-alarm.dto.ts
+│  │  │  └─ update-alarm.dto.ts
+│  │  └─ entities
+│  │     └─ alarm.entity.ts
+│  ├─ app.controller.spec.ts
+│  ├─ app.controller.ts
+│  ├─ app.module.ts
+│  ├─ app.service.ts
+│  ├─ boards
+│  │  ├─ boards.controller.spec.ts
+│  │  ├─ boards.controller.ts
+│  │  ├─ boards.module.ts
+│  │  ├─ boards.service.spec.ts
+│  │  ├─ boards.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-board.dto.ts
+│  │  │  └─ update-board.dto.ts
+│  │  └─ entities
+│  │     ├─ board.entity.ts
+│  │     └─ visibility.enum
+│  ├─ card-labels
+│  │  ├─ card-labels.controller.spec.ts
+│  │  ├─ card-labels.controller.ts
+│  │  ├─ card-labels.module.ts
+│  │  ├─ card-labels.service.spec.ts
+│  │  ├─ card-labels.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-card-label.dto.ts
+│  │  │  └─ update-card-label.dto.ts
+│  │  └─ entities
+│  │     └─ card-label.entity.ts
+│  ├─ card-members
+│  │  ├─ card-members.controller.spec.ts
+│  │  ├─ card-members.controller.ts
+│  │  ├─ card-members.module.ts
+│  │  ├─ card-members.service.spec.ts
+│  │  ├─ card-members.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-card-member.dto.ts
+│  │  │  └─ update-card-member.dto.ts
+│  │  └─ entities
+│  │     └─ card-member.entity.ts
+│  ├─ cards
+│  │  ├─ cards.controller.spec.ts
+│  │  ├─ cards.controller.ts
+│  │  ├─ cards.module.ts
+│  │  ├─ cards.service.spec.ts
+│  │  ├─ cards.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-card.dto.ts
+│  │  │  └─ update-card.dto.ts
+│  │  └─ entities
+│  │     └─ card.entity.ts
+│  ├─ checkitems
+│  │  ├─ checkitems.controller.spec.ts
+│  │  ├─ checkitems.controller.ts
+│  │  ├─ checkitems.module.ts
+│  │  ├─ checkitems.service.spec.ts
+│  │  ├─ checkitems.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-checkitem.dto.ts
+│  │  │  └─ update-checkitem.dto.ts
+│  │  └─ entities
+│  │     └─ checkitem.entity.ts
+│  ├─ checklists
+│  │  ├─ checklists.controller.spec.ts
+│  │  ├─ checklists.controller.ts
+│  │  ├─ checklists.module.ts
+│  │  ├─ checklists.service.spec.ts
+│  │  ├─ checklists.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-checklist.dto.ts
+│  │  │  └─ update-checklist.dto.ts
+│  │  └─ entities
+│  │     └─ checklist.entity.ts
+│  ├─ comments
+│  │  ├─ comments.controller.spec.ts
+│  │  ├─ comments.controller.ts
+│  │  ├─ comments.module.ts
+│  │  ├─ comments.service.spec.ts
+│  │  ├─ comments.service.ts
+│  │  ├─ dto
+│  │  │  ├─ create-comment.dto.ts
+│  │  │  └─ update-comment.dto.ts
+│  │  └─ entities
+│  │     └─ comment.entity.ts
+│  ├─ labels
+│  │  ├─ dto
+│  │  │  ├─ create-label.dto.ts
+│  │  │  └─ update-label.dto.ts
+│  │  ├─ entities
+│  │  │  └─ label.entity.ts
+│  │  ├─ labels.controller.spec.ts
+│  │  ├─ labels.controller.ts
+│  │  ├─ labels.module.ts
+│  │  ├─ labels.service.spec.ts
+│  │  └─ labels.service.ts
+│  ├─ lists
+│  │  ├─ dto
+│  │  │  ├─ create-list.dto.ts
+│  │  │  └─ update-list.dto.ts
+│  │  ├─ entities
+│  │  │  └─ list.entity.ts
+│  │  ├─ lists.controller.spec.ts
+│  │  ├─ lists.controller.ts
+│  │  ├─ lists.module.ts
+│  │  ├─ lists.service.spec.ts
+│  │  └─ lists.service.ts
+│  ├─ main.ts
+│  ├─ members
+│  │  ├─ dto
+│  │  │  ├─ create-member.dto.ts
+│  │  │  └─ update-member.dto.ts
+│  │  ├─ entities
+│  │  │  └─ member.entity.ts
+│  │  ├─ members.controller.spec.ts
+│  │  ├─ members.controller.ts
+│  │  ├─ members.module.ts
+│  │  ├─ members.service.spec.ts
+│  │  └─ members.service.ts
+│  └─ users
+│     ├─ dto
+│     │  ├─ create-user.dto.ts
+│     │  └─ update-user.dto.ts
+│     ├─ entities
+│     │  └─ user.entity.ts
+│     ├─ users.controller.spec.ts
+│     ├─ users.controller.ts
+│     ├─ users.module.ts
+│     ├─ users.service.spec.ts
+│     └─ users.service.ts
+├─ test
+│  ├─ app.e2e-spec.ts
+│  └─ jest-e2e.json
+├─ tsconfig.build.json
+└─ tsconfig.json
+
+```

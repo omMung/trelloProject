@@ -9,11 +9,13 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity({
   name: 'List',
 })
+@Unique(['boardId', 'position']) // 보드id와 포지션의 조합은 고유해야함
 export class List {
   @PrimaryGeneratedColumn()
   id: number;
