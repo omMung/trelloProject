@@ -4,6 +4,7 @@ import { Label } from './entities/label.entity';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
 import { Repository } from 'typeorm';
+import { error } from 'console';
 
 @Injectable()
 export class LabelsService {
@@ -17,19 +18,26 @@ export class LabelsService {
     return await this.labelRepository.save(label);
   }
 
-  findAll() {
-    return `This action returns all labels`;
+  async findAll() {
+    return await this.labelRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} label`;
+  async findOne(id: number) {
+    const label = await this.labelRepository.findOneBy({ id });
   }
 
-  update(id: number, updateLabelDto: UpdateLabelDto) {
-    return `This action updates a #${id} label`;
+  async update(id: number, updateLabelDto: UpdateLabelDto) {
+    const label = await this.labelRepository.findOneBy({ id });
+    if (!label) {
+      // 라벨이 존재하지 않을 경우 예외 처리
+      throw new Error('Label not found');
+    }
+    Object.assign(label, updateLabelDto);
+    return await this.labelRepository.save(label);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} label`;
+  async remove(id: number) {
+    const label = await this.labelRepository.findOneBy({ id });
+    return await this.labelRepository.delete(label);
   }
 }
