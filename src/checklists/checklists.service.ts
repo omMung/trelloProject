@@ -12,9 +12,9 @@ export class ChecklistsService {
     return `This action returns all checklists`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} checklist`;
-  }
+  // findOne(id: number) {
+  //   return `This action returns a #${id} checklist`;
+  // }
 
   update(id: number, updateChecklistDto: UpdateChecklistDto) {
     return `This action updates a #${id} checklist`;
