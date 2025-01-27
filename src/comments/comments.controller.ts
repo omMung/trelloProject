@@ -35,9 +35,9 @@ export class CommentsController {
     return await this.commentsService.getCommentByCardId(cardId);
   }
 
-  // @Get(':id')
+  // @Get(':id/detail')
   // async findOneComment(@Param('id') id: number) {
-  //   return await this.commentsService.findOneComment(+id);
+  //   return await this.commentsService.getCommentById(+id);
   // }
 
   @Patch(':id')
