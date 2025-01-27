@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { LabelsService } from './labels.service';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
@@ -8,7 +16,7 @@ export class LabelsController {
   constructor(private readonly labelsService: LabelsService) {}
 
   @Post()
-  create(@Body() createLabelDto: CreateLabelDto) {
+  async create(@Body() createLabelDto: CreateLabelDto) {
     return this.labelsService.create(createLabelDto);
   }
 
