@@ -1,3 +1,0 @@
-enum Visibility {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',}

@@ -7,27 +7,27 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 export class BoardsController {
   constructor(private readonly boardsService: BoardsService) {}
 
-  @Post()
+  @Post() // 보드 생성
   create(@Body() createBoardDto: CreateBoardDto) {
     return this.boardsService.create(createBoardDto);
   }
 
-  @Get()
+  @Get() // 보드 전체 조회
   findAll() {
     return this.boardsService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') // 보드 상세 조회
   findOne(@Param('id') id: string) {
     return this.boardsService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch(':id') // 보드 수정
   update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto) {
     return this.boardsService.update(+id, updateBoardDto);
   }
 
-  @Delete(':id')
+  @Delete(':id') // 보드 삭제
   remove(@Param('id') id: string) {
     return this.boardsService.remove(+id);
   }
