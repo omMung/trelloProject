@@ -27,7 +27,8 @@ import { Label } from './labels/entities/label.entity';
 import { List } from './lists/entities/list.entity';
 import { Member } from './members/entities/member.entity';
 import { User } from './users/entities/user.entity';
-import Joi from 'joi';
+import Joi from 'joi'; 
+
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -62,14 +63,14 @@ const typeOrmModuleOptions = {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      // validationSchema: Joi.object({
-      //   DB_HOST: Joi.string().required(),
-      //   DB_PORT: Joi.number().required(),
-      //   DB_USERNAME: Joi.string().required(),
-      //   DB_PASSWORD: Joi.string().required(),
-      //   DB_NAME: Joi.string().required(),
-      //   DB_SYNC: Joi.boolean().required(),
-      // }),
+      validationSchema: Joi.object({
+        DB_HOST: Joi.string().required(),
+        DB_PORT: Joi.number().required(),
+        DB_USERNAME: Joi.string().required(),
+        DB_PASSWORD: Joi.string().required(),
+        DB_NAME: Joi.string().required(),
+        DB_SYNC: Joi.boolean().required(),
+      }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     UsersModule,
