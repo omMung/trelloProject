@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
-
+import { GetMemberDto } from './dto/get-member.dto'
 
 @Controller('members')
 export class MembersController {
@@ -13,17 +13,17 @@ export class MembersController {
   }
 
   @Get() // 멤버 전체 조회
-  findAll() {
-    return this.membersService.findAll();
+  findAll(@Body() getMemberDto: GetMemberDto ) {
+    return this.membersService.findAll(getMemberDto);
   }
 
-  @Get(':id') // 멤버 상세 조회
-  findOne(@Param('id') id: string) {
-    return this.membersService.findOne(+id);
+  @Post(':id') // 멤버 상세 조회
+  findOne(@Param('id') id: string , @Body() getMemberDto: GetMemberDto ) {
+    return this.membersService.findOne(+id , getMemberDto);
   }
 
   @Delete(':id') // 멤버 삭제
-  remove(@Param('id') id: string) {
-    return this.membersService.remove(+id);
+  remove(@Param('id') id: string , @Body() getMemberDto: GetMemberDto) {
+    return this.membersService.remove(+id , getMemberDto);
   }
 }
