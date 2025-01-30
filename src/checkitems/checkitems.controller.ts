@@ -38,11 +38,11 @@ export class CheckitemsController {
     @Param('id') id: number,
     @Body() updateCheckitemDto: UpdateCheckitemDto,
   ): Promise<CheckItem> {
-    return this.checkitemsService.update(+id, updateCheckitemDto);
+    return this.checkitemsService.update(id, updateCheckitemDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.checkitemsService.remove(+id);
+  async remove(@Param('id') id: number): Promise<void> {
+    return this.checkitemsService.remove(id);
   }
 }

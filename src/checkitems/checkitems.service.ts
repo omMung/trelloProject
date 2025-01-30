@@ -47,7 +47,12 @@ export class CheckitemsService {
     return checkitem;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} checkitem`;
+  // 항목 삭제 메서드
+  remove(id: number): void {
+    const index = this.checkitems.findIndex((item) => item.id === id); // ID로 항목 찾기
+    if (index === -1) {
+      throw new Error('Checkitem not found'); // 에러 처리
+    }
+    this.checkitems.splice(index, 1); // 항목 삭제
   }
 }
