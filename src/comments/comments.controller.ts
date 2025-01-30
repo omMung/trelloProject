@@ -22,17 +22,19 @@ export class CommentsController {
     @Param('cardId') cardId: number,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    await this.commentsService.createComment(
+    const comment = await this.commentsService.createComment(
       cardId,
       1,
       createCommentDto.content,
     );
+    return { data: comment };
     // await this.commentsService.createComment(cardId, createCommentDto.content, user.id);
   }
 
   @Get(':cardId')
   async findAllComment(@Param('cardId') cardId: number) {
-    return await this.commentsService.getCommentByCardId(cardId);
+    const comments = await this.commentsService.getCommentByCardId(cardId);
+    return { data: comments };
   }
 
   // @Get(':id/detail')
@@ -46,7 +48,12 @@ export class CommentsController {
     @Param('id') id: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
-    await this.commentsService.updateComment(+id, 1, updateCommentDto.content); //user.id
+    const comment = await this.commentsService.updateComment(
+      +id,
+      1,
+      updateCommentDto.content,
+    ); //user.id
+    return { data: comment };
   }
 
   @Delete(':id')
@@ -54,6 +61,7 @@ export class CommentsController {
     // @userInfo() user: User,
     @Param('id') id: number,
   ) {
-    await this.commentsService.deleteComment(+id, 1);
+    const comment = await this.commentsService.deleteComment(+id, 1);
+    return { data: comment };
   }
 }

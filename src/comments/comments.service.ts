@@ -13,12 +13,14 @@ export class CommentsService {
   ) {}
 
   async createComment(cardId: number, userId: number, content: string) {
-    await this.commentRepository.save({
-      cardId: cardId,
-      userId: userId,
-      content: content,
+    const newComment = this.commentRepository.create({
+      cardId,
+      userId,
+      content,
     });
+    return await this.commentRepository.save(newComment);
   }
+
   async getCommentByCardId(cardId: number) {
     return await this.commentRepository.findBy({
       cardId: cardId,
@@ -36,11 +38,13 @@ export class CommentsService {
   async updateComment(id: number, userId: number, content: string) {
     await this.verifyComment(id, userId);
     await this.commentRepository.update({ id }, { content });
+    return await this.commentRepository.findOneBy({ id });
   }
 
   async deleteComment(id: number, userId: number) {
     await this.verifyComment(id, userId);
     await this.commentRepository.delete({ id });
+    return { id, message: '삭제되었습니다.' };
   }
 
   private async verifyComment(id: number, userId: number) {
