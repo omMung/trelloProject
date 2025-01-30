@@ -27,7 +27,7 @@ export class CheckitemsService {
   update(id: number, updateCheckitemDto: UpdateCheckitemDto): CheckItem {
     const checkitem = this.checkitems.find((item) => item.id === id); // ID로 항목 찾기
     if (!checkitem) {
-      throw new Error('Checkitem not found'); // 에러 처리
+      throw new Error('체크리스트 항목을 찾을 수 없습니다.'); // 에러 처리
     }
 
     // 업데이트
