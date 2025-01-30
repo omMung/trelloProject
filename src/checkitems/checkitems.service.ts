@@ -48,8 +48,10 @@ export class CheckitemsService {
   }
 
   // 항목 삭제 메서드
-  remove(id: number): void {
-    const index = this.checkitems.findIndex((item) => item.id === id); // ID로 항목 찾기
+  remove(checkListId: number): void {
+    const index = this.checkitems.findIndex(
+      (item) => item.checkListId === checkListId,
+    ); // ID로 항목 찾기
     if (index === -1) {
       throw new Error('Checkitem not found'); // 에러 처리
     }

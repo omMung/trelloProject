@@ -34,7 +34,12 @@ export class ChecklistsService {
     return checklist;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} checklist`;
+  // 카드 ID로 체크리스트 삭제 메서드
+  remove(cardId: number): void {
+    const index = this.checkLists.findIndex((item) => item.cardId === cardId); // 카드 ID로 체크리스트 찾기
+    if (index === -1) {
+      throw new Error('이 아이디에 해당하는 체크리스트가 없어용.'); // 에러 처리
+    }
+    this.checkLists.splice(index, 1); // 체크리스트 삭제
   }
 }
