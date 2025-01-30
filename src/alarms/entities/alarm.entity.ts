@@ -4,8 +4,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -27,11 +27,11 @@ export class Alarm {
   @Column('boolean', { default: false })
   status: boolean;
 
-  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "userId"})
-  user: User[];
+  @ManyToOne(() => User, (user) => user.alarms, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
-  @ManyToOne(() => Card, (card) => card.id)
-  @JoinColumn({name: "cardId"})
-  card: Card[];
+  @ManyToOne(() => Card, (card) => card.alarm)
+  @JoinColumn({ name: 'cardId' })
+  card: Card;
 }

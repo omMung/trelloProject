@@ -5,7 +5,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToOne,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -21,11 +22,11 @@ export class JoinMember {
   @Column('int', { nullable: false })
   cardId: number;
 
-  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "userId"})
-  user: User[];
+  @ManyToOne(() => User, (user) => user.joinMembers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
-  @ManyToOne(() => Card, (card) => card.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "cardId"})
-  card: Card[];
+  @ManyToOne(() => Card, (card) => card.joinMember, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'cardId' })
+  card: Card;
 }

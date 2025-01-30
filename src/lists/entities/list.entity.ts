@@ -6,9 +6,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   ManyToOne,
-  OneToMany, JoinColumn,
+  OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -33,10 +33,10 @@ export class List {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Board, (board) => board.id, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "boardId"})
-  board: Board[];
+  @ManyToOne(() => Board, (board) => board.lists, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'boardId' })
+  board: Board;
 
-  @OneToMany(() => Card, (card) => card.id)
-  card: Card[];
+  @OneToMany(() => Card, (card) => card.list)
+  cards: Card[];
 }

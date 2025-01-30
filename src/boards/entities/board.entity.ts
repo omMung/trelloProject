@@ -27,7 +27,6 @@ export class Board {
   @Column({ type: 'enum', enum: visibEnum })
   visibility: visibEnum;
 
-  
   @IsString()
   @Column('varchar', {})
   color: String;
@@ -42,13 +41,13 @@ export class Board {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.boards, { onDelete: 'CASCADE' })
   @JoinColumn({name: "userId"})
-  user: User[];
+  user: User;
 
-  @OneToMany(() => List, (list) => list.id)
-  list: List[];
+  @OneToMany(() => List, (list) => list.board)
+  lists: List[];
 
-  @OneToMany(() => Member, (member) => member.id)
-  member: Member[];
+  @OneToMany(() => Member, (member) => member.board)
+  members: Member[];
 }

@@ -17,8 +17,7 @@ export class MembersService {
     @InjectRepository(Board) private BoardRepo: Repository<Board>
   ){}
 
-  // 멤버 추가 (userId 하고 boardId 를 입력받음
-  // userId를 이용해 User테이블 공개 및 boardId가 Board 에도 존재하는지 확인할껏
+  // 멤버 추가 
   async create(createMemberDto: CreateMemberDto ) {
     const {userId , boardId} = createMemberDto
 
