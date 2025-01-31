@@ -62,6 +62,6 @@ export class Card {
   cardLabel: CardLabel[];
 
   @ManyToOne(() => List, (list) => list.cards, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'listId' })
+  @JoinColumn({ name: 'list_id' })
   list: List;
 }

@@ -8,9 +8,6 @@ export class Label {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', { nullable: false })
-  cardId: number;
-
   @Column('varchar', { nullable: false })
   color: string;
 

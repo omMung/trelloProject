@@ -34,10 +34,10 @@ export class Comment {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.comments, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => Card, (card) => card.comment, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'cardId' })
+  @JoinColumn({ name: 'card_id' })
   card: Card;
 }

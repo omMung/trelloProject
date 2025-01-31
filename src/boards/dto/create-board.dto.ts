@@ -1,7 +1,11 @@
-import {IsEnum ,IsString , IsNotEmpty } from 'class-validator'
+import {IsEnum ,IsString , IsNotEmpty, IsNumber } from 'class-validator'
 import { visibEnum } from './visibility.enum'
 
 export class CreateBoardDto {
+
+    @IsNotEmpty()
+    @IsNumber()
+    userId: number
 
     @IsNotEmpty()
     @IsString()

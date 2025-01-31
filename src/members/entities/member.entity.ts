@@ -16,10 +16,10 @@ export class Member {
   boardId: number;
 
   @ManyToOne(() => User, (user) => user.members, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "userId"})
+  @JoinColumn({name: "user_id"})
   user: User;
 
   @ManyToOne(() => Board, (board) => board.members, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "boardId"})
+  @JoinColumn({name: "board_id"})
   board: Board;
 }

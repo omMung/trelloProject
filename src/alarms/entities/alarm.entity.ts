@@ -28,10 +28,10 @@ export class Alarm {
   status: boolean;
 
   @ManyToOne(() => User, (user) => user.alarms, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => Card, (card) => card.alarm)
-  @JoinColumn({ name: 'cardId' })
+  @JoinColumn({ name: 'card_id' })
   card: Card;
 }

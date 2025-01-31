@@ -15,9 +15,10 @@ export class BoardsService {
   // 보드 생성
   async create(createBoardDto: CreateBoardDto) {
 
-    const {title, visibility, color} = createBoardDto
+    const {title, visibility, color, userId} = createBoardDto
 
     const newBoard = this.BoardRepository.create({
+      userId,
       title,
       visibility,
       color

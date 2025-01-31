@@ -27,7 +27,7 @@ export class CheckList {
   title: string;
 
   @ManyToOne(() => Card, (card) => card.checkList, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'cardId' })
+  @JoinColumn({ name: 'card_id' })
   card: Card;
 
   @OneToMany(() => CheckItem, (checkItem) => checkItem.checkList)

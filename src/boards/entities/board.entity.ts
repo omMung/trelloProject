@@ -42,7 +42,7 @@ export class Board {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.boards, { onDelete: 'CASCADE' })
-  @JoinColumn({name: "userId"})
+  @JoinColumn({name: "user_id"})
   user: User;
 
   @OneToMany(() => List, (list) => list.board)

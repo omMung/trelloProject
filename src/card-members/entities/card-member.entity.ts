@@ -23,10 +23,10 @@ export class JoinMember {
   cardId: number;
 
   @ManyToOne(() => User, (user) => user.joinMembers, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne(() => Card, (card) => card.joinMember, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'cardId' })
+  @JoinColumn({ name: 'card_id' })
   card: Card;
 }

@@ -22,10 +22,10 @@ export class CardLabel {
   cardId: number;
 
   @ManyToOne(() => Card, (card) => card.cardLabel, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'cardId' })
+  @JoinColumn({ name: 'card_id' })
   card: Card;
 
   @ManyToOne(() => Label, (label) => label.cardLabels, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'labelId' })
+  @JoinColumn({ name: 'label_id' })
   label: Label;
 }
