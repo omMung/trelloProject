@@ -37,10 +37,10 @@ export class CommentsController {
     return { data: comments };
   }
 
-  // @Get(':id/detail')
-  // async findOneComment(@Param('id') id: number) {
-  //   return await this.commentsService.getCommentById(+id);
-  // }
+  @Get(':id/detail')
+  async findOneComment(@Param('id') id: number) {
+    return await this.commentsService.getCommentById(+id);
+  }
 
   @Patch(':id')
   async updateComment(

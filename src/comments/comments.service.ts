@@ -27,13 +27,13 @@ export class CommentsService {
     });
   }
 
-  // async getCommentById(id: number) {
-  //   const comment = await this.commentRepository.findOneBy({ id });
-  //   if (_.isNil(comment)) {
-  //     throw new NotFoundException('댓글을 찾을 수 없습니다.');
-  //   }
-  //   return comment;
-  // }
+  async getCommentById(id: number) {
+    const comment = await this.commentRepository.findOneBy({ id });
+    if (_.isNil(comment)) {
+      throw new NotFoundException('댓글을 찾을 수 없습니다.');
+    }
+    return comment;
+  }
 
   async updateComment(id: number, userId: number, content: string) {
     await this.verifyComment(id, userId);
