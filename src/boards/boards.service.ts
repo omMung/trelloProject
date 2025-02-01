@@ -28,7 +28,7 @@ export class BoardsService {
       await this.BoardRepository.save(newBoard);
       return { message: "보드를 성공적으로 생성했습니다." };
     } catch (error) {
-      throw new NotFoundException("보드 생성에 실패했습니다.");
+      throw new Error("보드 생성에 실패했습니다.");
     }
   }
 

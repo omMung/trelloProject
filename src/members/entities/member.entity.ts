@@ -15,11 +15,11 @@ export class Member {
   @Column('int', { nullable: false })
   boardId: number;
 
-  @ManyToOne(() => User, (user) => user.members )
+  @ManyToOne(() => User, (user) => user.members, { onDelete: 'CASCADE' } )
   @JoinColumn({name: "user_id"})
   user: User;
 
-  @ManyToOne(() => Board, (board) => board.members )
+  @ManyToOne(() => Board, (board) => board.members, { onDelete: 'CASCADE' } )
   @JoinColumn({name: "board_id"})
   board: Board;
 }

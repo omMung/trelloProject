@@ -58,30 +58,37 @@ export class MembersService {
     const {boardId} = getMemberDto
     try{
     const members = await this.MemberRepo.find({
-      where: {id:boardId},
+      where: {boardId:boardId},
       select: ['userId']
     })
-    
-    if (!members){
+ 
+    if (members.length === 0){
       throw new Error("보드에 해당하는 유저를 찾을수가 없습니다")
     }
 
-    const userIds = members.map(value => value.userId)
+    const userIds = members.map(value => Number(value.userId))
 
     const users = await this.UserRepo.find({
       where: {id: In(userIds)},
       select: ['name']
     })
 
+    if(!users || users.length === 0) {
+      throw new Error("유저들을 찾을 수 없습니다.");
+    }
+
+
     return {message: `Trello 보드(${boardId})에  멤버 조회 성공`,
             names: users
     };
   }
   catch(error){
-    if(error instanceof NotFoundException){
+    if(error.message == "보드에 해당하는 유저를 찾을수가 없습니다"){
       throw error
     }
-
+    else if (error.message === "유저들을 찾을 수 없습니다") {
+      throw error;  
+    }
     throw new Error("보드 멤버 전체 조회중 에러가 발생")
   }
 }
@@ -128,29 +135,25 @@ export class MembersService {
     try{
       const {boardId} = getMemberDto
   
-      const members = await this.MemberRepo.find({
-        where: {id:boardId},
-        select: ['userId']
-      })
-  
-      const userIds = members.map(value => value.userId)
-      
-      if (!(userIds.includes(id))){
-        throw new Error("보드에 해당하는 유저를 찾을수가 없습니다")
-      }
-  
-      const users = await this.UserRepo.findOne({
-        where: {id: +id},
+      const user = await this.UserRepo.findOne({
+        where: {id},
         select: ['name']
       })
 
-      await this.UserRepo.delete({
-        id:+id
+      const users = user.name
+      console.log(users)
+
+
+      if(!users){
+        throw new NotFoundException("해당 유저를 찾을수 없습니다")
+      }
+
+      await this.MemberRepo.delete({
+        userId:id,
+        boardId:boardId
       })
       
-      return {message: `Trello 보드(${boardId})에  멤버(${id}) 삭제 성공`,
-              name: users
-      }
+      return {message: `Trello 보드(${boardId})에  멤버 '${users}' (${id})  삭제 성공`}
       
     }
     catch(error){
@@ -162,7 +165,5 @@ export class MembersService {
       }
     }
     }
-
-    
 }
 

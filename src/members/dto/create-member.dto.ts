@@ -1,14 +1,14 @@
-import {IsNotEmpty , IsString} from 'class-validator'
+import {IsNotEmpty , IsNumber} from 'class-validator'
 
 export class CreateMemberDto {
 
     @IsNotEmpty()
-    @IsString()
+    @IsNumber()
     userId: number
 
 
     @IsNotEmpty()
-    @IsString()
+    @IsNumber()
     boardId: number
 
 }
