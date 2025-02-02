@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
+import { VerifyEmailDto } from '../auth/dto/verify-email.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';

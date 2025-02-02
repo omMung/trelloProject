@@ -10,9 +10,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
@@ -24,6 +22,7 @@ export class UsersController {
   @Get('me')
   async getMyInfo(@Request() req) {
     const userId = req.user.id; // JWT에서 추출한 id
+
     return this.usersService.getUserById(userId);
   }
 
@@ -31,12 +30,8 @@ export class UsersController {
   @Patch('me')
   async updateMyInfo(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     const userId = req.user.id; // JWT에서 추출한 id
-    return this.usersService.update(userId, updateUserDto);
-  }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(userId, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)

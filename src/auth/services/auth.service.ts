@@ -1,16 +1,23 @@
 import nodemailer from 'nodemailer';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+  Res,
+} from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
-import { LoginDto } from '../../users/dto/login.dto';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { LoginDto } from '../dto/login.dto';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
   private blacklistedTokens = new Set<string>(); // 블랙리스트 저장소 (임시), 차후 redis 확장 예정?
 
   constructor(
+    @Inject(forwardRef(() => UsersService)) // forwardRef로 순환 참조 해결
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
@@ -31,7 +38,13 @@ export class AuthService {
       text: `인증 코드: ${verifyCode}`,
     };
 
-    await transporter.sendMail(mailOptions);
+    //await transporter.sendMail(mailOptions);
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log('이메일 발송 성공:', info.response); // 발송 성공 로그
+    } catch (error) {
+      console.error('이메일 발송 실패:', error); // 발송 실패 로그
+    }
   }
   async validateUser(email: string, password: string) {
     const user = await this.usersService.findByEmail(email);
