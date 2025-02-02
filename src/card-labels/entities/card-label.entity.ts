@@ -6,11 +6,13 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity({
   name: 'CardLabel',
 })
+@Unique(['cardId', 'labelId'])
 export class CardLabel {
   @PrimaryGeneratedColumn()
   id: number;
