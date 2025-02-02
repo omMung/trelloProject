@@ -31,7 +31,7 @@ describe('MembersController', () => {
   describe('create', () => {
     test('멤버가 정상적으로 생성 되어야 함', async () => {
       const createMemberDto: CreateMemberDto = { userId: 1, boardId: 1 };
-      const result = { message: 'Trello 보드(1)에 유저(1) 등록 성공', data: [{ name: 'User 1' }] };
+      const result = { message: `Trello 보드(${createMemberDto.userId})에 유저(${createMemberDto.boardId}) 등록 성공`, data: [{ name: 'User 1' }] };
 
      
       service.create = jest.fn().mockResolvedValue(result);
