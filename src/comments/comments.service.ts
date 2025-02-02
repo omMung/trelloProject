@@ -1,5 +1,9 @@
 import { Repository } from 'typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 
@@ -13,6 +17,14 @@ export class CommentsService {
   ) {}
 
   async createComment(cardId: number, userId: number, content: string) {
+    if (_.isEmpty(content.trim())) {
+      throw new BadRequestException('댓글 내용을 비울 수 없습니다.');
+    }
+
+    if (content.length > 50) {
+      throw new BadRequestException('댓글 내용은 50자를 넘길 수 없습니다.');
+    }
+
     const newComment = this.commentRepository.create({
       cardId,
       userId,
@@ -36,6 +48,13 @@ export class CommentsService {
   }
 
   async updateComment(id: number, userId: number, content: string) {
+    if (_.isEmpty(content.trim())) {
+      throw new BadRequestException('댓글 내용을 비울 수 없습니다.');
+    }
+
+    if (content.length > 50) {
+      throw new BadRequestException('댓글 내용은 50자를 넘길 수 없습니다.');
+    }
     await this.verifyComment(id, userId);
     await this.commentRepository.update({ id }, { content });
     return await this.commentRepository.findOneBy({ id });
