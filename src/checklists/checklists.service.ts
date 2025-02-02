@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
 import { CheckList } from './entities/checklist.entity';
@@ -15,13 +19,12 @@ export class ChecklistsService {
 
   // 체크리스트 생성 메서드
   async create(createChecklistDto: CreateChecklistDto): Promise<CheckList> {
-    // const newChecklist = new CheckList();
-    // newChecklist.cardId = createChecklistDto.cardId;
-    // newChecklist.title = createChecklistDto.title;
-    // this.checkitemsRepository.push(newChecklist);
-    // return newChecklist;
-    const newChecklist = this.checkitemsRepository.create(createChecklistDto);
-    return await this.checkitemsRepository.save(newChecklist);
+    try {
+      const newChecklist = this.checkitemsRepository.create(createChecklistDto);
+      return await this.checkitemsRepository.save(newChecklist);
+    } catch (err) {
+      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
+    }
   }
 
   // 체크리스트 업데이트 메서드
@@ -29,42 +32,31 @@ export class ChecklistsService {
     id: number,
     updateChecklistDto: UpdateChecklistDto,
   ): Promise<CheckList> {
-    // const checklist = this.checkitemsRepository.find((item) => item.id === id); // ID로 체크리스트 찾기
-    // if (!checklist) {
-    //   throw new Error('체크리스트를 찾을 수 없습니다.'); // 에러 처리
-    // }
+    try {
+      const checklist = await this.checkitemsRepository.findOneBy({ id }); // ID로 체크리스트 찾기
+      if (!checklist) {
+        throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
+      }
 
-    // // 업데이트
-    // if (updateChecklistDto.title !== undefined) {
-    //   checklist.title = updateChecklistDto.title;
-    // }
-    // if (updateChecklistDto.position !== undefined) {
-    //   checklist.position = updateChecklistDto.position;
-    // }
-
-    // return checklist;
-    const checklist = await this.checkitemsRepository.findOneBy({ id }); // ID로 체크리스트 찾기
-    if (!checklist) {
-      throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
+      // 업데이트
+      Object.assign(checklist, updateChecklistDto);
+      return await this.checkitemsRepository.save(checklist);
+    } catch (err) {
+      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
-
-    // 업데이트
-    Object.assign(checklist, updateChecklistDto);
-    return await this.checkitemsRepository.save(checklist);
   }
 
   // 카드 ID로 체크리스트 삭제 메서드
   async remove(cardId: number): Promise<void> {
-    // const index = this.checkitemsRepository.findIndex(
-    //   (item) => item.cardId === cardId,
-    // ); // 카드 ID로 체크리스트 찾기
-    // if (index === -1) {
-    //   throw new Error('이 아이디에 해당하는 체크리스트가 없어용.'); // 에러 처리
-    // }
-    // this.checkitemsRepository.splice(index, 1); // 체크리스트 삭제
-    const result = await this.checkitemsRepository.delete({ cardId }); // 카드 ID로 체크리스트 삭제
-    if (result.affected === 0) {
-      throw new NotFoundException('이 아이디에 해당하는 체크리스트가 없어용.'); // 에러 처리
+    try {
+      const result = await this.checkitemsRepository.delete({ cardId }); // 카드 ID로 체크리스트 삭제
+      if (result.affected === 0) {
+        throw new NotFoundException(
+          '이 아이디에 해당하는 체크리스트가 없어용.',
+        ); // 에러 처리
+      }
+    } catch (err) {
+      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }
 }
