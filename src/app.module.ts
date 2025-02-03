@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -15,7 +16,6 @@ import { CardMembersModule } from './card-members/card-members.module';
 import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import Joi from 'joi';
 
 const typeOrmModuleOptions = {
@@ -30,7 +30,7 @@ const typeOrmModuleOptions = {
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
     entities: [__dirname + '/**/entities/*.{ts,js}'],
-    synchronize: false, //configService.get('DB_SYNC'),
+    synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
   inject: [ConfigService],
