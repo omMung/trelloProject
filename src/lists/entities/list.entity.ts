@@ -1,5 +1,5 @@
-import { Board } from 'src/boards/entities/board.entity';
-import { Card } from 'src/cards/entities/card.entity';
+import { Board } from '../../boards/entities/board.entity';
+import { Card } from '../../cards/entities/card.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -34,7 +34,7 @@ export class List {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Board, (board) => board.list, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Board, (board) => board.lists, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 

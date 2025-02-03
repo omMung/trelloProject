@@ -1,12 +1,11 @@
-import { Card } from 'src/cards/entities/card.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Card } from '../../cards/entities/card.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
@@ -35,9 +34,9 @@ export class Comment {
 
   @ManyToOne(() => User, (user) => user.comments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  user: User[];
+  user: User;
 
   @ManyToOne(() => Card, (card) => card.comment, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'card_id' })
-  card: Card[];
+  card: Card;
 }

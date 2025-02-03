@@ -2,6 +2,7 @@ import { IsString } from 'class-validator';
 import { List } from 'src/lists/entities/list.entity';
 import { Member } from 'src/members/entities/member.entity';
 import { User } from 'src/users/entities/user.entity';
+import { visibEnum } from '../dto/visibility.enum';
 import {
   Column,
   CreateDateColumn,
@@ -12,10 +13,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-enum Visibility {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',
-}
+
 @Entity({
   name: 'Board',
 })
@@ -26,8 +24,8 @@ export class Board {
   @Column('int', { nullable: false })
   userId: number;
 
-  @Column({ type: 'enum', enum: Visibility })
-  visibility: Visibility;
+  @Column({ type: 'enum', enum: visibEnum })
+  visibility: visibEnum;
 
   @IsString()
   @Column('varchar', {})
@@ -48,8 +46,8 @@ export class Board {
   user: User;
 
   @OneToMany(() => List, (list) => list.board)
-  list: List[];
+  lists: List[];
 
   @OneToMany(() => Member, (member) => member.board)
-  member: Member[];
+  members: Member[];
 }

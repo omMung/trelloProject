@@ -1,5 +1,5 @@
-import { Board } from 'src/boards/entities/board.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Board } from '../../boards/entities/board.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -25,7 +25,7 @@ export class Member {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Board, (board) => board.member, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Board, (board) => board.members, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 }

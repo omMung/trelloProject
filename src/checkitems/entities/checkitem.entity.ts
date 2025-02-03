@@ -1,4 +1,4 @@
-import { CheckList } from 'src/checklists/entities/checklist.entity';
+import { CheckList } from '../../checklists/entities/checklist.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
