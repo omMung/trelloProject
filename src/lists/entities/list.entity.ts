@@ -9,13 +9,13 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
-  Unique,
+  // Unique,
 } from 'typeorm';
 
 @Entity({
   name: 'List',
 })
-@Unique(['boardId', 'position']) // 보드id와 포지션의 조합은 고유해야함
+// @Unique(['boardId', 'position']) // 보드id와 포지션의 조합은 고유해야함
 export class List {
   @PrimaryGeneratedColumn()
   id: number;
@@ -23,7 +23,7 @@ export class List {
   @Column('int', { nullable: false })
   boardId: number;
 
-  @Column('int', { nullable: false, unique: true })
+  @Column('int', { nullable: false })
   position: number;
 
   @Column('varchar', { nullable: false })

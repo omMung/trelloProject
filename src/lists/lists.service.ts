@@ -10,6 +10,7 @@ import { List } from './entities/list.entity';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
+// import { getConnection } from 'typeorm';
 
 @Injectable() // 주입 가능
 export class ListsService {
@@ -134,9 +135,49 @@ export class ListsService {
     }
 
     // 위치 업데이트
-    const updatePromises = lists.map((list) =>
-      this.listsRepository.update(list.id, { position: list.position }),
-    );
+    // async function updateUserUsingQueryBuilder(id: number, newName: string) {
+    //   await getConnection()
+    //     .createQueryBuilder()
+    //     .update(List)
+    //     .set({ name: newName })
+    //     .where('id = :id', { id })
+    //     .execute();
+    // }
+    // const deletePromise = lists.map((list) => {
+    //   // console.log(list);
+    //   return this.listsRepository.delete(list.id);
+    // });
+
+    // await Promise.all(deletePromise);
+    // console.log(lists);
+
+    // const updatePromises = lists.map((list) => {
+    //   console.log(list);
+    //   return this.listsRepository.create({
+    //     boardId: 1,
+    //     title: 'test',
+    //     position: list.position,
+    //   });
+    // });
+
+    // await Promise.all(updatePromises);
+
+    // return this.listsRepository.save(list);
+
+    // for (let i = 0; i < lists.length; i++) {
+    //   const list = this.listsRepository.create({
+    //     boardId: 1,
+    //     title: 'test',
+    //     position: lists[i].position,
+    //   });
+    //   await this.listsRepository.save(list);
+    // }
+    // 위치 업데이트
+
+    const updatePromises = lists.map((list) => {
+      console.log(list);
+      return this.listsRepository.update(list.id, { position: list.position });
+    });
 
     await Promise.all(updatePromises);
   }

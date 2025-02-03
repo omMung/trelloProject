@@ -1,13 +1,5 @@
 // src/lists/lists.controller.ts
-import {
-  Controller,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ListsService } from './lists.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
@@ -36,10 +28,12 @@ export class ListsController {
   }
 
   // 리스트 위치 업데이트
-  @Patch()
+  @Patch() // 명확한 엔드포인트 지정 권장
   async updatePositions(
     @Body() updateListPositionsDto: UpdateListPositionsDto,
-  ) {
-    return this.listsService.updatePositions(updateListPositionsDto);
+  ): Promise<{ message: string }> {
+    // 반환 타입 명시
+    await this.listsService.updatePositions(updateListPositionsDto);
+    return { message: '리스트 위치가 성공적으로 업데이트되었습니다.' };
   }
 }
