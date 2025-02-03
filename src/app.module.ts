@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -17,6 +17,7 @@ import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
 import Joi from 'joi';
+import { JwtModule } from '@nestjs/jwt';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -35,6 +36,7 @@ const typeOrmModuleOptions = {
   }),
   inject: [ConfigService],
 };
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,9 +48,20 @@ const typeOrmModuleOptions = {
         DB_PORT: Joi.number().required(),
         DB_NAME: Joi.string().required(),
         DB_SYNC: Joi.boolean().required(),
+        JWT_SECRET: Joi.string().required(), // JWT 시크릿 키 검증 추가
+        JWT_EXPIRES_IN: Joi.string().default('1h'), // JWT 만료시간 검증 추가
       }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
+    // JwtModule 등록 (글로벌 제공)
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
+      }),
+    }),
     UsersModule,
     BoardsModule,
     ListsModule,
@@ -64,5 +77,6 @@ const typeOrmModuleOptions = {
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [JwtModule],
 })
 export class AppModule {}
