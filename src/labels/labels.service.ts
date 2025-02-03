@@ -31,9 +31,7 @@ export class LabelsService {
   async findOne(id: number) {
     const label = await this.labelRepository.findOneBy({ id });
     if (!label) {
-      throw new NotFoundException(
-        `ID ${id}에 해당하는 라벨을 찾을 수 없습니다.`,
-      );
+      throw new NotFoundException(`해당하는 라벨을 찾을 수 없습니다.`);
     }
     return label;
   }
@@ -41,9 +39,7 @@ export class LabelsService {
   async update(id: number, updateLabelDto: UpdateLabelDto) {
     const label = await this.labelRepository.findOneBy({ id });
     if (!label) {
-      throw new NotFoundException(
-        `ID ${id}에 해당하는 라벨이 존재하지 않습니다.`,
-      );
+      throw new NotFoundException(`해당하는 라벨이 존재하지 않습니다.`);
     }
     if (
       updateLabelDto.color &&
