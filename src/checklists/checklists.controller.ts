@@ -44,7 +44,10 @@ export class ChecklistsController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number, @Body() cardId: number): Promise<void> {
-    return this.checklistsService.remove(id, cardId);
+  async remove(
+    @Param('id') id: number,
+    @Body() updateChecklistDto: UpdateChecklistDto,
+  ): Promise<void> {
+    return this.checklistsService.remove(id, updateChecklistDto);
   }
 }

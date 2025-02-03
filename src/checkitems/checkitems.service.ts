@@ -13,9 +13,24 @@ export class CheckitemsService {
     private checkitemsRepository: Repository<CheckItem>,
   ) {}
 
-  create(createCheckitemDto: CreateCheckitemDto): Promise<CheckItem> {
+  async create(createCheckitemDto: CreateCheckitemDto): Promise<CheckItem> {
     try {
-      const newCheckitem = this.checkitemsRepository.create(createCheckitemDto);
+      const { checkListId, title } = createCheckitemDto;
+      const checkLists = await this.checkitemsRepository.find({
+        where: { checkListId },
+        select: ['position'],
+      });
+      // 최대 포지션 찾기
+      const maxPosition =
+        checkLists.length > 0
+          ? Math.max(...checkLists.map((list) => list.position))
+          : 0;
+
+      const newCheckitem = this.checkitemsRepository.create({
+        checkListId,
+        title,
+        position: maxPosition + 1,
+      });
       return this.checkitemsRepository.save(newCheckitem);
     } catch (err) {
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');

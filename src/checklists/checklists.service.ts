@@ -20,7 +20,20 @@ export class ChecklistsService {
   // 체크리스트 생성 메서드
   async create(createChecklistDto: CreateChecklistDto): Promise<CheckList> {
     try {
-      const newChecklist = this.checklistRepository.create(createChecklistDto);
+      const { cardId, title } = createChecklistDto;
+      const cards = await this.checklistRepository.find({
+        where: { cardId },
+        select: ['position'],
+      });
+      // 최대 포지션 찾기
+      const maxPosition =
+        cards.length > 0 ? Math.max(...cards.map((list) => list.position)) : 0;
+
+      const newChecklist = this.checklistRepository.create({
+        cardId,
+        title,
+        position: maxPosition + 1,
+      });
       return await this.checklistRepository.save(newChecklist);
     } catch (err) {
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
@@ -53,8 +66,12 @@ export class ChecklistsService {
   }
 
   // 체크리스트 삭제 메서드
-  async remove(id: number, cardId: number): Promise<void> {
+  async remove(
+    id: number,
+    updateChecklistDto: UpdateChecklistDto,
+  ): Promise<void> {
     try {
+      const { cardId } = updateChecklistDto;
       //카드id 검증 필요
 
       const result = await this.checklistRepository.delete({ id }); // 카드 ID로 체크리스트 삭제
