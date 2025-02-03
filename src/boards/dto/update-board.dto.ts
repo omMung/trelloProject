@@ -1,4 +1,15 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateBoardDto } from './create-board.dto';
+import {IsNotEmpty , IsEnum , IsString} from 'class-validator'
+import {visibEnum} from './visibility.enum'
 
-export class UpdateBoardDto extends PartialType(CreateBoardDto) {}
+export class UpdateBoardDto {
+
+    
+    @IsString()
+    title: string
+
+    @IsEnum(visibEnum)
+    visibility: visibEnum
+
+    @IsString()
+    color: string
+}
