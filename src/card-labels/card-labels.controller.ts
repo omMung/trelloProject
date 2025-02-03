@@ -25,11 +25,6 @@ export class CardLabelsController {
     return this.cardLabelsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cardLabelsService.findOne(+id);
-  }
-
   @Patch(':id')
   update(
     @Param('id') id: string,

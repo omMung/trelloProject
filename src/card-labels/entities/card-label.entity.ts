@@ -1,5 +1,5 @@
-import { Card } from 'src/cards/entities/card.entity';
-import { Label } from 'src/labels/entities/label.entity';
+import { Card } from '../../cards/entities/card.entity';
+import { Label } from '../../labels/entities/label.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

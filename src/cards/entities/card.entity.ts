@@ -1,4 +1,4 @@
-import { Alarm } from 'src/alarms/entities/alarm.entity';
+import { Alarm } from '../../alarms/entities/alarm.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,12 +8,12 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Comment } from 'src/comments/entities/comment.entity';
+import { Comment } from '../../comments/entities/comment.entity';
 import { CardsService } from '../cards.service';
-import { JoinMember } from 'src/card-members/entities/card-member.entity';
-import { CheckList } from 'src/checklists/entities/checklist.entity';
-import { CardLabel } from 'src/card-labels/entities/card-label.entity';
-import { List } from 'src/lists/entities/list.entity';
+import { JoinMember } from '../../card-members/entities/card-member.entity';
+import { CheckList } from '../../checklists/entities/checklist.entity';
+import { CardLabel } from '../../card-labels/entities/card-label.entity';
+import { List } from '../../lists/entities/list.entity';
 
 @Entity({
   name: 'Card',

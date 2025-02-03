@@ -1,7 +1,7 @@
 import { IsString } from 'class-validator';
-import { List } from 'src/lists/entities/list.entity';
-import { Member } from 'src/members/entities/member.entity';
-import { User } from 'src/users/entities/user.entity';
+import { List } from '../../lists/entities/list.entity';
+import { Member } from '../../members/entities/member.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,

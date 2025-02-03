@@ -10,8 +10,8 @@ import { CreateCardLabelDto } from './dto/create-card-label.dto';
 import { UpdateCardLabelDto } from './dto/update-card-label.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Card } from 'src/cards/entities/card.entity';
-import { Label } from 'src/labels/entities/label.entity';
+import { Card } from '../cards/entities/card.entity';
+import { Label } from '../labels/entities/label.entity';
 
 @Injectable()
 export class CardLabelsService {
@@ -49,16 +49,28 @@ export class CardLabelsService {
     }
   }
 
-  findAll() {
-    return `This action returns all cardLabels`;
+  async findAll() {
+    try {
+      return await this.cardLabelRepository.find();
+    } catch (err) {
+      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cardLabel`;
-  }
+  async update(id: number, updateCardLabelDto: UpdateCardLabelDto) {
+    const { cardId, labelId } = updateCardLabelDto;
+    const cardLabel = await this.cardLabelRepository.findOneBy({ id: cardId });
+    if (!cardLabel) {
+      throw new NotFoundException(`해당하는 카드 라벨이 존재하지 않습니다.`);
+    }
+    const label = await this.labelRepository.findOneBy({ id: labelId });
+    if (!label) {
+      throw new BadRequestException(`해당하는 라벨이 존재하지 않습니다.`);
+    }
 
-  update(id: number, updateCardLabelDto: UpdateCardLabelDto) {
-    return `This action updates a #${id} cardLabel`;
+    // 업데이트 진행
+    Object.assign(cardLabel, updateCardLabelDto);
+    return await this.cardLabelRepository.save(cardLabel);
   }
 
   async remove(id: number) {
@@ -67,6 +79,6 @@ export class CardLabelsService {
       throw new NotFoundException(`해당하는 지정 라벨이 존재하지 않습니다.`);
     }
     await this.cardLabelRepository.delete(id);
-    return `This action removes a #${id} cardLabel`;
+    return `지정 라벨을 삭제하였습니다.`;
   }
 }
