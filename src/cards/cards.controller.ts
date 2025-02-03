@@ -10,6 +10,7 @@ import {
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
+import { UpdateCardPositionsDto } from './dto/update-card-positions.dto';
 
 @Controller('cards')
 export class CardsController {
@@ -33,5 +34,15 @@ export class CardsController {
   @Delete(':id')
   deleteCard(@Param('id') id: string, @Body('list_id') listId: number) {
     return this.cardsService.deleteCard(+id, listId);
+  }
+
+  // 카드 위치 업데이트
+  @Patch()
+  async updatePositions(
+    @Body() UpdateCardPositionsDto: UpdateCardPositionsDto,
+  ): Promise<{ message: string }> {
+    // 반환 타입 명시
+    await this.cardsService.updatePositions(UpdateCardPositionsDto);
+    return { message: '카드 위치가 성공적으로 업데이트되었습니다.' };
   }
 }
