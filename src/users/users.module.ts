@@ -4,18 +4,11 @@ import { UsersService } from './users.service';
 import { AuthService } from '../auth/services/auth.service';
 import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
-import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from '../auth/controllers/auth.controller';
-import { jwtConstants } from '../config/jwt.config';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: jwtConstants.expiresIn },
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController, AuthController],
   providers: [UsersService, AuthService],
   exports: [UsersService, AuthService],
