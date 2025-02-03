@@ -1,5 +1,5 @@
-import { Board } from 'src/boards/entities/board.entity';
-import { Card } from 'src/cards/entities/card.entity';
+import { Board } from '../../boards/entities/board.entity';
+import { Card } from '../../cards/entities/card.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

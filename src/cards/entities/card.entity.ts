@@ -1,4 +1,4 @@
-import { Alarm } from 'src/alarms/entities/alarm.entity';
+import { Alarm } from '../../alarms/entities/alarm.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
