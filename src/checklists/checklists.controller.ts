@@ -25,9 +25,9 @@ export class ChecklistsController {
   }
 
   @Get()
-  async findAll(@Request() req): Promise<CheckList[]> {
-    const userId = req.body.userId; // 리퀘스트 바디에서 유저 ID 추출
-    return this.checklistsService.findAllByUserId(userId); // 서비스에서 유저 ID로 체크리스트 조회
+  async findAll(@Body() cardId: number): Promise<CheckList[]> {
+    //카드아이디가 로그인 중인 유저의 카드에 해당하는지 검증
+    return this.checklistsService.findAllByCardId(cardId); // 서비스에서 유저 ID로 체크리스트 조회
   }
 
   // @Get(':id')
