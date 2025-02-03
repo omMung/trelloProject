@@ -37,6 +37,7 @@ export class ChecklistsService {
       if (!checklist) {
         throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
       }
+      //카드id 검증 필요
 
       // 업데이트
       Object.assign(checklist, updateChecklistDto);
@@ -46,10 +47,12 @@ export class ChecklistsService {
     }
   }
 
-  // 카드 ID로 체크리스트 삭제 메서드
-  async remove(cardId: number): Promise<void> {
+  // 체크리스트 삭제 메서드
+  async remove(id: number): Promise<void> {
     try {
-      const result = await this.checkitemsRepository.delete({ cardId }); // 카드 ID로 체크리스트 삭제
+      //카드id 검증 필요
+
+      const result = await this.checkitemsRepository.delete({ id }); // 카드 ID로 체크리스트 삭제
       if (result.affected === 0) {
         throw new NotFoundException(
           '이 아이디에 해당하는 체크리스트가 없어용.',

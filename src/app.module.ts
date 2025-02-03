@@ -30,7 +30,7 @@ const typeOrmModuleOptions = {
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
     entities: [__dirname + '/**/entities/*.{ts,js}'],
-    synchronize: configService.get('DB_SYNC'),
+    synchronize: false, //configService.get('DB_SYNC'),
     logging: true,
   }),
   inject: [ConfigService],
