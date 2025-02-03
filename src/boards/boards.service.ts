@@ -57,11 +57,18 @@ export class BoardsService {
       select: ['id','visibility','color','title']
     })
 
+    if(!Board){
+      throw new NotFoundException("해당 보드를 찾을수 없습니다")
+    }
+
     return {message: "하나의 보드를 성공적으로 조회했습니다",
       data: Board
 }
   }
   catch(error){
+    if(error instanceof NotFoundException){
+      throw error
+    }
     throw new NotFoundException("보드 상세 조회중에 에러가 발생했습니다.");
   }
   }

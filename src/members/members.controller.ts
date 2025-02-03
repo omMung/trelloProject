@@ -17,7 +17,7 @@ export class MembersController {
     return this.membersService.findAll(getMemberDto);
   }
 
-  @Post(':id') // 멤버 상세 조회
+  @Get(':id') // 멤버 상세 조회
   findOne(@Param('id') id: string , @Body() getMemberDto: GetMemberDto ) {
     return this.membersService.findOne(+id , getMemberDto);
   }
