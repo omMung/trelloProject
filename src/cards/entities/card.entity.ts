@@ -3,13 +3,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
   OneToMany,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { Comment } from 'src/comments/entities/comment.entity';
-import { CardsService } from '../cards.service';
 import { JoinMember } from 'src/card-members/entities/card-member.entity';
 import { CheckList } from 'src/checklists/entities/checklist.entity';
 import { CardLabel } from 'src/card-labels/entities/card-label.entity';
@@ -28,10 +26,10 @@ export class Card {
   @Column('varchar', { nullable: false })
   title: string;
 
-  @Column('int', { nullable: false, unique: true })
+  @Column('int', {})
   position: number;
 
-  @Column('varchar', { nullable: true })
+  @Column('varchar', { default: '#FFFFFF' })
   color: string;
 
   @Column('varchar', { nullable: true })
@@ -40,11 +38,11 @@ export class Card {
   @Column('boolean', { default: false })
   status: boolean;
 
-  @Column('date', { nullable: true })
-  startDate: Date;
+  @Column('varchar', { nullable: true })
+  startDate: string;
 
-  @Column('date', { nullable: true })
-  dueDate: Date;
+  @Column('varchar', { nullable: true })
+  dueDate: string;
 
   @OneToMany(() => Alarm, (alarm) => alarm.card)
   alarm: Alarm[];
