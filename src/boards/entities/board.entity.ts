@@ -10,7 +10,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany, JoinColumn,
+  OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 
