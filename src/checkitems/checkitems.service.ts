@@ -28,6 +28,8 @@ export class CheckitemsService {
     updateCheckitemDto: UpdateCheckitemDto,
   ): Promise<CheckItem> {
     try {
+      //카드id 검증 필요
+      //멤버id 검증 필요
       const checkitem = await this.checkitemsRepository.findOneBy({ id }); // ID로 항목 찾기
       if (!checkitem) {
         throw new Error('체크리스트 항목을 찾을 수 없습니다.'); // 에러 처리
@@ -41,14 +43,14 @@ export class CheckitemsService {
   }
 
   // 항목 삭제 메서드
-  async remove(checkListId: number): Promise<void> {
+  async remove(id: number, checkListId: number): Promise<void> {
     try {
       const checkitem = await this.checkitemsRepository.findOneBy({
-        checkListId,
+        id,
       });
 
       if (!checkitem) {
-        throw new Error('Checkitem not found'); // 에러 처리
+        throw new Error('항목이 없어용.'); // 에러 처리
       }
 
       await this.checkitemsRepository.remove(checkitem); // 항목 삭제
