@@ -3,10 +3,11 @@ import {
   ConflictException,
   BadRequestException,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { VerifyEmailDto } from '../auth/dto/verify-email.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -18,6 +19,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    //@Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
   async create(createUserDto: CreateUserDto) {
@@ -52,33 +54,6 @@ export class UsersService {
     await this.authService.sendVerificationEmail(email, verifyCode);
 
     return { message: '회원가입이 완료되었습니다. 이메일을 확인해주세요.' };
-  }
-
-  async verifyEmail(verifyEmailDto: VerifyEmailDto) {
-    const { email, verifyCode } = verifyEmailDto;
-
-    const user = await this.userRepository.findOne({ where: { email } });
-
-    if (!user) {
-      throw new BadRequestException(
-        '해당 이메일의 사용자가 존재하지 않습니다.',
-      );
-    }
-
-    if (user.verifyCode !== verifyCode) {
-      throw new BadRequestException('인증 코드가 올바르지 않습니다.');
-    }
-
-    // 인증 완료
-    user.isVerified = true;
-    user.verifyCode = null; // 인증 코드 제거
-    await this.userRepository.save(user);
-
-    return { message: '이메일 인증이 완료되었습니다.' };
-  }
-
-  async findByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
   }
 
   async getUserById(userId: number) {

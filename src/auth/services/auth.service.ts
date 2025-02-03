@@ -4,22 +4,28 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
-  Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { LoginDto } from '../dto/login.dto';
-import { Response } from 'express';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
+import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
   private blacklistedTokens = new Set<string>(); // 블랙리스트 저장소 (임시), 차후 redis 확장 예정?
 
   constructor(
-    @Inject(forwardRef(() => UsersService)) // forwardRef로 순환 참조 해결
-    private readonly usersService: UsersService,
+    // @Inject(forwardRef(() => UsersService)) // forwardRef로 순환 참조 해결
+    // private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async sendVerificationEmail(email: string, verifyCode: string) {
@@ -47,7 +53,7 @@ export class AuthService {
     }
   }
   async validateUser(email: string, password: string) {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
       throw new UnauthorizedException(
         '이메일 또는 비밀번호가 올바르지 않습니다.',
@@ -82,6 +88,29 @@ export class AuthService {
         name: user.name,
       },
     };
+  }
+
+  async verifyEmail(verifyEmailDto: VerifyEmailDto) {
+    const { email, verifyCode } = verifyEmailDto;
+
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new BadRequestException(
+        '해당 이메일의 사용자가 존재하지 않습니다.',
+      );
+    }
+
+    if (user.verifyCode !== verifyCode) {
+      throw new BadRequestException('인증 코드가 올바르지 않습니다.');
+    }
+
+    // 인증 완료
+    user.isVerified = true;
+    user.verifyCode = null; // 인증 코드 제거
+    await this.userRepository.save(user);
+
+    return { message: '이메일 인증이 완료되었습니다.' };
   }
 
   async logout(token: string) {
