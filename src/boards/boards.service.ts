@@ -17,9 +17,9 @@ export class BoardsService {
   ){} // 리포지토리를 주입 받기 위한 설정
 
   // 보드 생성
-  async create(createBoardDto: CreateBoardDto) {
+  async create(userId ,createBoardDto: CreateBoardDto) {
 
-    const {title, visibility, color, userId} = createBoardDto
+    const {title, visibility, color} = createBoardDto
 
     const newBoard = this.BoardRepository.create({
       userId,
@@ -117,23 +117,27 @@ export class BoardsService {
   }
 
   // 보드 수정
-  async update(id: number, updateBoardDto: UpdateBoardDto) {
+  async update(userId , id: number, updateBoardDto: UpdateBoardDto) {
     const {title , visibility , color} = updateBoardDto
 
     try{
-    const board = await this.BoardRepository.findOne({ where: { id } });
+    const board = await this.BoardRepository.findOne({ where: { id , userId } });
 
     if (!board) {
       throw new NotFoundException('보드를 찾을 수 없습니다.');
     }
     
-    await this.BoardRepository.update(id, {
+    await this.BoardRepository.update({id,userId}, {
       title,
       visibility,
       color
     })
 
-    const newboard = await this.BoardRepository.findOne({ where: {id} })
+    const newboard = await this.BoardRepository.findOne({ where: {id , userId } })
+
+    if (!newboard) {
+      throw new NotFoundException('새로 업데이트한 보드를 찾을 수 없습니다.');
+    }
 
     return {
       message: "보드를 성공적으로 수정했습니다",
@@ -151,10 +155,10 @@ export class BoardsService {
   }
 
   // 보드 삭제
-  async remove(id: number) {
+  async remove(userId, id: number) {
     try{
     const board = await this.BoardRepository.findOne({
-      where: {id}
+      where: {id,userId}
     })
 
     if(!board) {
