@@ -2,14 +2,18 @@ import { Injectable , NotFoundException} from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Board } from './entities/board.entity'
+import { List } from '../lists/entities/list.entity'
+import { Card } from '../cards/entities/card.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class BoardsService {
 
   constructor(
-    @InjectRepository(Board) private BoardRepository: Repository<Board>
+    @InjectRepository(Board) private BoardRepository: Repository<Board>,
+    @InjectRepository(List) private ListRepository: Repository<List>,
+    @InjectRepository(Card) private CardRepository: Repository<Card>
   ){} // 리포지토리를 주입 받기 위한 설정
 
   // 보드 생성
@@ -50,10 +54,10 @@ export class BoardsService {
   }
 
   // 보드 상세 조회(보드 뿐만 아니라 카드나 다른 내용또한 같이 있어야 하므로 다른사람들과 같이할것)
-  async findOne(id: number) { 
+  async findOne(id: number) { // 2번보드에 있는 보드 ,카드,리스트 확인
     try{
     const Board = await this.BoardRepository.findOne({
-      where: {id: id},
+      where: {id},
       select: ['id','visibility','color','title']
     })
 
@@ -61,10 +65,49 @@ export class BoardsService {
       throw new NotFoundException("해당 보드를 찾을수 없습니다")
     }
 
+    const List = await this.ListRepository.find({
+      where: {boardId: id},
+      select: ['id','position','title']
+    })
+
+    const ListId = await this.ListRepository.find({
+      where: {boardId: id},
+      select: ['id']
+    })
+
+    const ListIds = ListId.map(value => value.id)
+
+    if(!List && List.length === 0){
+      throw new NotFoundException("보드안에 리스트를 찾을수 없습니다")
+    }
+
+    const Card = await this.CardRepository.find({
+      where: {listId: In(ListIds)},
+      select: ['id', 'listId', 'title','position','color','description']
+    })
+
+    if(!Card && Card.length === 0){
+      throw new NotFoundException("리스트안에 카드를 찾을수 없습니다")
+    }
+
+    const ListWithCards = List.map(list => {
+      const cardsInList = Card.filter(card => card.listId === list.id);
+      return {
+        ...list,
+        cards: cardsInList,
+      };
+    });
+
+  
+
     return {message: "하나의 보드를 성공적으로 조회했습니다",
-      data: Board
-}
+      data: {
+        ...Board,
+        lists: ListWithCards,
+      }
+    }
   }
+  
   catch(error){
     if(error instanceof NotFoundException){
       throw error
