@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CardsService } from './cards.service';
+import { Repository } from 'typeorm';
 
 describe('CardsService', () => {
   let service: CardsService;
