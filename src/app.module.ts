@@ -42,7 +42,7 @@ const typeOrmModuleOptions = {
     password: configService.get('DB_PASSWORD'),
     database: configService.get('DB_NAME'),
     entities: [__dirname + '/**/entities/*.{ts,js}'],
-    synchronize: configService.get('DB_SYNC'),
+    synchronize: false, //configService.get('DB_SYNC'),
     logging: true,
   }),
   inject: [ConfigService],
@@ -51,14 +51,14 @@ const typeOrmModuleOptions = {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      // validationSchema: Joi.object({
-      //   DB_USERNAME: Joi.string().required(),
-      //   DB_PASSWORD: Joi.string().required(),
-      //   DB_HOST: Joi.string().required(),
-      //   DB_PORT: Joi.number().required(),
-      //   DB_NAME: Joi.string().required(),
-      //   DB_SYNC: Joi.boolean().required(),
-      // }),
+      validationSchema: Joi.object({
+        DB_USERNAME: Joi.string().required(),
+        DB_PASSWORD: Joi.string().required(),
+        DB_HOST: Joi.string().required(),
+        DB_PORT: Joi.number().required(),
+        DB_NAME: Joi.string().required(),
+        DB_SYNC: Joi.boolean().required(),
+      }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     UsersModule,
