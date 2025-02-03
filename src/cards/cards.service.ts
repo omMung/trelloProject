@@ -25,7 +25,15 @@ export class CardsService {
 
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
     const { list_id, title, description, color, status } = createCardDto;
-    const verifyListId = await this.listRepository.findOne({});
+
+    // const verifyListId = await this.listRepository.findOne({
+    //   where: { list_id },
+    // });
+    // if (_.isNil(verifyListId)) {
+    //   throw new NotFoundException(
+    //     '메시지를 찾을 수 없거나 수정/삭제할 권한이 없습니다.',
+    //   );
+
     const lastPosition = await this.findLastPosition();
 
     const card = this.cardsRepository.create({
@@ -41,7 +49,7 @@ export class CardsService {
   }
 
   async findOne(id: number, listId: number): Promise<Card> {
-    return await this.cardsRepository.findOneBy({ id, listId });
+    return await this.cardsRepository.findOneBy({ id });
   }
 
   async updateCard(id: number, updateCardDto: UpdateCardDto) {
@@ -61,7 +69,7 @@ export class CardsService {
   }
 
   async deleteCard(id: number, listId: number): Promise<void> {
-    await this.cardsRepository.delete({ id, listId });
+    await this.cardsRepository.delete({ id });
   }
 
   private async verifyCards(id: number, updateCardDto: UpdateCardDto) {

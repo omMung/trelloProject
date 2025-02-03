@@ -8,6 +8,9 @@ import {
 
 export class CreateCardDto {
   @IsNumber()
+  board_id: Number;
+
+  @IsNumber()
   list_id: Number;
 
   @IsNotEmpty({ message: '제목을 입력해주세요.' })
