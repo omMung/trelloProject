@@ -6,29 +6,32 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-// import { userInfo } from 'os'; 유저 엔티티에서 정보를 가져와야 한다.
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post(':cardId')
   async createComment(
-    // @userInfo() user: User,
+    @Request() req,
     @Param('cardId') cardId: number,
     @Body() createCommentDto: CreateCommentDto,
   ) {
+    const user = req.user; // JwtAuthGuard에서 설정된 user 정보
     const comment = await this.commentsService.createComment(
       cardId,
-      1,
+      user.id,
       createCommentDto.content,
     );
     return { data: comment };
-    // await this.commentsService.createComment(cardId, createCommentDto.content, user.id);
   }
 
   @Get(':cardId')
@@ -42,26 +45,27 @@ export class CommentsController {
     return await this.commentsService.getCommentById(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async updateComment(
-    // @userInfo() user: User,
+    @Request() req,
     @Param('id') id: number,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
+    const user = req.user;
     const comment = await this.commentsService.updateComment(
       +id,
-      1,
+      user.id,
       updateCommentDto.content,
-    ); //user.id
+    );
     return { data: comment };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteComment(
-    // @userInfo() user: User,
-    @Param('id') id: number,
-  ) {
-    const comment = await this.commentsService.deleteComment(+id, 1);
+  async deleteComment(@Request() req, @Param('id') id: number) {
+    const user = req.user;
+    const comment = await this.commentsService.deleteComment(+id, user.id);
     return { data: comment };
   }
 }
