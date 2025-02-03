@@ -34,7 +34,7 @@ export class List {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Board, (board) => board.list, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Board, (board) => board.lists, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 

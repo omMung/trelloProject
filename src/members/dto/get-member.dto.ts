@@ -1,11 +1,6 @@
 import {IsNotEmpty , IsNumber} from 'class-validator'
 
-export class CreateMemberDto {
-
-    @IsNotEmpty()
-    @IsNumber()
-    userId: number
-
+export class GetMemberDto {
 
     @IsNotEmpty()
     @IsNumber()
