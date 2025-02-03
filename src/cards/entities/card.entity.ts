@@ -3,13 +3,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
   OneToMany,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { Comment } from 'src/comments/entities/comment.entity';
-import { CardsService } from '../cards.service';
 import { JoinMember } from 'src/card-members/entities/card-member.entity';
 import { CheckList } from 'src/checklists/entities/checklist.entity';
 import { CardLabel } from 'src/card-labels/entities/card-label.entity';

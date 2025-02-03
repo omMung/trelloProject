@@ -9,7 +9,6 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
-  // Unique,
 } from 'typeorm';
 
 @Entity({
