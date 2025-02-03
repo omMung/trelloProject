@@ -1,34 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// src/lists/lists.controller.ts
+import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ListsService } from './lists.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
+import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
 
 @Controller('lists')
 export class ListsController {
   constructor(private readonly listsService: ListsService) {}
 
+  // 리스트 생성
   @Post()
-  create(@Body() createListDto: CreateListDto) {
+  async create(@Body() createListDto: CreateListDto) {
     return this.listsService.create(createListDto);
   }
 
-  @Get()
-  findAll() {
-    return this.listsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listsService.findOne(+id);
-  }
-
+  //특정 리스트 업데이트
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListDto: UpdateListDto) {
+  async update(@Param('id') id: string, @Body() updateListDto: UpdateListDto) {
     return this.listsService.update(+id, updateListDto);
   }
 
+  //특정 리스트 삭제
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.listsService.remove(+id);
+  }
+
+  // 리스트 위치 업데이트
+  @Patch() // 명확한 엔드포인트 지정 권장
+  async updatePositions(
+    @Body() updateListPositionsDto: UpdateListPositionsDto,
+  ): Promise<{ message: string }> {
+    // 반환 타입 명시
+    await this.listsService.updatePositions(updateListPositionsDto);
+    return { message: '리스트 위치가 성공적으로 업데이트되었습니다.' };
   }
 }

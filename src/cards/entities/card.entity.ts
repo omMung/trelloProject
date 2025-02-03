@@ -3,17 +3,15 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
   OneToMany,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Comment } from '../../comments/entities/comment.entity';
-import { CardsService } from '../cards.service';
-import { JoinMember } from '../../card-members/entities/card-member.entity';
-import { CheckList } from '../../checklists/entities/checklist.entity';
-import { CardLabel } from '../../card-labels/entities/card-label.entity';
-import { List } from '../../lists/entities/list.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
+import { JoinMember } from 'src/card-members/entities/card-member.entity';
+import { CheckList } from 'src/checklists/entities/checklist.entity';
+import { CardLabel } from 'src/card-labels/entities/card-label.entity';
+import { List } from 'src/lists/entities/list.entity';
 
 @Entity({
   name: 'Card',
