@@ -1,34 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
-import { UpdateMemberDto } from './dto/update-member.dto';
+import { GetMemberDto } from './dto/get-member.dto'
 
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
-  @Post()
+  @Post() // 멤버 추가
   create(@Body() createMemberDto: CreateMemberDto) {
     return this.membersService.create(createMemberDto);
   }
 
-  @Get()
-  findAll() {
-    return this.membersService.findAll();
+  @Get() // 멤버 전체 조회
+  findAll(@Body() getMemberDto: GetMemberDto ) {
+    return this.membersService.findAll(getMemberDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.membersService.findOne(+id);
+  @Get(':id') // 멤버 상세 조회
+  findOne(@Param('id') id: string , @Body() getMemberDto: GetMemberDto ) {
+    return this.membersService.findOne(+id , getMemberDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
-    return this.membersService.update(+id, updateMemberDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.membersService.remove(+id);
+  @Delete(':id') // 멤버 삭제
+  remove(@Param('id') id: string , @Body() getMemberDto: GetMemberDto) {
+    return this.membersService.remove(+id , getMemberDto);
   }
 }
