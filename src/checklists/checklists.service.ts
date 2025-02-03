@@ -1,26 +1,70 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
+import { CheckList } from './entities/checklist.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ChecklistsService {
-  create(createChecklistDto: CreateChecklistDto) {
-    return 'This action adds a new checklist';
+  // private checkLists: CheckList[] = []; // 임시 저장소
+  constructor(
+    @InjectRepository(CheckList)
+    private checklistRepository: Repository<CheckList>,
+  ) {}
+
+  // 체크리스트 생성 메서드
+  async create(createChecklistDto: CreateChecklistDto): Promise<CheckList> {
+    try {
+      const newChecklist = this.checklistRepository.create(createChecklistDto);
+      return await this.checklistRepository.save(newChecklist);
+    } catch (err) {
+      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
+    }
   }
 
-  findAll() {
-    return `This action returns all checklists`;
+  //체크리스트 조회 메서드
+  async findAllByUserId(userId: number): Promise<CheckList[]> {
+    return this.checklistRepository.find({ where: { id: userId } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} checklist`;
+  // 체크리스트 업데이트 메서드
+  async update(
+    id: number,
+    updateChecklistDto: UpdateChecklistDto,
+  ): Promise<CheckList> {
+    try {
+      const checklist = await this.checklistRepository.findOneBy({ id }); // ID로 체크리스트 찾기
+      if (!checklist) {
+        throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
+      }
+      //카드id 검증 필요
+
+      // 업데이트
+      Object.assign(checklist, updateChecklistDto);
+      return await this.checklistRepository.save(checklist);
+    } catch (err) {
+      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
+    }
   }
 
-  update(id: number, updateChecklistDto: UpdateChecklistDto) {
-    return `This action updates a #${id} checklist`;
-  }
+  // 체크리스트 삭제 메서드
+  async remove(id: number, cardId: number): Promise<void> {
+    try {
+      //카드id 검증 필요
 
-  remove(id: number) {
-    return `This action removes a #${id} checklist`;
+      const result = await this.checklistRepository.delete({ id }); // 카드 ID로 체크리스트 삭제
+      if (result.affected === 0) {
+        throw new NotFoundException(
+          '이 아이디에 해당하는 체크리스트가 없어용.',
+        ); // 에러 처리
+      }
+    } catch (err) {
+      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
+    }
   }
 }

@@ -6,11 +6,11 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Member } from 'src/members/entities/member.entity';
-import { Board } from 'src/boards/entities/board.entity';
-import { JoinMember } from 'src/card-members/entities/card-member.entity';
-import { Alarm } from 'src/alarms/entities/alarm.entity';
-import { Comment } from 'src/comments/entities/comment.entity';
+import { Member } from '../../members/entities/member.entity';
+import { Board } from '../../boards/entities/board.entity';
+import { JoinMember } from '../../card-members/entities/card-member.entity';
+import { Alarm } from '../../alarms/entities/alarm.entity';
+import { Comment } from '../../comments/entities/comment.entity';
 
 @Entity({
   name: 'User',
