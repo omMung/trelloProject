@@ -37,6 +37,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Delete('me')
   async deleteMyAccount(@Request() req) {
+    console.log('@@@@@@@@@@@');
     const userId = req.user.id;
     return this.usersService.delete(userId);
   }
