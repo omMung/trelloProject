@@ -1,5 +1,5 @@
-import { Card } from 'src/cards/entities/card.entity';
-import { CheckItem } from 'src/checkitems/entities/checkitem.entity';
+import { Card } from '../../cards/entities/card.entity';
+import { CheckItem } from '../../checkitems/entities/checkitem.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
