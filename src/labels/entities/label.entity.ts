@@ -1,9 +1,16 @@
 import { CardLabel } from '../../card-labels/entities/card-label.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  Unique,
+} from 'typeorm';
 
 @Entity({
   name: 'Label',
 })
+@Unique(['title', 'color'])
 export class Label {
   @PrimaryGeneratedColumn()
   id: number;
