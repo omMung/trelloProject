@@ -26,10 +26,10 @@ export class Card {
   @Column('varchar', { nullable: false })
   title: string;
 
-  @Column('int', { nullable: false, unique: true })
+  @Column('int', {})
   position: number;
 
-  @Column('varchar', { nullable: true })
+  @Column('varchar', { default: '#FFFFFF' })
   color: string;
 
   @Column('varchar', { nullable: true })
@@ -38,11 +38,11 @@ export class Card {
   @Column('boolean', { default: false })
   status: boolean;
 
-  @Column('date', { nullable: true })
-  startDate: Date;
+  @Column('varchar', { nullable: true })
+  startDate: string;
 
-  @Column('date', { nullable: true })
-  dueDate: Date;
+  @Column('varchar', { nullable: true })
+  dueDate: string;
 
   @OneToMany(() => Alarm, (alarm) => alarm.card)
   alarm: Alarm[];
