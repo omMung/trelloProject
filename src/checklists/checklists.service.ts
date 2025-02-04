@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -19,8 +20,9 @@ export class ChecklistsService {
 
   // 체크리스트 생성 메서드
   async create(createChecklistDto: CreateChecklistDto): Promise<CheckList> {
+    const { cardId, title } = createChecklistDto;
+
     try {
-      const { cardId, title } = createChecklistDto;
       const cards = await this.checklistRepository.find({
         where: { cardId },
         select: ['position'],
@@ -51,12 +53,19 @@ export class ChecklistsService {
     id: number,
     updateChecklistDto: UpdateChecklistDto,
   ): Promise<CheckList> {
+    const { cardId, title } = updateChecklistDto;
+
     try {
       const checklist = await this.checklistRepository.findOneBy({ id }); // ID로 체크리스트 찾기
       if (!checklist) {
         throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
       }
-      //카드id 검증 필요
+      //카드id 검증
+      if (checklist.cardId !== cardId) {
+        throw new BadRequestException(
+          '체크리스트의 카드 ID가 일치하지 않습니다.',
+        );
+      }
 
       // 업데이트
       Object.assign(checklist, updateChecklistDto);
@@ -71,9 +80,19 @@ export class ChecklistsService {
     id: number,
     updateChecklistDto: UpdateChecklistDto,
   ): Promise<void> {
+    const { cardId } = updateChecklistDto;
+
     try {
-      const { cardId } = updateChecklistDto;
-      //카드id 검증 필요
+      const checklist = await this.checklistRepository.findOneBy({ id }); // ID로 체크리스트 찾기
+      if (!checklist) {
+        throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
+      }
+      //카드id 검증
+      if (checklist.cardId !== cardId) {
+        throw new BadRequestException(
+          '체크리스트의 카드 ID가 일치하지 않습니다.',
+        );
+      }
 
       const result = await this.checklistRepository.delete({ id }); // 카드 ID로 체크리스트 삭제
       if (result.affected === 0) {
