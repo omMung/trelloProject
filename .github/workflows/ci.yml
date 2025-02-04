@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production # GitHub Environments를 사용할 경우 production 환경 지정
-      # url: ${{ https://www.yangs.site/ }}  # 배포 후 URL을 출력하려면 추가 구성 가능
+      # url: ${{ https://www.yangs.site/ }}  # 배포 후 URL을 출력하려면 추가 구성 가능ㅌ
     steps:
       # EC2 배포를 위해 원격 서버에 접근하기 전에 코드를 체크아웃
       - name: Check out repository code
