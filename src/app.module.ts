@@ -16,6 +16,7 @@ import { CardMembersModule } from './card-members/card-members.module';
 import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
+import { FileModule } from './file/file.module';
 import Joi from 'joi';
 
 const typeOrmModuleOptions = {
@@ -61,6 +62,7 @@ const typeOrmModuleOptions = {
     LabelsModule,
     CheckitemsModule,
     CardLabelsModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

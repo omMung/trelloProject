@@ -5,10 +5,17 @@ import { CardLabelsService } from './card-labels.service';
 import { CardLabelsController } from './card-labels.controller';
 import { Label } from 'src/labels/entities/label.entity';
 import { Card } from 'src/cards/entities/card.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtModule } from '@nestjs/jwt';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CardLabel, Label, Card])],
+  imports: [
+    TypeOrmModule.forFeature([CardLabel, Label, Card]),
+    JwtModule.register({}),
+    UsersModule,
+  ],
   controllers: [CardLabelsController],
-  providers: [CardLabelsService],
+  providers: [CardLabelsService, JwtAuthGuard],
 })
 export class CardLabelsModule {}

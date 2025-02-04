@@ -24,9 +24,8 @@ export class CardLabelsService {
     private readonly labelRepository: Repository<Label>,
   ) {}
 
-  async create(createCardLabelDto: CreateCardLabelDto) {
+  async create(userId: number, cardId: number, labelId: number) {
     try {
-      const { cardId, labelId } = createCardLabelDto;
       const card = await this.cardRepository.findOneBy({ id: cardId });
       if (!card) {
         throw new BadRequestException(`해당하는 카드가 존재하지 않습니다.`);
@@ -37,7 +36,7 @@ export class CardLabelsService {
       if (!label) {
         throw new BadRequestException(`해당하는 라벨이 존재하지 않습니다.`);
       }
-      const cardLabel = this.cardLabelRepository.create(createCardLabelDto);
+      const cardLabel = this.cardLabelRepository.create({ cardId, labelId });
       return await this.cardLabelRepository.save(cardLabel);
     } catch (err) {
       //전역 예외 처리 필터 준비
