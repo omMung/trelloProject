@@ -44,8 +44,8 @@ export class CheckitemsController {
   @Delete(':id')
   async remove(
     @Param('id') id: number,
-    @Body() CheckListId: number,
+    @Body() UpdateCheckitemDto: UpdateCheckitemDto,
   ): Promise<void> {
-    return this.checkitemsService.remove(id, CheckListId);
+    return this.checkitemsService.remove(id, UpdateCheckitemDto);
   }
 }
