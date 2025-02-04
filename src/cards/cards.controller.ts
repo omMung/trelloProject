@@ -6,24 +6,28 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CardsService } from './cards.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { UpdateCardPositionsDto } from './dto/update-card-positions.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('cards')
 export class CardsController {
   constructor(private readonly cardsService: CardsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createCard(@Body() createCardDto: CreateCardDto) {
-    return await this.cardsService.createCard(createCardDto);
+  async createCard(@Request() req, @Body() createCardDto: CreateCardDto) {
+    return await this.cardsService.createCard(req, createCardDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Body() listId: number) {
-    return this.cardsService.findOne(+id, listId);
+  findOne(@Param('id') id: string, @Body() createCardDto: CreateCardDto) {
+    return this.cardsService.findOne(+id, createCardDto);
   }
 
   @Patch(':id')
@@ -32,8 +36,8 @@ export class CardsController {
   }
 
   @Delete(':id')
-  deleteCard(@Param('id') id: string, @Body('list_id') listId: number) {
-    return this.cardsService.deleteCard(+id, listId);
+  deleteCard(@Param('id') id: string) {
+    return this.cardsService.deleteCard(+id);
   }
 
   // 카드 위치 업데이트
