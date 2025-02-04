@@ -18,14 +18,16 @@ export class BoardsController {
 
   @UseGuards(JwtAuthGuard)
   @Get() // 보드 전체 조회
-  findAll() {
-    return this.boardsService.findAll();
+  findAll(@Request() req) {
+    const userId = req.user.id
+    return this.boardsService.findAll(userId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id') // 보드 상세 조회
-  findOne(@Param('id') id: string) {
-    return this.boardsService.findOne(+id);
+  findOne(@Request() req , @Param('id') id: string) {
+    const userId = req.user.id
+    return this.boardsService.findOne(userId, +id);
   }
 
   @UseGuards(JwtAuthGuard)

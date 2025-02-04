@@ -1,9 +1,10 @@
-import { Injectable , NotFoundException} from '@nestjs/common';
+import { Injectable , NotFoundException , BadRequestException} from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Board } from './entities/board.entity'
 import { List } from '../lists/entities/list.entity'
 import { Card } from '../cards/entities/card.entity'
+import { visibEnum } from './dto/visibility.enum'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm';
 
@@ -20,7 +21,13 @@ export class BoardsService {
   async create(userId ,createBoardDto: CreateBoardDto) {
 
     const {title, visibility, color} = createBoardDto
+    
+    const colorRegex = /^#[0-9A-F]{6}$/i
 
+    if (!colorRegex.test(color)) {
+      throw new BadRequestException('유효하지 않은 색상 코드입니다. 올바른 형식(#RRGGBB)을 사용해 주세요.');
+    }
+  
     const newBoard = this.BoardRepository.create({
       userId,
       title,
@@ -32,15 +39,25 @@ export class BoardsService {
       await this.BoardRepository.save(newBoard);
       return { message: "보드를 성공적으로 생성했습니다." };
     } catch (error) {
-      throw new Error("보드 생성에 실패했습니다.");
+      if(error instanceof BadRequestException){
+        throw error
+      }
+      else{
+        throw new NotFoundException('보드 삭제에 에러가 발생했습니다.')
+      }
     }
   }
 
 
-  // 보드 전체 조회(보드 뿐만 아니라 카드나 다른 내용또한 같이 있어야 하므로 다른사람들과 같이할것)
-  async findAll() { 
+  // 보드 전체 조회
+  async findAll(userId) { 
     try{
+      
+
     const allBoard = await this.BoardRepository.find({
+      where: [{visibility: visibEnum.PUBLIC},
+            {userId: userId}
+      ],
       select: ['id','visibility','color','title']
     })
 
@@ -53,16 +70,17 @@ export class BoardsService {
   }
   }
 
-  // 보드 상세 조회(보드 뿐만 아니라 카드나 다른 내용또한 같이 있어야 하므로 다른사람들과 같이할것)
-  async findOne(id: number) { // 2번보드에 있는 보드 ,카드,리스트 확인
+  // 보드 상세 조회
+  async findOne(userId: number , id: number) {
     try{
+
     const Board = await this.BoardRepository.findOne({
-      where: {id},
+      where: [{visibility:visibEnum.PUBLIC,id},{userId,id}],
       select: ['id','visibility','color','title']
     })
 
     if(!Board){
-      throw new NotFoundException("해당 보드를 찾을수 없습니다")
+      throw new NotFoundException("해당 보드를 상세 조회 할수 없습니다")
     }
 
     const List = await this.ListRepository.find({
