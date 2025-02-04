@@ -80,7 +80,10 @@ jobs:
           port: 22 # SSH 포트 (기본 22)
           script: |
             echo "현재 디렉토리: $(pwd)"  # 원격 서버에서 현재 작업 디렉토리 확인
-            cd ~/trelloProject           # 프로젝트 디렉토리로 이동
+            cd ~/trelloProject 
+            git pull origin feat/ydw/list 
+            nohup npm run start > app.log 2>&1 &
+            echo "웹 서버가 백그라운드에서 실행되었습니다.     # 프로젝트 디렉토리로 이동
             echo "프로젝트 디렉토리로 이동됨: $(pwd)"  # 이동 후 디렉토리 확인
             # 3000 포트로 이미 동작 중인 프로세스가 있을 경우, 종료하도록 시도
             lsof -i :3000 || true
