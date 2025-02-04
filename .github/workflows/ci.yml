@@ -1,18 +1,47 @@
-name: GitHub Actions Demo
+# 워크플로우 이름 설정
+name:
+  TrelloProject CI
+  # 워크플로우 실행 시 트리거한 사용자의 이름 표시
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+# 이 워크플로우가 어떤 이벤트에서 실행될 지 정의, 여기서는 push(커밋) 이벤트 발생 시 워크플로우 실행
 on: [push]
 jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
+  MySQL-Database-Setup: # 잡 이름
+    runs-on: ubuntu-latest # 이 잡이 최신 Ubuntu 환경에서 실행됨을 지정, runs-on 값을 변경하여 다른 OS(예: windows-latest, macos-latest)에서 실행할 수도 있다
     steps:
+      # 현재 워크플로우가 어떤 이벤트(push, pull request 등)에 의해 트리거되었는지 출력
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      # 현재 jop이 실행되고 있는 운영체제(ubuntu) 출력
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      # 현재 실행중인 브랜치와 리포지토리 이름 출력
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      # GitHub의 공식 액션 actions/checkout을 사용하여 현재 리포지토리 코드를 러너 환경으로 가져옵니다.
       - name: Check out repository code
         uses: actions/checkout@v4
+      # 코드가 클론되었음을 확인하는 메시지 출력
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+
+        # Node.js 환경 설정
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.12.0' # 사용하고자 하는 Node 버전
+
+      # 의존성 설치
+      - name: Install Dependencies
+        run: npm ci
+
+      # 린트 검사 실행
+      - name: Run Lint
+        run: npm run lint
+
+      # 테스트 실행 (CI 환경에서 실행하는 테스트 명령어)
+      - name: Run Tests
+        run: npm run test:ci
+
       - name: List files in the repository
+        # 지정된 디렉토리의 파일, 폴더 나열 >> 시각적 확인 가능
         run: |
           ls ${{ github.workspace }}
+      # 현재 잡 상태 출력 >> 정상적으로 진행되었는지 확인 가능
       - run: echo "🍏 This job's status is ${{ job.status }}."
