@@ -1,61 +1,89 @@
 # 워크플로우 이름 설정
-name:
-  TrelloProject CI/CD
-  # 워크플로우 실행 시 트리거한 사용자의 이름 표시
+name: TrelloProject CI/CD
+# 워크플로우 실행 시 트리거한 사용자의 이름 표시
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-# 이 워크플로우가 어떤 이벤트에서 실행될 지 정의, 여기서는 push(커밋) 이벤트 발생 시 워크플로우 실행
+
+# 이 워크플로우가 어떤 이벤트에서 실행될 지 정의 (여기서는 push 이벤트 발생 시 실행)
 on: [push]
+
 jobs:
-  TrelloProject-CI: # 잡 이름
-    runs-on: ubuntu-latest # 이 잡이 최신 Ubuntu 환경에서 실행됨을 지정, runs-on 값을 변경하여 다른 OS(예: windows-latest, macos-latest)에서 실행할 수도 있다
+  # 1. CI Job: 빌드, 의존성 설치, 파일 확인 등의 작업 수행
+  TrelloProject-CI:
+    runs-on: ubuntu-latest # 최신 Ubuntu 환경에서 실행
     steps:
-      # 현재 워크플로우가 어떤 이벤트(push, pull request 등)에 의해 트리거되었는지 출력
+      # 현재 워크플로우가 어떤 이벤트에 의해 트리거되었는지 출력
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      # 현재 jop이 실행되고 있는 운영체제(ubuntu) 출력
+      # 현재 실행되고 있는 서버의 운영체제 정보 출력
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      # 현재 실행중인 브랜치와 리포지토리 이름 출력
+      # 현재 실행 중인 브랜치와 리포지토리 이름 출력
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      # GitHub의 공식 액션 actions/checkout을 사용하여 현재 리포지토리 코드를 러너 환경으로 가져옵니다.
+
+      # GitHub의 공식 액션을 사용하여 현재 리포지토리 코드를 체크아웃
       - name: Check out repository code
         uses: actions/checkout@v4
-      # 코드가 클론되었음을 확인하는 메시지 출력
+
+      # 코드가 체크아웃(클론)되었음을 확인하는 메시지 출력
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
 
-        # Node.js 환경 설정
+      # Node.js 환경 설정 (지정한 Node 버전 사용)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.12.0' # 사용하고자 하는 Node 버전
+          node-version: '22.12.0'
 
-      # 의존성 설치
+      # 의존성 설치 (package-lock.json 기반으로 설치)
       - name: Install Dependencies
         run: npm ci
 
-      # 린트 검사 실행
+      # 린트 검사
       # - name: Run Lint
       #   run: npm run lint
 
-      # 테스트 실행 (CI 환경에서 실행하는 테스트 명령어)
+      # 테스트 실행
       # - name: Run Tests
       #   run: npm run test:ci
 
+      # 현재 작업 디렉토리 내의 파일 목록을 나열하여 시각적으로 확인
       - name: List files in the repository
-        # 지정된 디렉토리의 파일, 폴더 나열 >> 시각적 확인 가능
         run: |
           ls ${{ github.workspace }}
-      # 현재 잡 상태 출력 >> 정상적으로 진행되었는지 확인 가능
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-  # TrelloProject-CD:
-  #   needs: ci # CI job이 성공한 후 실행됨
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: production # GitHub Environments를 사용하는 경우
-  #     url: ${{ steps.deploy.outputs.deployment_url }} # 배포 후 URL 등
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
 
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '22.12.0'
+      # 현재 CI Job의 상태를 출력 (성공 여부 확인)
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  # 2. CD Job: CI Job이 성공한 후 자동으로 AWS EC2 서버에 배포 수행
+  TrelloProject-CD:
+    needs: TrelloProject-CI # CI Job(TrelloProject-CI)이 성공한 후 실행
+    runs-on: ubuntu-latest
+    environment:
+      name: production # GitHub Environments를 사용할 경우 production 환경 지정
+      # url: ${{ https://www.yangs.site/ }}  # 배포 후 URL을 출력하려면 추가 구성 가능
+    steps:
+      # EC2 배포를 위해 원격 서버에 접근하기 전에 코드를 체크아웃
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      # 배포 시에도 동일한 Node.js 버전을 사용하도록 환경 설정
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.12.0'
+
+      # appleboy/ssh-action을 사용하여 AWS EC2 서버에 SSH 접속 후 배포 명령어 실행
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          # AWS EC2 서버의 호스트명(IP 주소)은 GitHub Secrets에 저장된 값을 사용
+          host: ${{ secrets.EC2_HOST }} # 예: 13.125.224.60
+          username: ubuntu # EC2 서버 접속 사용자 (보통 ubuntu)
+          key: ${{ secrets.EC2_KEY }} # SSH 인증 키 (PEM 또는 PPK 형식)
+          port: 22 # SSH 포트 (기본 22)
+          script: |
+            echo "현재 디렉토리: $(pwd)"  # 원격 서버에서 현재 작업 디렉토리 확인
+            cd ~/trelloProject           # 프로젝트 디렉토리로 이동
+            echo "프로젝트 디렉토리로 이동됨: $(pwd)"  # 이동 후 디렉토리 확인
+            # 3000 포트로 이미 동작 중인 프로세스가 있을 경우, 종료하도록 시도
+            lsof -i :3000 || true
+            # (필요시 실행 중인 프로세스 종료: kill -9 [PID])
+            # 웹 서버 실행 (npm run start 명령어 실행)
+            npm run start
