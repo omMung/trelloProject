@@ -79,14 +79,23 @@ jobs:
           key: ${{ secrets.EC2_KEY }} # SSH 인증 키 (PEM 또는 PPK 형식)
           port: 22 # SSH 포트 (기본 22)
           script: |
-            echo "현재 디렉토리: $(pwd)"  # 원격 서버에서 현재 작업 디렉토리 확인
-            cd ~/trelloProject 
-            git pull origin feat/ydw/list 
+            echo "현재 디렉토리: $(pwd)" 
+
+            # 프로젝트 디렉토리로 이동
+            cd ~/trelloProject
+
+            # 최신 코드 가져오기
+            git pull origin fear/ydw/list
+
+            # 3000포트에서 실행 중인 프로세스 확인, 종료
+            RUNNING_PID=$(lsof -ti :3000)
+            if[ ! -z "$RUNNING_PID"]; then
+              echo "기존 프로세스 종료 중... (PID: $RUNNING_PID)"
+              kill -9 $RUNNING_PID
+            fi
+
+            # 백그라운드에서 웹 서버 실행
+            echo "서버 실행 중..."
             nohup npm run start > app.log 2>&1 &
-            echo "웹 서버가 백그라운드에서 실행되었습니다.     # 프로젝트 디렉토리로 이동
-            echo "프로젝트 디렉토리로 이동됨: $(pwd)"  # 이동 후 디렉토리 확인
-            # 3000 포트로 이미 동작 중인 프로세스가 있을 경우, 종료하도록 시도
-            lsof -i :3000 || true
-            # (필요시 실행 중인 프로세스 종료: kill -9 [PID])
-            # 웹 서버 실행 (npm run start 명령어 실행)
-            npm run start
+
+            echo "웹 서버가 백그라운드에서 실행되었습니다."
