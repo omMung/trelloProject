@@ -36,8 +36,8 @@ jobs:
       #   run: npm run lint
 
       # 테스트 실행 (CI 환경에서 실행하는 테스트 명령어)
-      # - name: Run Tests
-      #   run: npm run test:ci
+      - name: Run Tests
+        run: npm run test:ci
 
       - name: List files in the repository
         # 지정된 디렉토리의 파일, 폴더 나열 >> 시각적 확인 가능
