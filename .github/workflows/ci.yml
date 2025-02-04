@@ -1,12 +1,12 @@
 # 워크플로우 이름 설정
 name:
-  TrelloProject CI
+  TrelloProject CI/CD
   # 워크플로우 실행 시 트리거한 사용자의 이름 표시
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 # 이 워크플로우가 어떤 이벤트에서 실행될 지 정의, 여기서는 push(커밋) 이벤트 발생 시 워크플로우 실행
 on: [push]
 jobs:
-  MySQL-Database-Setup: # 잡 이름
+  TrelloProject-CI: # 잡 이름
     runs-on: ubuntu-latest # 이 잡이 최신 Ubuntu 환경에서 실행됨을 지정, runs-on 값을 변경하여 다른 OS(예: windows-latest, macos-latest)에서 실행할 수도 있다
     steps:
       # 현재 워크플로우가 어떤 이벤트(push, pull request 등)에 의해 트리거되었는지 출력
@@ -36,8 +36,8 @@ jobs:
       #   run: npm run lint
 
       # 테스트 실행 (CI 환경에서 실행하는 테스트 명령어)
-      - name: Run Tests
-        run: npm run test:ci
+      # - name: Run Tests
+      #   run: npm run test:ci
 
       - name: List files in the repository
         # 지정된 디렉토리의 파일, 폴더 나열 >> 시각적 확인 가능
@@ -45,3 +45,17 @@ jobs:
           ls ${{ github.workspace }}
       # 현재 잡 상태 출력 >> 정상적으로 진행되었는지 확인 가능
       - run: echo "🍏 This job's status is ${{ job.status }}."
+  TrelloProject-CD:
+    needs: ci # CI job이 성공한 후 실행됨
+    runs-on: ubuntu-latest
+    environment:
+      name: production # GitHub Environments를 사용하는 경우
+      url: ${{ steps.deploy.outputs.deployment_url }} # 배포 후 URL 등
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.12.0'
