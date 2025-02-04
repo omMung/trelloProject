@@ -41,8 +41,9 @@ export class ChecklistsService {
   }
 
   //체크리스트 조회 메서드
-  async findAllByCardId(cardId: number): Promise<CheckList[]> {
-    return this.checklistRepository.find({ where: { cardId } });
+  async findAllByCardId(updateChecklistDto: UpdateChecklistDto) {
+    const { cardId } = updateChecklistDto;
+    return await this.checklistRepository.findBy({ cardId });
   }
 
   // 체크리스트 업데이트 메서드

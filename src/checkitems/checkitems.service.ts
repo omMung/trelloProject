@@ -20,6 +20,12 @@ export class CheckitemsService {
         where: { checkListId },
         select: ['position'],
       });
+
+      //존재하지 않는 체크리스트 아이디
+      if (!checkLists) {
+        throw new Error('존재하지 않는 체크리스트입니다.');
+      }
+
       // 최대 포지션 찾기
       const maxPosition =
         checkLists.length > 0

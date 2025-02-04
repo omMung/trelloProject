@@ -25,9 +25,9 @@ export class ChecklistsController {
   }
 
   @Get()
-  async findAll(@Body() cardId: number): Promise<CheckList[]> {
+  async findAll(@Body() UpdateChecklistDto: UpdateChecklistDto) {
     //카드아이디가 로그인 중인 유저의 카드에 해당하는지 검증
-    return this.checklistsService.findAllByCardId(cardId); // 서비스에서 유저 ID로 체크리스트 조회
+    return await this.checklistsService.findAllByCardId(UpdateChecklistDto); // 서비스에서 카드 ID로 체크리스트 조회
   }
 
   // @Get(':id')
