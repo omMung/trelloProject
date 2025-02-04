@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { LoginDto } from '../dto/login.dto';
@@ -20,10 +19,7 @@ export class AuthService {
   private blacklistedTokens = new Set<string>(); // 블랙리스트 저장소 (임시), 차후 redis 확장 예정?
 
   constructor(
-    // @Inject(forwardRef(() => UsersService)) // forwardRef로 순환 참조 해결
-    // private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
