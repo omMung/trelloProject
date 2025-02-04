@@ -1,9 +1,5 @@
+import { PartialType } from '@nestjs/mapped-types';
+import {CreateMemberDto} from './create-member.dto'
 import {IsNotEmpty , IsNumber} from 'class-validator'
 
-export class DeleteMemberDto {
-
-    @IsNotEmpty()
-    @IsNumber()
-    boardId: number
-
-}
+export class DeleteMemberDto extends PartialType(CreateMemberDto) {}

@@ -1,102 +1,108 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
-import { CreateBoardDto } from './dto/create-board.dto';
-import { UpdateBoardDto } from './dto/update-board.dto';
-import { visibEnum } from './dto/visibility.enum';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { visibEnum } from './dto/visibility.enum'
 
 describe('BoardsController', () => {
-  let controller: BoardsController;
-  let service: BoardsService;
+  let boardsController: BoardsController;
+  let boardsService: BoardsService;
+
+  const mockBoardsService = {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BoardsController],
       providers: [
-        {
-          provide: BoardsService,
-          useValue: {
-            create: jest.fn(),
-            findAll: jest.fn(),
-            findOne: jest.fn(),
-            update: jest.fn(),
-            remove: jest.fn(),
-          },
-        },
+        { provide: BoardsService, useValue: mockBoardsService },
       ],
     }).compile();
 
-    controller = module.get<BoardsController>(BoardsController);
-    service = module.get<BoardsService>(BoardsService);
+    boardsController = module.get<BoardsController>(BoardsController);
+    boardsService = module.get<BoardsService>(BoardsService);
   });
 
   describe('create', () => {
-    it('should successfully create a board', async () => {
-      const createBoardDto: CreateBoardDto = {
-        userId: 1,
-        title: 'New Board',
-        visibility: visibEnum.PUBLIC,
-        color: 'blue',
-      };
+    test('보드를 성공적으로 생성할 수 있어야 한다', async () => {
       const result = { message: '보드를 성공적으로 생성했습니다.' };
+      mockBoardsService.create.mockResolvedValue(result);
 
-      service.create = jest.fn().mockResolvedValue(result);
+      expect(await boardsController.create({ user: { id: 1 } }, { title: 'Test', visibility: visibEnum.PUBLIC, color: '#FFFFFF' }))
+        .toEqual(result);
+    });
 
-      expect(await controller.create(createBoardDto)).toBe(result);
+    test('유효하지 않은 색상 코드일 경우 BadRequestException이 발생해야 한다', async () => {
+      await expect(boardsController.create({ user: { id: 1 } }, { title: 'Test', visibility: visibEnum.PUBLIC, color: 'invalid' }))
+        .rejects
+        .toThrow(BadRequestException);
     });
   });
 
   describe('findAll', () => {
-    it('should successfully fetch all boards', async () => {
-      const result = {
-        message: '모든 보드를 성공적으로 조회했습니다',
-        data: [{ id: 1, title: 'Board 1', visibility: 'private', color: 'blue' }],
-      };
+    test('모든 보드를 성공적으로 조회할 수 있어야 한다', async () => {
+      const result = { message: '모든 보드를 성공적으로 조회했습니다', data: [] };
+      mockBoardsService.findAll.mockResolvedValue(result);
 
-      service.findAll = jest.fn().mockResolvedValue(result);
-
-      expect(await controller.findAll()).toBe(result);
+      expect(await boardsController.findAll({ user: { id: 1 } })).toEqual(result);
     });
   });
 
   describe('findOne', () => {
-    it('should successfully fetch a board', async () => {
+    test('하나의 보드를 성공적으로 조회할 수 있어야 한다', async () => {
       const result = {
         message: '하나의 보드를 성공적으로 조회했습니다',
-        data: { id: 1, title: 'Board 1', visibility: 'private', color: 'blue' },
+        data: { id: 1, title: 'Test', visibility: visibEnum.PUBLIC, color: '#FFFFFF' },
       };
+      mockBoardsService.findOne.mockResolvedValue(result);
 
-      service.findOne = jest.fn().mockResolvedValue(result);
+      expect(await boardsController.findOne({ user: { id: 1 } }, '1')).toEqual(result);
+    });
 
-      expect(await controller.findOne('1')).toBe(result);
+    test('존재하지 않는 보드일 경우 NotFoundException이 발생해야 한다', async () => {
+      mockBoardsService.findOne.mockRejectedValue(new NotFoundException('해당 보드를 상세 조회 할수 없습니다'));
+      await expect(boardsController.findOne({ user: { id: 1 } }, '999'))
+        .rejects
+        .toThrow(NotFoundException);
     });
   });
 
   describe('update', () => {
-    it('should successfully update a board', async () => {
-      const updateBoardDto: UpdateBoardDto = {
-        title: 'Updated Board',
-        visibility: visibEnum.PRIVATE,
-        color: 'red',
-      };
-      const result = {
-        message: '보드를 성공적으로 수정했습니다',
-        data: { id: 1, title: 'Updated Board', visibility: 'public', color: 'red' },
-      };
+    test('보드를 성공적으로 수정할 수 있어야 한다', async () => {
+      const result = { message: '보드를 성공적으로 수정했습니다', data: { id: 1, title: 'Updated Title' } };
+      mockBoardsService.update.mockResolvedValue(result);
 
-      service.update = jest.fn().mockResolvedValue(result);
+      expect(await boardsController.update({ user: { id: 1 } }, '1', { title: 'Updated Title', visibility: visibEnum.PRIVATE, color: '#FF1212' }))
+        .toEqual(result);
+    });
 
-      expect(await controller.update('1', updateBoardDto)).toBe(result);
+    test('수정할 보드를 찾을 수 없을 경우 NotFoundException이 발생해야 한다', async () => {
+      mockBoardsService.update.mockRejectedValue(new NotFoundException('보드를 찾을 수 없습니다.'));
+      await expect(boardsController.update({ user: { id: 1 } }, '999', { title: 'Updated Title', visibility: visibEnum.PUBLIC, color: '#FFFFFF' }))
+        .rejects
+        .toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
-    it('should successfully remove a board', async () => {
+    test('보드를 성공적으로 삭제할 수 있어야 한다', async () => {
       const result = { message: '보드를 성공적으로 삭제했습니다' };
+      mockBoardsService.remove.mockResolvedValue(result);
 
-      service.remove = jest.fn().mockResolvedValue(result);
+      expect(await boardsController.remove({ user: { id: 1 } }, '1')).toEqual(result);
+    });
 
-      expect(await controller.remove('1')).toBe(result);
+    test('삭제할 보드를 찾을 수 없을 경우 NotFoundException이 발생해야 한다', async () => {
+      mockBoardsService.remove.mockRejectedValue(new NotFoundException('삭제할 대상 보드를 찾을수 없습니다'));
+      await expect(boardsController.remove({ user: { id: 1 } }, '999'))
+        .rejects
+        .toThrow(NotFoundException);
     });
   });
 });
