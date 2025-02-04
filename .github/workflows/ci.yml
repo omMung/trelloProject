@@ -85,11 +85,11 @@ jobs:
             cd ~/trelloProject
 
             # 최신 코드 가져오기
-            git pull origin fear/ydw/list
+            git pull origin feat/ydw/list
 
             # 3000포트에서 실행 중인 프로세스 확인, 종료
             RUNNING_PID=$(lsof -ti :3000)
-            if[ ! -z "$RUNNING_PID"]; then
+            if [ ! -z "$RUNNING_PID" ]; then
               echo "기존 프로세스 종료 중... (PID: $RUNNING_PID)"
               kill -9 $RUNNING_PID
             fi
