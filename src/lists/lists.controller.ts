@@ -1,15 +1,26 @@
 // src/lists/lists.controller.ts
-import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ListsService } from './lists.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('lists')
 export class ListsController {
   constructor(private readonly listsService: ListsService) {}
 
   // 리스트 생성
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createListDto: CreateListDto) {
     return this.listsService.create(createListDto);
@@ -28,7 +39,7 @@ export class ListsController {
   }
 
   // 리스트 위치 업데이트
-  @Patch() // 명확한 엔드포인트 지정 권장
+  @Patch()
   async updatePositions(
     @Body() updateListPositionsDto: UpdateListPositionsDto,
   ): Promise<{ message: string }> {
