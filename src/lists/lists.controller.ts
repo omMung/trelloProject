@@ -20,7 +20,7 @@ export class ListsController {
   constructor(private readonly listsService: ListsService) {}
 
   // 리스트 생성
-  // @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)ㄴ
   @Post()
   async create(@Body() createListDto: CreateListDto) {
     return this.listsService.create(createListDto);
