@@ -26,7 +26,7 @@ export class ListsController {
     return this.listsService.create(createListDto);
   }
 
-  //특정 리스트 업데이트
+  //특정 리스트 업데이트ㅌ
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateListDto: UpdateListDto) {
     return this.listsService.update(+id, updateListDto);
