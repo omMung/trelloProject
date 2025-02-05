@@ -105,19 +105,24 @@ trelloProject
 ├─ nest-cli.json
 ├─ package-lock.json
 ├─ package.json
+├─ public
+│  └─ myAlarm.html
 ├─ README.md
 ├─ src
 │  ├─ alarms
 │  │  ├─ alarms.controller.spec.ts
 │  │  ├─ alarms.controller.ts
+│  │  ├─ alarms.gateway.ts
+│  │  ├─ alarms.listener.ts
 │  │  ├─ alarms.module.ts
 │  │  ├─ alarms.service.spec.ts
 │  │  ├─ alarms.service.ts
 │  │  ├─ dto
-│  │  │  ├─ create-alarm.dto.ts
-│  │  │  └─ update-alarm.dto.ts
-│  │  └─ entities
-│  │     └─ alarm.entity.ts
+│  │  │  └─ create-alarm.dto.ts
+│  │  ├─ entities
+│  │  │  └─ alarm.entity.ts
+│  │  └─ event
+│  │     └─ alarm.events.ts
 │  ├─ app.controller.spec.ts
 │  ├─ app.controller.ts
 │  ├─ app.module.ts

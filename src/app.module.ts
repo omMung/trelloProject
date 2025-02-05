@@ -16,6 +16,8 @@ import { CardMembersModule } from './card-members/card-members.module';
 import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import Joi from 'joi';
 
 const typeOrmModuleOptions = {
@@ -49,6 +51,10 @@ const typeOrmModuleOptions = {
       }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), // ✅ `public` 폴더 내의 파일 서빙
+      serveRoot: '/public', // ✅ `https://www.yangs.site/public` 에서 제공됨
+    }),
     UsersModule,
     BoardsModule,
     ListsModule,
