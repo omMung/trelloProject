@@ -82,12 +82,12 @@ describe('BoardsService', () => {
   describe('findAll', () => {
     it('보드를 성공적으로 조회해야 함', async () => {
       const userId = 1;
-      const boards = [{ id: 1, visibility: visibEnum.PUBLIC, color: '#FFFFFF', title: 'Board 1' }];
+      const allBoards = [{ id: 1, visibility: visibEnum.PUBLIC, color: '#FFFFFF', title: 'Board 1' }];
 
-      mockBoardRepository.find.mockResolvedValue(boards);
+      mockBoardRepository.find.mockResolvedValue(allBoards);
 
       const result = await service.findAll(userId);
-      expect(result).toEqual({ message: '모든 보드를 성공적으로 조회했습니다.', data: boards });
+      expect(result).toEqual({ message: '모든 보드를 성공적으로 조회했습니다.', data: allBoards });
       expect(mockBoardRepository.find).toHaveBeenCalledWith({
         where: [{ visibility: visibEnum.PUBLIC }, { userId }],
         select: ['id', 'visibility', 'color', 'title'],
@@ -139,6 +139,14 @@ describe('BoardsService', () => {
       mockBoardRepository.findOne.mockResolvedValue(null);
       await expect(service.update(1, 999, { title: 'New Title', visibility: visibEnum.PUBLIC, color: '#000000' }))
         .rejects.toThrow(NotFoundException);
+    });
+
+    it('유효하지 않은 색상 코드가 주어지면 에러를 던져야 함', async () => {
+      const updateBoardDto = { title: 'Invalid Color', visibility: visibEnum.PUBLIC, color: 'INVALID' };
+      const userId = 1;
+      const boardId = 1;
+
+      await expect(service.update(boardId, userId, updateBoardDto)).rejects.toThrow(BadRequestException);
     });
   });
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException , InternalServerErrorException} from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Board } from './entities/board.entity';
@@ -51,7 +51,7 @@ export class BoardsService {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new NotFoundException('보드 생성에 에러가 발생했습니다.');
+      throw new InternalServerErrorException('보드 생성에 에러가 발생했습니다.');
     }
   }
 
@@ -68,7 +68,7 @@ export class BoardsService {
         data: allBoards,
       };
     } catch (error) {
-      throw new NotFoundException('보드 전체 조회 중에 에러가 발생했습니다.');
+      throw new InternalServerErrorException('보드 전체 조회 중에 에러가 발생했습니다.');
     }
   }
 
@@ -123,15 +123,20 @@ export class BoardsService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new NotFoundException('보드 상세 조회 중에 에러가 발생했습니다.');
+      throw new InternalServerErrorException('보드 상세 조회 중에 에러가 발생했습니다.');
     }
   }
 
   // 보드 수정
   async update(userId: number, id: number, updateBoardDto: UpdateBoardDto) {
-    const { title, visibility, color } = updateBoardDto;
-
     try {
+    const { title, visibility, color } = updateBoardDto;
+    const colorRegex = /^(#([0-9A-F]{3}){1,2})$/i;
+
+    if (!colorRegex.test(color)) {
+      throw new BadRequestException('유효하지 않은 색상 코드입니다. 올바른 형식(#RRGGBB)을 사용해 주세요.');
+    }
+    
       const board = await this.boardRepository.findOne({ where: { id, userId } });
 
       if (!board) {
@@ -158,7 +163,10 @@ export class BoardsService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new NotFoundException('보드 수정에 에러가 발생했습니다.');
+      else if(error instanceof BadRequestException){
+        throw error
+      }
+      throw new InternalServerErrorException('보드 수정에 에러가 발생했습니다.');
     }
   }
 
@@ -178,7 +186,7 @@ export class BoardsService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new NotFoundException('보드 삭제에 에러가 발생했습니다.');
+      throw new InternalServerErrorException('보드 삭제에 에러가 발생했습니다.');
     }
   }
 }

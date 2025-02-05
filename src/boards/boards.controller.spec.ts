@@ -50,13 +50,10 @@ describe('BoardsController', () => {
       mockBoardsService.create.mockResolvedValue(result);
 
       // 객체 형태로 전달된 인자 확인
-      expect(
-        await controller.create({ user: { id: 1 } }, { title: 'Test', visibility: visibEnum.PUBLIC, color: '#FFFFFF' }),
-      ).toEqual(result);
-
+      expect(await controller.create({ user: { id: 1 } }, { title: 'Test', visibility: visibEnum.PUBLIC, color: '#FFFFFF' }),).toEqual(result);
       expect(service.create).toHaveBeenCalledWith(1, { title: 'Test', visibility: visibEnum.PUBLIC, color: '#FFFFFF' });
     });
-});
+  });
 
   // 모든 보드 조회 API 테스트
   describe('모든 보드 조회', () => {
@@ -72,7 +69,7 @@ describe('BoardsController', () => {
   // 특정 보드 조회 API 테스트
   describe('보드 단건 조회', () => {
     it('하나의 보드를 반환해야 한다.', async () => {
-      const result = { message: '하나의 보드를 성공적으로 조회했습니다', data: { id: 1, title: 'Test', visibility: visibEnum.PUBLIC, color: '#FFFFFF' } };
+      const result = { message: '하나의 보드를 성공적으로 조회했습니다', data: { id: 1,visibility: visibEnum.PUBLIC, color: '#FFFFFF' , title: 'Test', lists: [] } };
       mockBoardsService.findOne.mockResolvedValue(result);
 
       expect(await controller.findOne({ user: { id: 1 } }, '1')).toEqual(result);
@@ -88,7 +85,7 @@ describe('BoardsController', () => {
   // 보드 수정 API 테스트
   describe('보드 수정', () => {
     it('보드를 성공적으로 수정해야 한다.', async () => {
-      const result = { message: '보드를 성공적으로 수정했습니다', data: { id: 1, title: 'Updated Title' } };
+      const result = { message: '보드를 성공적으로 수정했습니다', data: { id: 1, visibilit:visibEnum.PRIVATE , color:'#FF1212' ,title: 'Updated Title', createdAt:'2025-02-04T02:18:28.522Z', updatedAt:'2025-02-04T02:19:40.000Z' , userId:11 } };
       mockBoardsService.update.mockResolvedValue(result);
 
       expect(
@@ -101,8 +98,7 @@ describe('BoardsController', () => {
     it('수정할 보드를 찾을 수 없을 경우 NotFoundException이 발생해야 한다.', async () => {
       mockBoardsService.update.mockRejectedValue(new NotFoundException('수정할 보드를 찾을 수 없습니다.'));
       await expect(
-        controller.update({ user: { id: 1 } }, '999', { title: 'Updated Title', visibility: visibEnum.PUBLIC, color: '#FFFFFF' }),
-      ).rejects.toThrow(NotFoundException);
+        controller.update({ user: { id: 1 } }, '999', { title: 'Updated Title', visibility: visibEnum.PUBLIC, color: '#FFFFFF' }),).rejects.toThrow(NotFoundException);
     });
   });
 

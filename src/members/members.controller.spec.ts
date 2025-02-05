@@ -19,6 +19,7 @@ describe('MembersController', () => {
 
   // 각 테스트 실행 전 설정
   beforeEach(async () => {
+    jest.clearAllMocks()
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MembersController],
       providers: [
@@ -44,7 +45,7 @@ describe('MembersController', () => {
   // 멤버 생성 API 테스트
   describe('멤버 생성', () => {
     it('멤버를 성공적으로 생성할 수 있어야 한다.', async () => {
-      const result = { message: 'Trello 보드(1)에 유저(1) 등록 성공', data: [{ name: 'User 1', email: 'user1@example.com' }] };
+      const result = { message: 'Trello 보드(1)에 유저(1) 등록 성공', data: [{ name: 'User 1', email: 'user1@example.com',phoneNumber:'010-7777-2233' }] };
       mockMembersService.create.mockResolvedValue(result);
 
       expect(await controller.create({ user: { id: 1 } }, { boardId: 1, userId: 1 })).toEqual(result);
@@ -67,7 +68,7 @@ describe('MembersController', () => {
       mockMembersService.findAll.mockResolvedValue(result);
 
       expect(await controller.findAll({ boardId: 1 })).toEqual(result);
-      expect(service.findAll).toHaveBeenCalledWith({"boardId": 1});
+      expect(service.findAll).toHaveBeenCalledWith({ boardId: 1 });
     });
 
     it('보드에 해당하는 멤버가 없을 경우 Error가 발생해야 한다.', async () => {

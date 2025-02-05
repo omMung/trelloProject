@@ -1,4 +1,4 @@
-import { Injectable , NotFoundException , ForbiddenException} from '@nestjs/common';
+import { Injectable , NotFoundException , ForbiddenException , InternalServerErrorException} from '@nestjs/common';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetMemberDto } from './dto/get-member.dto'
 import { DeleteMemberDto } from './dto/delete-member.dto'
@@ -59,7 +59,7 @@ export class MembersService {
         throw error
       }
 
-      throw new Error('보드 유저 등록 중 에러가 발생')
+      throw new InternalServerErrorException('보드 유저 등록 중 에러가 발생')
     }
   }
 
@@ -99,7 +99,7 @@ export class MembersService {
     else if (error.message === "유저들을 찾을 수 없습니다") {
       throw error;  
     }
-    throw new Error("보드 멤버 전체 조회중 에러가 발생")
+    throw new InternalServerErrorException("보드 멤버 전체 조회중 에러가 발생")
   }
 }
 
@@ -134,7 +134,7 @@ export class MembersService {
       throw error
     }
     else{
-      throw new Error("보드 멤버 상세 조회중 에러가 발생")
+      throw new InternalServerErrorException("보드 멤버 상세 조회중 에러가 발생")
     }
   }
   }
@@ -189,7 +189,7 @@ export class MembersService {
         throw error
       }
       else{
-        throw new Error("보드 멤버 삭제중 에러가 발생")
+        throw new InternalServerErrorException("보드 멤버 삭제중 에러가 발생")
       }
     }
     }

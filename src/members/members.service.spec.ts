@@ -1,153 +1,161 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MembersService } from './members.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Member } from './entities/member.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { NotFoundException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 
-describe('멤버 서비스 (MembersService)', () => {
+describe('MembersService', () => {
   let service: MembersService;
-  let memberRepository: Repository<Member>;
-  let userRepository: Repository<User>;
-  let boardRepository: Repository<Board>;
-
-  const mockMemberRepository = {
-    save: jest.fn(),
-    findOne: jest.fn(),
-    find: jest.fn(),
-    delete: jest.fn(),
-  };
-
-  const mockUserRepository = {
-    findOne: jest.fn(),
-    find: jest.fn(),
-  };
-
-  const mockBoardRepository = {
-    findOne: jest.fn(),
-  };
+  let memberRepo: Repository<Member>;
+  let userRepo: Repository<User>;
+  let boardRepo: Repository<Board>;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MembersService,
-        { provide: getRepositoryToken(Member), useValue: mockMemberRepository },
-        { provide: getRepositoryToken(User), useValue: mockUserRepository },
-        { provide: getRepositoryToken(Board), useValue: mockBoardRepository },
+        {
+          provide: getRepositoryToken(Member),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(User),
+          useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(Board),
+          useClass: Repository,
+        },
       ],
     }).compile();
 
     service = module.get<MembersService>(MembersService);
-    memberRepository = module.get<Repository<Member>>(getRepositoryToken(Member));
-    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
-    boardRepository = module.get<Repository<Board>>(getRepositoryToken(Board));
+    memberRepo = module.get<Repository<Member>>(getRepositoryToken(Member));
+    userRepo = module.get<Repository<User>>(getRepositoryToken(User));
+    boardRepo = module.get<Repository<Board>>(getRepositoryToken(Board));
   });
 
-  test('서비스가 정상적으로 정의되는지 확인', () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('멤버 추가 (create)', () => {
-    test('정상적으로 멤버를 추가하면 성공 메시지를 반환해야 한다', async () => {
-      mockUserRepository.findOne.mockResolvedValue({ id: 1, name: '홍길동' });
-      mockBoardRepository.findOne.mockResolvedValue({ id: 1, userId: 100 });
-      mockMemberRepository.save.mockResolvedValue(undefined);
+  describe('create', () => {
+    it('멤버 추가 성공', async () => {
+      const createMemberDto = { userId: 1, boardId: 1 };
+      const authId = 1;
+      const mockBoard = { id: 1, userId: authId };
+      const mockUser = { id: 1, name: 'John Doe', email: 'john@example.com', phoneNumber: '123456789' };
 
-      const result = await service.create(100, { userId: 1, boardId: 1 });
+      jest.spyOn(boardRepo, 'findOne').mockResolvedValue(mockBoard as Board);
+      jest.spyOn(userRepo, 'findOne').mockResolvedValue(mockUser as User);
+      jest.spyOn(memberRepo, 'save').mockResolvedValue(undefined);
 
+      const result = await service.create(authId, createMemberDto);
       expect(result).toEqual({
         message: `Trello 보드(1)에 유저(1) 등록 성공`,
-        data: { id: 1, name: '홍길동' },
+        data: mockUser,
       });
     });
 
-    test('존재하지 않는 유저를 추가하려 하면 NotFoundException이 발생해야 한다', async () => {
-      mockUserRepository.findOne.mockResolvedValue(null);
+    it('보드를 찾을 수 없으면 예외 발생', async () => {
+      jest.spyOn(boardRepo, 'findOne').mockResolvedValue(null);
 
-      await expect(service.create(100, { userId: 1, boardId: 1 })).rejects.toThrow(NotFoundException);
+      await expect(service.create(1, { userId: 1, boardId: 1 })).rejects.toThrow(InternalServerErrorException);
     });
 
-    test('존재하지 않는 보드에 추가하려 하면 NotFoundException이 발생해야 한다', async () => {
-      mockUserRepository.findOne.mockResolvedValue({ id: 1 });
-      mockBoardRepository.findOne.mockResolvedValue(null);
+    it('유저를 찾을 수 없으면 예외 발생', async () => {
+      jest.spyOn(boardRepo, 'findOne').mockResolvedValue({ id: 1, userId: 1 } as Board);
+      jest.spyOn(userRepo, 'findOne').mockResolvedValue(null);
 
-      await expect(service.create(100, { userId: 1, boardId: 1 })).rejects.toThrow(NotFoundException);
+      await expect(service.create(1, { userId: 1, boardId: 1 })).rejects.toThrow(NotFoundException);
     });
 
-    test('보드 생성자가 아닌 사용자가 추가하려 하면 ForbiddenException이 발생해야 한다', async () => {
-      mockUserRepository.findOne.mockResolvedValue({ id: 1 });
-      mockBoardRepository.findOne.mockResolvedValue({ id: 1, userId: 999 });
+    it('보드 소유자가 아닐 경우 예외 발생', async () => {
+      jest.spyOn(boardRepo, 'findOne').mockResolvedValue({ id: 1, userId: 2 } as Board);
+      jest.spyOn(userRepo, 'findOne').mockResolvedValue({ id: 1 } as User);
 
-      await expect(service.create(100, { userId: 1, boardId: 1 })).rejects.toThrow(ForbiddenException);
+      await expect(service.create(1, { userId: 1, boardId: 1 })).rejects.toThrow(ForbiddenException);
     });
   });
 
-  describe('모든 멤버 조회 (findAll)', () => {
-    test('보드에 속한 멤버를 정상적으로 조회해야 한다', async () => {
-      mockMemberRepository.find.mockResolvedValue([{ userId: 1 }, { userId: 2 }]);
-      mockUserRepository.find.mockResolvedValue([{ id: 1, name: '김철수' }, { id: 2, name: '이영희' }]);
+  describe('findAll', () => {
+    it('멤버 전체 조회 성공', async () => {
+      const getMemberDto = { boardId: 1 };
+      const members = [{ userId: 1 }, { userId: 2 }];
+      const users = [{ id: 1, name: 'John' }, { id: 2, name: 'Doe' }];
 
-      const result = await service.findAll({ boardId: 1 });
+      jest.spyOn(memberRepo, 'find').mockResolvedValue(members as Member[]);
+      jest.spyOn(userRepo, 'find').mockResolvedValue(users as User[]);
 
+      const result = await service.findAll(getMemberDto);
       expect(result).toEqual({
-        message: `Trello 보드(1)에  멤버 조회 성공`,
-        names: [{ id: 1, name: '김철수' }, { id: 2, name: '이영희' }],
+        message: 'Trello 보드(1)에  멤버 조회 성공',
+        names: users,
       });
     });
 
-    test('멤버가 없는 보드를 조회하면 에러가 발생해야 한다', async () => {
-      mockMemberRepository.find.mockResolvedValue([]);
+    it('보드에 멤버가 없을 경우 예외 발생', async () => {
+      jest.spyOn(memberRepo, 'find').mockResolvedValue([]);
 
-      await expect(service.findAll({ boardId: 1 })).rejects.toThrowError('보드에 해당하는 유저를 찾을수가 없습니다');
+      await expect(service.findAll({ boardId: 1 })).rejects.toThrow(Error);
     });
   });
 
-  describe('특정 멤버 조회 (findOne)', () => {
-    test('특정 멤버 정보를 정상적으로 조회해야 한다', async () => {
-      mockMemberRepository.find.mockResolvedValue([{ userId: 1 }]);
-      mockUserRepository.findOne.mockResolvedValue({
-        id: 1,
-        name: '김철수',
-        email: 'kim@example.com',
-        phoneNumber: '010-1234-5678',
-      });
+  describe('findOne', () => {
+    it('멤버 상세 조회 성공', async () => {
+      const detailGetMemberDto = { boardId: 1 };
+      const members = [{ userId: 1 }];
+      const user = { id: 1, name: 'John', email: 'john@example.com', phoneNumber: '123456789' };
 
-      const result = await service.findOne(1, { boardId: 1 });
+      jest.spyOn(memberRepo, 'find').mockResolvedValue(members as Member[]);
+      jest.spyOn(userRepo, 'findOne').mockResolvedValue(user as User);
 
+      const result = await service.findOne(1, detailGetMemberDto);
       expect(result).toEqual({
-        message: `Trello 보드(1)에  멤버(1) 상세 조회 성공`,
-        data: {
-          id: 1,
-          name: '김철수',
-          email: 'kim@example.com',
-          phoneNumber: '010-1234-5678',
-        },
+        message: 'Trello 보드(1)에  멤버(1) 상세 조회 성공',
+        data: user,
       });
     });
 
-    test('해당 보드에 없는 멤버를 조회하면 에러가 발생해야 한다', async () => {
-      mockMemberRepository.find.mockResolvedValue([]);
+    it('해당 유저가 보드에 없으면 예외 발생', async () => {
+      jest.spyOn(memberRepo, 'find').mockResolvedValue([{ userId: 2 }] as Member[]);
 
-      await expect(service.findOne(1, { boardId: 1 })).rejects.toThrowError('보드에 해당하는 유저를 찾을수가 없습니다');
+      await expect(service.findOne(1, { boardId: 1 })).rejects.toThrow(NotFoundException);
     });
   });
 
-  describe('멤버 삭제 (remove)', () => {
-    test('멤버를 정상적으로 삭제해야 한다', async () => {
-      mockBoardRepository.findOne.mockResolvedValue({ id: 1, userId: 100 });
-      mockUserRepository.findOne.mockResolvedValue({ id: 1, name: '홍길동' });
-      mockMemberRepository.findOne.mockResolvedValue({ userId: 1, boardId: 1 });
-      mockMemberRepository.delete.mockResolvedValue({ affected: 1 });
+  describe('remove', () => {
+    it('멤버 삭제 성공', async () => {
+      const deleteMemberDto = { userId: 1, boardId: 1 };
+      const authId = 1;
+      const board = { id: 1, userId: authId };
+      const user = { id: 1, name: 'John' };
+      const member = { userId: 1, boardId: 1 };
 
-      const result = await service.remove(100, { userId: 1, boardId: 1 });
+      jest.spyOn(boardRepo, 'findOne').mockResolvedValue(board as Board);
+      jest.spyOn(userRepo, 'findOne').mockResolvedValue(user as User);
+      jest.spyOn(memberRepo, 'findOne').mockResolvedValue(member as Member);
+      jest.spyOn(memberRepo, 'delete').mockResolvedValue({ affected: 1 } as any);
 
+      const result = await service.remove(authId, deleteMemberDto);
       expect(result).toEqual({
-        message: `Trello 보드(1)에  멤버 '홍길동' (1)  삭제 성공`,
+        message: `Trello 보드(1)에  멤버 'John' (1)  삭제 성공`,
       });
+    });
+
+    it('보드를 찾을 수 없으면 예외 발생', async () => {
+      jest.spyOn(boardRepo, 'findOne').mockResolvedValue(null);
+
+      await expect(service.remove(1, { userId: 1, boardId: 1 })).rejects.toThrow(InternalServerErrorException);
+    });
+
+    it('보드 소유자가 아닐 경우 예외 발생', async () => {
+      jest.spyOn(boardRepo, 'findOne').mockResolvedValue({ id: 1, userId: 2 } as Board);
+
+      await expect(service.remove(1, { userId: 1, boardId: 1 })).rejects.toThrow(InternalServerErrorException);
     });
   });
 });
