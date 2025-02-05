@@ -132,4 +132,85 @@ describe('CardsService', () => {
       );
     });
   });
+
+  describe('findOne', () => {
+    it('should find a card successfully', async () => {
+      const mockCard = {
+        id: 1,
+        listId: 1,
+        title: 'Test Card',
+      };
+      const mockFindCardDto = { listId: 1 };
+
+      mockCardRepository.findOneBy.mockResolvedValue(mockCard);
+
+      const result = await service.findOne(1, mockFindCardDto);
+      expect(result).toEqual(mockCard);
+    });
+
+    it('should throw NotFoundException when list ID does not match', async () => {
+      const mockCard = {
+        id: 1,
+        listId: 2, // Different list ID
+        title: 'Test Card',
+      };
+      const mockFindCardDto = { listId: 1 };
+
+      mockCardRepository.findOneBy.mockResolvedValue(mockCard);
+
+      await expect(service.findOne(1, mockFindCardDto)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('updateCard', () => {
+    it('should throw NotFoundException when list not found', async () => {
+      const mockReq = { user: { id: 1 } };
+      const mockUpdateCardDto = { listId: 999 };
+
+      mockListRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.updateCard(mockReq, 1, mockUpdateCardDto),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw NotFoundException when user is not a board member', async () => {
+      const mockReq = { user: { id: 1 } };
+      const mockUpdateCardDto = { listId: 1 };
+
+      mockListRepository.findOne.mockResolvedValue({ boardId: 1 });
+      mockMemberRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.updateCard(mockReq, 1, mockUpdateCardDto),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('deleteCard', () => {
+    it('should throw NotFoundException when list not found', async () => {
+      const mockReq = { user: { id: 1 } };
+      const mockDeleteCardDto = { listId: 999 };
+
+      mockListRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.deleteCard(mockReq, 1, mockDeleteCardDto),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw NotFoundException when user is not a board member', async () => {
+      const mockReq = { user: { id: 1 } };
+      const mockDeleteCardDto = { listId: 1 };
+
+      mockListRepository.findOne.mockResolvedValue({ boardId: 1 });
+      mockMemberRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.deleteCard(mockReq, 1, mockDeleteCardDto),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
 });

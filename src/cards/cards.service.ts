@@ -12,6 +12,8 @@ import { List } from 'src/lists/entities/list.entity';
 import { Card } from './entities/card.entity';
 import { Member } from 'src/members/entities/member.entity';
 import { UpdateCardPositionsDto } from './dto/update-card-positions.dto';
+import { FindCardDto } from './dto/find-card.dto';
+import { DeleteCardDto } from './dto/delete-card.dto';
 
 @Injectable()
 export class CardsService {
@@ -34,24 +36,18 @@ export class CardsService {
   async createCard(req, createCardDto: CreateCardDto): Promise<Card> {
     const { listId, title, description, color, status } = createCardDto;
 
-    const userId = await this.memberRepository.findOne({
-      where: { userId: req.user.id },
-    });
-    if (_.isNil(userId)) {
-      throw new NotFoundException('소속된 보드가 없습니다.');
-    }
-
     const verifyListId = await this.listsRepository.findOne({
       where: { id: Number(listId) },
     });
     if (_.isNil(verifyListId)) {
-      throw new NotFoundException(
-        '메시지를 찾을 수 없거나 수정/삭제할 권한이 없습니다.',
-      );
+      throw new NotFoundException('리스트 아이디가 존재하지 않습니다.');
     }
 
-    if (userId.boardId !== verifyListId.boardId) {
-      throw new NotFoundException('해당 리스트는 보드에 존재하지 않습니다.');
+    const userId = await this.memberRepository.findOne({
+      where: { userId: req.user.id, boardId: verifyListId.boardId },
+    });
+    if (_.isNil(userId)) {
+      throw new NotFoundException('보드에 소속되지 않아 생성이 불가합니다.');
     }
 
     const lastPosition = await this.findLastPosition();
@@ -68,17 +64,30 @@ export class CardsService {
     return card;
   }
 
-  async findOne(id: number, createCardDto: CreateCardDto): Promise<Card> {
+  async findOne(id: number, findCardDto: FindCardDto): Promise<Card> {
     const byCard = await this.cardsRepository.findOneBy({ id });
-    if (createCardDto.listId !== byCard.listId) {
-      throw new NotFoundException('해당 리스트가 존재하지 않습니다.');
+    if (findCardDto.listId !== byCard.listId) {
+      throw new NotFoundException('리스트 아이디가 존재하지 않습니다.');
     }
     return byCard;
   }
 
-  async updateCard(id: number, updateCardDto: UpdateCardDto) {
+  async updateCard(req, id: number, updateCardDto: UpdateCardDto) {
     const { listId, title, description, color, status } = updateCardDto;
 
+    const verifyListId = await this.listsRepository.findOne({
+      where: { id: Number(listId) },
+    });
+    if (_.isNil(verifyListId)) {
+      throw new NotFoundException('리스트 아이디가 존재하지 않습니다.');
+    }
+
+    const userId = await this.memberRepository.findOne({
+      where: { userId: req.user.id, boardId: verifyListId.boardId },
+    });
+    if (_.isNil(userId)) {
+      throw new NotFoundException('보드에 소속되지 않아 생성이 불가합니다.');
+    }
     await this.verifyCards(id);
     await this.cardsRepository.update(
       { id }, // 조건
@@ -93,7 +102,25 @@ export class CardsService {
     );
   }
 
-  async deleteCard(id: number): Promise<void> {
+  async deleteCard(
+    req,
+    id: number,
+    deleteCardDto: DeleteCardDto,
+  ): Promise<void> {
+    const verifyListId = await this.listsRepository.findOne({
+      where: { id: Number(deleteCardDto.listId) },
+    });
+    if (_.isNil(verifyListId)) {
+      throw new NotFoundException('리스트 아이디가 존재하지 않습니다.');
+    }
+
+    const userId = await this.memberRepository.findOne({
+      where: { userId: req.user.id, boardId: verifyListId.boardId },
+    });
+    if (_.isNil(userId)) {
+      throw new NotFoundException('보드에 소속되지 않아 생성이 불가합니다.');
+    }
+
     await this.verifyCards(id);
     await this.cardsRepository.delete({ id });
   }
