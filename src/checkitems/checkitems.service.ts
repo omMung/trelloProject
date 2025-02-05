@@ -9,31 +9,34 @@ import { UpdateCheckitemDto } from './dto/update-checkitem.dto';
 import { CheckItem } from './entities/checkitem.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChecklistsService } from 'src/checklists/checklists.service';
 
 @Injectable()
 export class CheckitemsService {
   constructor(
     @InjectRepository(CheckItem)
     private checkitemsRepository: Repository<CheckItem>,
+    private checklistsService: ChecklistsService, // ChecklistsService 주입
   ) {}
 
   async create(createCheckitemDto: CreateCheckitemDto): Promise<CheckItem> {
     try {
       const { checkListId, title } = createCheckitemDto;
-      const checkLists = await this.checkitemsRepository.find({
+
+      // 체크리스트 ID 검증
+      const checkListExists = await this.checklistsService.exists(checkListId);
+      if (!checkListExists) {
+        throw new NotFoundException('존재하지 않는 체크리스트입니다.');
+      }
+      const checkitems = await this.checkitemsRepository.find({
         where: { checkListId },
         select: ['position'],
       });
 
-      //존재하지 않는 체크리스트 아이디
-      if (!checkLists) {
-        throw new Error('존재하지 않는 체크리스트입니다.');
-      }
-
       // 최대 포지션 찾기
       const maxPosition =
-        checkLists.length > 0
-          ? Math.max(...checkLists.map((list) => list.position))
+        checkitems.length > 0
+          ? Math.max(...checkitems.map((list) => list.position))
           : 0;
 
       const newCheckitem = this.checkitemsRepository.create({

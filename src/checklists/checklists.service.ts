@@ -117,4 +117,11 @@ export class ChecklistsService {
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }
+
+  async exists(checkListId: number): Promise<boolean> {
+    const count = await this.checklistRepository.count({
+      where: { id: checkListId },
+    });
+    return count > 0;
+  }
 }
