@@ -52,9 +52,9 @@ const typeOrmModuleOptions = {
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
+      rootPath: join('C:\\trelloProject', 'public'), // ✅ Windows 경로로 변경
       serveRoot: '/', // ✅ 루트 URL에서 정적 파일 제공
-      exclude: ['/api*'], // ✅ API 경로 제외 (API 요청은 NestJS에서 처리)
+      exclude: ['/api*'], // ✅ API 엔드포인트 제외
     }),
     UsersModule,
     BoardsModule,
