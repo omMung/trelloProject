@@ -27,5 +27,5 @@ export class UpdateCardPositionsDto {
   // { "id": 2, "position": 2 },
   // { "id": 3, "position": 3 }
   // ];
-  // 클라이언트에서 포지션 순으로 정렬된 lists를 보내준다고 가정
+  // 클라이언트에서 포지션 순으로 정렬된 cards를 보내준다고 가정
 }

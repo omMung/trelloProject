@@ -7,6 +7,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { List } from './entities/list.entity';
+import { Member } from '../members/entities/member.entity';
+import { User } from '../users/entities/user.entity';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
@@ -17,10 +19,47 @@ export class ListsService {
   constructor(
     @InjectRepository(List)
     private listsRepository: Repository<List>,
+    @InjectRepository(Member)
+    private membersRepository: Repository<Member>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
-  async create(createListDto: CreateListDto): Promise<List> {
+  // dto로 받은 boardId, jwt인증 성공 시 req에 포함되어 있는 id(User)로
+  // 존재하는 유저인지, 그 유저가 현재 보드 멤버에 포함되어 있는지 검증하는 함수
+  private async validateUserAndMember(
+    req: any,
+    boardId: number,
+  ): Promise<void> {
+    const userId = req.user.id;
+    // 유저 존재 검증
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('유저 정보가 없습니다.');
+    }
+    // 보드에 속한 멤버인지 검증
+    const member = await this.membersRepository.findOne({
+      where: { id: userId, boardId },
+    });
+    if (!member) {
+      throw new NotFoundException(
+        '해당 보드에 소속된 멤버 정보가 존재하지 않습니다.',
+      );
+    }
+  }
+
+  async create(createListDto: CreateListDto, req: any): Promise<List> {
     const { boardId, title } = createListDto;
+
+    await this.validateUserAndMember(req, boardId);
+
+    // 같은 제목이미 존재하는지 검증
+    const existingList = await this.listsRepository.findOne({
+      where: { boardId, title },
+    });
+    if (existingList) {
+      throw new BadRequestException('같은 제목의 리스트가 이미 존재합니다.');
+    }
 
     // 보드 id로 리스트 조회
     const lists = await this.listsRepository.find({
@@ -56,7 +95,15 @@ export class ListsService {
   }
 
   // 리스트 업데이트(파라미터로 id 받음)
-  async update(id: number, updateListDto: UpdateListDto): Promise<List> {
+  async update(
+    id: number,
+    updateListDto: UpdateListDto,
+    req: any,
+  ): Promise<List> {
+    const { boardId } = updateListDto;
+
+    await this.validateUserAndMember(req, boardId);
+
     const list = await this.listsRepository.findOne({ where: { id } });
 
     if (!list) {
@@ -74,7 +121,15 @@ export class ListsService {
   }
 
   // 특정 리스트 삭제(파라미터로 id 받음)
-  async remove(id: number): Promise<void> {
+  async remove(
+    id: number,
+    updateListDto: UpdateListDto,
+    req: any,
+  ): Promise<void> {
+    const { boardId } = updateListDto;
+
+    await this.validateUserAndMember(req, boardId);
+
     const list = await this.listsRepository.findOne({ where: { id } });
 
     if (!list) {
@@ -89,6 +144,7 @@ export class ListsService {
   // ex) 1,2,3,4 >> O , 1,2,4 >> X
   async updatePositions(
     updateListPositionsDto: UpdateListPositionsDto,
+    req: any,
   ): Promise<void> {
     const { boardId, lists } = updateListPositionsDto;
     // const lists = [
@@ -96,6 +152,7 @@ export class ListsService {
     // { "id": 2, "position": 2 },
     // { "id": 3, "position": 3 }
     // ];
+    await this.validateUserAndMember(req, boardId);
 
     // 보드 id로 리스트 조회
     const DBLists = await this.listsRepository.find({
@@ -133,46 +190,6 @@ export class ListsService {
         throw new BadRequestException('잘못된 요청입니다');
       }
     }
-
-    // 위치 업데이트
-    // async function updateUserUsingQueryBuilder(id: number, newName: string) {
-    //   await getConnection()
-    //     .createQueryBuilder()
-    //     .update(List)
-    //     .set({ name: newName })
-    //     .where('id = :id', { id })
-    //     .execute();
-    // }
-    // const deletePromise = lists.map((list) => {
-    //   // console.log(list);
-    //   return this.listsRepository.delete(list.id);
-    // });
-
-    // await Promise.all(deletePromise);
-    // console.log(lists);
-
-    // const updatePromises = lists.map((list) => {
-    //   console.log(list);
-    //   return this.listsRepository.create({
-    //     boardId: 1,
-    //     title: 'test',
-    //     position: list.position,
-    //   });
-    // });
-
-    // await Promise.all(updatePromises);
-
-    // return this.listsRepository.save(list);
-
-    // for (let i = 0; i < lists.length; i++) {
-    //   const list = this.listsRepository.create({
-    //     boardId: 1,
-    //     title: 'test',
-    //     position: lists[i].position,
-    //   });
-    //   await this.listsRepository.save(list);
-    // }
-    // 위치 업데이트
 
     const updatePromises = lists.map((list) => {
       console.log(list);

@@ -1,34 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { AlarmsService } from './alarms.service';
 import { CreateAlarmDto } from './dto/create-alarm.dto';
-import { UpdateAlarmDto } from './dto/update-alarm.dto';
 
 @Controller('alarms')
 export class AlarmsController {
   constructor(private readonly alarmsService: AlarmsService) {}
 
   @Post()
-  create(@Body() createAlarmDto: CreateAlarmDto) {
-    return this.alarmsService.create(createAlarmDto);
+  async createAlarm(@Body() createAlarmDto: CreateAlarmDto) {
+    return this.alarmsService.createAlarm(createAlarmDto);
   }
 
-  @Get()
-  findAll() {
-    return this.alarmsService.findAll();
+  @Get(':userId')
+  async getUserAlarms(@Param('userId') userId: number) {
+    return this.alarmsService.getAlarmsByUser(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.alarmsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlarmDto: UpdateAlarmDto) {
-    return this.alarmsService.update(+id, updateAlarmDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.alarmsService.remove(+id);
+  @Delete(':userId')
+  async clearUserAlarms(@Param('userId') userId: number) {
+    await this.alarmsService.clearAlarms(userId);
+    return { message: '알림이 삭제되었습니다.' };
   }
 }

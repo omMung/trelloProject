@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알림창</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .notification-container {
+            width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .notification:last-child {
+            border-bottom: none;
+        }
+
+        .notification p {
+            margin: 0;
+        }
+
+        .clear-btn {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="notification-container">
+        <h3>나의 알림</h3>
+        <div id="notifications">
+            <div class="notification">
+                <p>새로운 카드가 할당되었습니다.</p>
+            </div>
+            <div class="notification">
+                <p>카드가 업데이트되었습니다.</p>
+            </div>
+        </div>
+        <button class="clear-btn" onclick="clearNotifications()">알림 삭제</button>
+    </div>
+
+    <script>
+        function clearNotifications() {
+            document.getElementById('notifications').innerHTML = '';
+        }
+    </script>
+</body>
+
+</html>

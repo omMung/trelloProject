@@ -21,11 +21,14 @@ export class Alarm {
   @Column('int', { nullable: false })
   cardId: number;
 
+  @Column()
+  eventId: string; // 어떤 이벤트인지
+
   @Column('varchar', { nullable: false })
-  content: string;
+  content: string; // 알림 메시지
 
   @Column('boolean', { default: false })
-  status: boolean;
+  status: boolean; // 알림 읽음 상태
 
   @ManyToOne(() => User, (user) => user.alarms, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })

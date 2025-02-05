@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Alarm } from './entities/alarm.entity';
 import { CreateAlarmDto } from './dto/create-alarm.dto';
-import { UpdateAlarmDto } from './dto/update-alarm.dto';
 
 @Injectable()
 export class AlarmsService {
-  create(createAlarmDto: CreateAlarmDto) {
-    return 'This action adds a new alarm';
+  constructor(
+    @InjectRepository(Alarm)
+    private readonly alarmRepository: Repository<Alarm>,
+  ) {}
+
+  async createAlarm(createAlarmDto: CreateAlarmDto): Promise<Alarm> {
+    const alarm = this.alarmRepository.create(createAlarmDto);
+    return this.alarmRepository.save(alarm);
   }
 
-  findAll() {
-    return `This action returns all alarms`;
+  async getAlarmsByUser(userId: number): Promise<Alarm[]> {
+    return this.alarmRepository.find({ where: { userId } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} alarm`;
-  }
-
-  update(id: number, updateAlarmDto: UpdateAlarmDto) {
-    return `This action updates a #${id} alarm`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} alarm`;
+  async clearAlarms(userId: number): Promise<void> {
+    await this.alarmRepository.delete({ userId });
   }
 }
