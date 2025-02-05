@@ -8,6 +8,7 @@ import {
   NotFoundException,
   ConflictException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -32,6 +33,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       errorType = 'ConflictException';
     } else if (exception instanceof InternalServerErrorException) {
       errorType = 'InternalServerErrorException';
+    } else if (exception instanceof ForbiddenException) {
+      errorType = 'ForbiddenException';
     }
 
     response.status(status).json({

@@ -28,9 +28,11 @@ export class CardLabelsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Body() boardId: number, @Request() req) {
+  findAll(@Request() req, @Body() body: { cardId: number }) {
     const user = req.user;
-    return this.cardLabelsService.findAll(user.id, boardId);
+    const cardId = body.cardId;
+    console.log(cardId);
+    return this.cardLabelsService.findAll(user.id, cardId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -42,7 +44,7 @@ export class CardLabelsController {
   ) {
     const user = req.user;
     const { cardId, labelId } = updateCardLabelDto;
-    return this.cardLabelsService.update(+id, cardId, labelId);
+    return this.cardLabelsService.update(user.id, cardId, labelId, +id);
   }
 
   @UseGuards(JwtAuthGuard)

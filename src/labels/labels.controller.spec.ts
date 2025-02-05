@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LabelsController } from './labels.controller';
 import { LabelsService } from './labels.service';
+import { CreateLabelDto } from './dto/create-label.dto';
+import { UpdateLabelDto } from './dto/update-label.dto';
 
 describe('LabelsController', () => {
   let controller: LabelsController;
@@ -29,59 +31,99 @@ describe('LabelsController', () => {
     service = module.get<LabelsService>(LabelsService);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  describe('create', () => {
-    it('should create a label', async () => {
-      const dto = { color: '#FFFFFF', title: 'Test Label' };
-      mockLabelsService.create.mockResolvedValue(dto);
+  describe('라벨 생성', () => {
+    it('사용자 ID와 DTO를 받아 새로운 라벨을 생성해야 함', async () => {
+      const mockUser = { id: 1 };
+      const mockRequest = { user: mockUser };
+      const createLabelDto: CreateLabelDto = {
+        title: 'Bug',
+        color: '#ff0000',
+        boardId: 1,
+      };
+      const expectedResult = {
+        id: 1,
+        ...createLabelDto,
+      };
 
-      const result = await controller.create(dto);
-      expect(result).toEqual(dto);
-      expect(mockLabelsService.create).toHaveBeenCalledWith(dto);
+      mockLabelsService.create.mockResolvedValue(expectedResult);
+
+      const result = await controller.create(mockRequest, createLabelDto);
+
+      expect(service.create).toHaveBeenCalledWith(
+        mockUser.id,
+        createLabelDto.title,
+        createLabelDto.color,
+        createLabelDto.boardId,
+      );
+      expect(result).toEqual(expectedResult);
     });
   });
 
-  describe('findAll', () => {
-    it('should return an array of labels', async () => {
-      const result = [{ id: 1, color: '#FFFFFF', title: 'Test Label' }];
-      mockLabelsService.findAll.mockResolvedValue(result);
+  describe('모든 라벨 조회', () => {
+    it('모든 라벨을 조회해야 함', async () => {
+      const expectedLabels = [
+        { id: 1, title: 'Bug', color: '#ff0000', boardId: 1 },
+        { id: 2, title: 'Feature', color: '#00ff00', boardId: 1 },
+      ];
+      mockLabelsService.findAll.mockResolvedValue(expectedLabels);
 
-      expect(await controller.findAll()).toEqual(result);
-      expect(mockLabelsService.findAll).toHaveBeenCalled();
+      const result = await controller.findAll();
+
+      expect(service.findAll).toHaveBeenCalled();
+      expect(result).toEqual(expectedLabels);
     });
   });
 
-  describe('findOne', () => {
-    it('should return a label', async () => {
-      const label = { id: 1, color: '#FFFFFF', title: 'Test Label' };
-      mockLabelsService.findOne.mockResolvedValue(label);
+  describe('특정 라벨 조회', () => {
+    it('ID를 통해 특정 라벨을 조회해야 함', async () => {
+      const labelId = '1';
+      const expectedLabel = {
+        id: 1,
+        title: 'Bug',
+        color: '#ff0000',
+        boardId: 1,
+      };
+      mockLabelsService.findOne.mockResolvedValue(expectedLabel);
 
-      expect(await controller.findOne('1')).toEqual(label);
-      expect(mockLabelsService.findOne).toHaveBeenCalledWith(1);
+      const result = await controller.findOne(labelId);
+
+      expect(service.findOne).toHaveBeenCalledWith(1);
+      expect(result).toEqual(expectedLabel);
     });
   });
 
-  describe('update', () => {
-    it('should update a label', async () => {
-      const dto = { title: 'Updated Label' };
-      const label = { id: 1, color: '#FFFFFF', title: 'Test Label' };
-      mockLabelsService.update.mockResolvedValue({ ...label, ...dto });
+  describe('라벨 수정', () => {
+    it('ID와 DTO를 받아 라벨을 수정해야 함', async () => {
+      const labelId = '1';
+      const updateLabelDto: UpdateLabelDto = {
+        title: 'Critical Bug',
+        color: '#ff0000',
+      };
+      const updatedLabel = { id: 1, ...updateLabelDto, boardId: 1 };
 
-      expect(await controller.update('1', dto)).toEqual({ ...label, ...dto });
-      expect(mockLabelsService.update).toHaveBeenCalledWith(1, dto);
+      mockLabelsService.update.mockResolvedValue(updatedLabel);
+
+      const result = await controller.update(labelId, updateLabelDto);
+
+      expect(service.update).toHaveBeenCalledWith(1, updateLabelDto);
+      expect(result).toEqual(updatedLabel);
     });
   });
 
-  describe('remove', () => {
-    it('should remove a label', async () => {
-      const result = { message: '라벨이 성공적으로 삭제되었습니다.' };
-      mockLabelsService.remove.mockResolvedValue(result);
+  describe('라벨 삭제', () => {
+    it('ID를 통해 라벨을 삭제해야 함', async () => {
+      const labelId = '1';
+      const deleteResult = { affected: 1 };
+      mockLabelsService.remove.mockResolvedValue(deleteResult);
 
-      expect(await controller.remove('1')).toEqual(result);
-      expect(mockLabelsService.remove).toHaveBeenCalledWith(1);
+      const result = await controller.remove(labelId);
+
+      expect(service.remove).toHaveBeenCalledWith(1);
+      expect(result).toEqual(deleteResult);
     });
   });
 });
