@@ -52,8 +52,9 @@ const typeOrmModuleOptions = {
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'), // ✅ `public` 폴더 내의 파일 서빙
-      serveRoot: '/public', // ✅ `https://www.yangs.site/public` 에서 제공됨
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/', // ✅ 루트 URL에서 정적 파일 제공
+      exclude: ['/api*'], // ✅ API 경로 제외 (API 요청은 NestJS에서 처리)
     }),
     UsersModule,
     BoardsModule,

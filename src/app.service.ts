@@ -7,13 +7,13 @@ export class AppService {
 
   // 기본 API 상태 확인
   getHello(): string {
-    return '🚀 서버가 정상적으로 실행 중입니다!';
+    return '서버가 정상적으로 실행 중입니다!';
   }
 
   // 서버 상태 확인 API
   getStatus(): Record<string, any> {
     return {
-      status: '✅ 서버 정상 작동 중',
+      status: '서버 정상 작동 중',
       timestamp: new Date().toISOString(),
     };
   }
