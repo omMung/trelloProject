@@ -76,7 +76,7 @@
 
     <script>
         const userId = 1; // 현재 로그인한 사용자 ID (임시)
-        const serverUrl = "https://www.yangs.site"; // ✅ 서버 주소 변경
+        const serverUrl = "http://localhost:3000"; // ✅ 서버 주소 변경
         const socket = io(`${serverUrl}`, { query: { userId } });
 
         socket.on("connect", () => {
@@ -90,14 +90,26 @@
 
         async function fetchNotifications() {
             try {
+                console.log("📢 알람 가져오기 요청...");
                 const response = await fetch(`${serverUrl}/alarms/${userId}`);
+
+                if (!response.ok) {
+                    throw new Error(`서버 응답 오류: ${response.status} ${response.statusText}`);
+                }
+
                 const alarms = await response.json();
+                console.log("✅ 알람 데이터:", alarms);
+
                 document.getElementById("notifications").innerHTML = ""; // 초기화
                 alarms.forEach(displayNotification);
             } catch (error) {
-                console.error("알람 가져오기 실패:", error);
+                console.error("❌ 알람 가져오기 실패:", error);
             }
         }
+
+        // 페이지 로딩 시 알람 불러오기
+        window.onload = fetchNotifications;
+
 
         function displayNotification(alarm) {
             const notificationContainer = document.getElementById("notifications");

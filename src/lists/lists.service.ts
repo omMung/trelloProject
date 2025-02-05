@@ -70,10 +70,10 @@ export class ListsService {
 
   async create(createListDto: CreateListDto, req: any): Promise<List> {
     const { boardId, title } = createListDto;
-
     const { user, members } = await this.validateUserAndMember(req, boardId);
 
-    // 같은 제목이미 존재하는지 검증
+    console.log('📢 리스트 생성 요청 받음:', { boardId, title, user, members });
+
     const existingList = await this.listsRepository.findOne({
       where: { boardId, title },
     });
@@ -81,45 +81,40 @@ export class ListsService {
       throw new BadRequestException('같은 제목의 리스트가 이미 존재합니다.');
     }
 
-    // 보드 id로 리스트 조회
     const lists = await this.listsRepository.find({
       where: { boardId },
       select: ['position'],
     });
-    // const lists = [
-    //   { position: 1 },
-    //   { position: 2 },
-    //   { position: 3 },
-    // ];
-
-    // 최대 포지션 찾기
     const maxPosition =
       lists.length > 0 ? Math.max(...lists.map((list) => list.position)) : 0;
-    // 1. 맵 함수를 통해 position 값만 추출한 새로운 배열 생성
-    // 2. Math.max(...arrays) : 배열의 모든 요소는 개별 인자로 전달, 그중 최대값 구함
-    // 3. 삼항연상자 형태 >> 배열 길이가 0이라면 >> 아직 리스트가 없다면 maxPosition은 0
-    // 배열 길이가 0 이상이라면 >> 기존 리스트가 있다면 maxPosition은 배열 중 position 최대값
-
-    // maxPosition에 +1 하여 최종 포지션 결정
     const newPosition = maxPosition + 1;
 
-    // 리스트 엔티티 생성
     const list = this.listsRepository.create({
       boardId,
       position: newPosition,
       title,
     });
+    const savedList = await this.listsRepository.save(list);
 
-    // ✅ 리스트 생성 이벤트 알림 (알람 기능과 연동)
+    console.log('✅ 리스트 생성 완료:', savedList);
+
+    // 이벤트 발생
     this.eventEmitter.emit('list.created', {
-      senderId: user.id, // 리스트를 생성한 유저 ID
-      boardId, // 해당 보드 ID
-      members, // 해당 보드의 모든 멤버 ID 배열
+      senderId: user.id,
+      boardId,
+      members,
       message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
     });
 
-    // 리스트 저장 및 반환
-    return this.listsRepository.save(list);
+    // 이벤트 발생 로그 추가
+    console.log('list.created 이벤트 발생:', {
+      senderId: user.id,
+      boardId,
+      members,
+      message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
+    });
+
+    return savedList;
   }
 
   // 리스트 업데이트(파라미터로 id 받음)

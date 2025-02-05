@@ -18,8 +18,8 @@ export class AppService {
     };
   }
 
-  // 특정 사용자의 알람 조회
-  async getUserAlarms(userId: number) {
-    return await this.alarmsService.getAlarmsByUser(userId);
-  }
+  // // 특정 사용자의 알람 조회
+  // async getUserAlarms(userId: number) {
+  //   return await this.alarmsService.getAlarmsByUser(userId);
+  // }
 }

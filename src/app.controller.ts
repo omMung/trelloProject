@@ -17,8 +17,8 @@ export class AppController {
     return this.appService.getStatus();
   }
 
-  @Get('alarms/:userId')
-  async getUserAlarms(@Param('userId', ParseIntPipe) userId: number) {
-    return await this.appService.getUserAlarms(userId);
-  }
+  // @Get('alarms/:userId')
+  // async getUserAlarms(@Param('userId', ParseIntPipe) userId: number) {
+  //   return await this.appService.getUserAlarms(userId);
+  // }
 }

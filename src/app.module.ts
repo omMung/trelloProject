@@ -17,6 +17,7 @@ import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { join } from 'path';
 import Joi from 'joi';
 
@@ -50,12 +51,14 @@ const typeOrmModuleOptions = {
         DB_SYNC: Joi.boolean().required(),
       }),
     }),
+    EventEmitterModule.forRoot(), // ✅ 이벤트 시스템 활성화
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     ServeStaticModule.forRoot({
-      rootPath: join('C:\\trelloProject', 'public'), // ✅ Windows 경로로 변경
+      rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/', // ✅ 루트 URL에서 정적 파일 제공
-      exclude: ['/api*'], // ✅ API 엔드포인트 제외
+      exclude: ['/api*'], // ✅ API 요청 제외
     }),
+
     UsersModule,
     BoardsModule,
     ListsModule,

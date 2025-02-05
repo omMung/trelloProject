@@ -5,7 +5,7 @@ import { ListsController } from './lists.controller';
 import { List } from './entities/list.entity';
 import { Member } from '../members/entities/member.entity';
 import { User } from '../users/entities/user.entity';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+// import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MembersModule } from '../members/members.module'; //  MembersModule 추가
 import { UsersModule } from '../users/users.module';
 
@@ -16,6 +16,7 @@ import { UsersModule } from '../users/users.module';
     UsersModule,
   ],
   controllers: [ListsController],
-  providers: [ListsService, EventEmitter2],
+  providers: [ListsService],
+  exports: [TypeOrmModule],
 })
 export class ListsModule {}

@@ -31,8 +31,4 @@ export class Alarm {
   @ManyToOne(() => User, (user) => user.alarms, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
-
-  @ManyToOne(() => Card, (card) => card.alarm)
-  @JoinColumn({ name: 'card_id' })
-  card: Card;
 }
