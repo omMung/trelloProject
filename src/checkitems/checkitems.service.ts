@@ -46,6 +46,10 @@ export class CheckitemsService {
       });
       return this.checkitemsRepository.save(newCheckitem);
     } catch (err) {
+      // 특정 예외를 다시 던지기
+      if (err instanceof NotFoundException) {
+        throw err; // 원래의 예외를 그대로 던짐
+      }
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }
@@ -71,6 +75,13 @@ export class CheckitemsService {
       Object.assign(checkitem, updateCheckitemDto);
       return this.checkitemsRepository.save(checkitem); // 업데이트된 항목 저장
     } catch (err) {
+      // 특정 예외를 다시 던지기
+      if (
+        err instanceof NotFoundException ||
+        err instanceof BadRequestException
+      ) {
+        throw err; // 원래의 예외를 그대로 던짐
+      }
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }
@@ -97,6 +108,13 @@ export class CheckitemsService {
 
       await this.checkitemsRepository.remove(checkitem); // 항목 삭제
     } catch (err) {
+      // 특정 예외를 다시 던지기
+      if (
+        err instanceof NotFoundException ||
+        err instanceof BadRequestException
+      ) {
+        throw err; // 원래의 예외를 그대로 던짐
+      }
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }

@@ -48,16 +48,55 @@ describe('CheckitemsService', () => {
   });
 
   describe('create', () => {
-    it('체크리스트 항목 생성', async () => {
-      const createCheckitemDto: CreateCheckitemDto = {
-        checkListId: 1,
+    it('존재하지 않는 체크리스트 ID로 체크리스트 항목 생성 시 NotFoundException 발생', async () => {
+      const createCheckitemDto = {
+        checkListId: 999, // 존재하지 않는 체크리스트 ID
         title: 'Test Check Item',
       };
-      const mockCheckItems = [{ position: 1 }, { position: 2 }];
 
-      mockCheckItemRepository.find.mockResolvedValue(mockCheckItems);
-      mockCheckItemRepository.create.mockReturnValue(mockCheckItems[0]);
-      mockCheckItemRepository.save.mockResolvedValue(mockCheckItems[0]);
+      // 체크리스트가 존재하지 않는 경우를 mock 처리
+      jest.spyOn(checklistsService, 'exists').mockResolvedValue(false);
+
+      await expect(service.create(createCheckitemDto)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('존재하는 체크리스트 ID로 체크리스트 항목 생성', async () => {
+      const createCheckitemDto = {
+        checkListId: 1, // 존재하는 체크리스트 ID
+        title: 'Valid Check Item',
+      };
+      const mockCheckItems = [
+        {
+          id: 1,
+          checkListId: 1,
+          title: '항목 1',
+          position: 1,
+          status: false,
+          memberId: 1,
+        },
+        {
+          id: 2,
+          checkListId: 1,
+          title: '항목 2',
+          position: 2,
+          status: false,
+          memberId: 2,
+        },
+      ];
+
+      // 체크리스트가 존재하는 경우를 mock 처리
+      jest.spyOn(checklistsService, 'exists').mockResolvedValue(true);
+      jest
+        .spyOn(mockCheckItemRepository, 'find')
+        .mockResolvedValue(mockCheckItems);
+      jest
+        .spyOn(mockCheckItemRepository, 'create')
+        .mockReturnValue(mockCheckItems[0]);
+      jest
+        .spyOn(mockCheckItemRepository, 'save')
+        .mockResolvedValue(mockCheckItems[0]);
 
       const result = await service.create(createCheckitemDto);
       expect(result).toEqual(mockCheckItems[0]);
@@ -67,134 +106,157 @@ describe('CheckitemsService', () => {
       });
       expect(mockCheckItemRepository.create).toHaveBeenCalledWith({
         checkListId: 1,
-        title: 'Test Check Item',
+        title: 'Valid Check Item',
         position: 3,
       });
       expect(mockCheckItemRepository.save).toHaveBeenCalledWith(
         mockCheckItems[0],
       );
     });
-
-    it('존재하지 않는 체크리스트', async () => {
-      const createCheckitemDto: CreateCheckitemDto = {
-        checkListId: 999,
-        title: 'Nonexistent Check Item',
-      };
-      // 체크리스트가 존재하지 않는 경우를 mock 처리
-      jest.spyOn(checklistsService, 'exists').mockResolvedValue(false);
-
-      await expect(service.create(createCheckitemDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
   });
 
   describe('update', () => {
-    it('체크리스트 항목 수정', async () => {
-      const updateCheckitemDto: UpdateCheckitemDto = {
+    it('존재하지 않는 체크리스트 항목 ID로 업데이트 시 NotFoundException 발생', async () => {
+      const updateCheckitemDto = {
         checklistId: 1,
-        title: 'Updated Check Item',
+        title: 'Updated Title',
         status: true,
-        position: 1,
-        memberId: 2,
-      };
-      const mockCheckItem = { id: 1, checkListId: 1, title: 'Old Check Item' };
-
-      mockCheckItemRepository.findOneBy.mockResolvedValue(mockCheckItem);
-      mockCheckItemRepository.save.mockResolvedValue({
-        ...mockCheckItem,
-        ...updateCheckitemDto,
-      });
-
-      const result = await service.update(mockCheckItem.id, updateCheckitemDto);
-      expect(result).toEqual({ ...mockCheckItem, ...updateCheckitemDto });
-    });
-
-    it('존재하지 않는 체크리스트 항목', async () => {
-      const updateCheckitemDto: UpdateCheckitemDto = {
-        checklistId: 1,
-        title: 'Updated Check Item',
-        status: true,
-        position: 1,
-        memberId: 2,
+        position: 5,
+        memberId: 5,
       };
 
-      mockCheckItemRepository.findOneBy.mockResolvedValue(null);
+      jest.spyOn(mockCheckItemRepository, 'findOneBy').mockResolvedValue(null);
 
       await expect(service.update(999, updateCheckitemDto)).rejects.toThrow(
         NotFoundException,
       );
     });
 
-    it('일치하지 않는 체크리스트 아이디', async () => {
-      const updateCheckitemDto: UpdateCheckitemDto = {
-        checklistId: 2,
-        title: 'Updated Check Item',
+    it('체크리스트 ID 불일치 시 BadRequestException 발생', async () => {
+      const updateCheckitemDto = {
+        checklistId: 2, // 불일치하는 체크리스트 ID
+        title: 'Updated Title',
         status: true,
-        position: 1,
-        memberId: 2,
+        position: 5,
+        memberId: 5,
       };
-      const mockCheckItem = { id: 1, checkListId: 1, title: 'Old Check Item' };
+      const mockCheckItem = {
+        id: 1,
+        checkListId: 1,
+        title: 'Old Title',
+        status: false,
+        position: 1,
+        memberId: null,
+      };
 
-      mockCheckItemRepository.findOneBy.mockResolvedValue(mockCheckItem);
+      jest
+        .spyOn(mockCheckItemRepository, 'findOneBy')
+        .mockResolvedValue(mockCheckItem);
 
-      await expect(
-        service.update(mockCheckItem.id, updateCheckitemDto),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.update(1, updateCheckitemDto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('체크리스트 항목 업데이트 성공', async () => {
+      const updateCheckitemDto = {
+        checklistId: 1,
+        title: 'Updated Title',
+        status: true,
+        position: 5,
+        memberId: 5,
+      };
+      const mockCheckItem = {
+        id: 1,
+        checkListId: 1,
+        title: 'Old Title',
+        status: false,
+        position: 1,
+        memberId: null,
+      };
+
+      jest
+        .spyOn(mockCheckItemRepository, 'findOneBy')
+        .mockResolvedValue(mockCheckItem);
+      jest
+        .spyOn(mockCheckItemRepository, 'save')
+        .mockResolvedValue(mockCheckItem);
+
+      const result = await service.update(1, updateCheckitemDto);
+      expect(result).toEqual(mockCheckItem);
+      expect(mockCheckItemRepository.save).toHaveBeenCalledWith(mockCheckItem);
     });
   });
 
   describe('remove', () => {
-    it('체크리스트 항목 제거', async () => {
-      const updateCheckitemDto: UpdateCheckitemDto = {
-        checklistId: 1,
-        title: 'Updated Check Item',
-        status: true,
+    it('존재하지 않는 체크리스트 항목 ID로 삭제 시 NotFoundException 발생', async () => {
+      jest.spyOn(mockCheckItemRepository, 'findOneBy').mockResolvedValue(null);
+
+      await expect(
+        service.remove(999, {
+          checklistId: 1,
+          title: 'Updated Title',
+          status: true,
+          position: 5,
+          memberId: 5,
+        }),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('체크리스트 ID 불일치 시 BadRequestException 발생', async () => {
+      const mockCheckItem = {
+        id: 1,
+        checkListId: 1,
+        title: 'Old Title',
+        status: false,
         position: 1,
-        memberId: 2,
+        memberId: null,
       };
-      const mockCheckItem = { id: 1, checkListId: 1 };
 
-      mockCheckItemRepository.findOneBy.mockResolvedValue(mockCheckItem);
-      mockCheckItemRepository.remove.mockResolvedValue(undefined);
+      jest
+        .spyOn(mockCheckItemRepository, 'findOneBy')
+        .mockResolvedValue(mockCheckItem);
 
-      await service.remove(mockCheckItem.id, updateCheckitemDto);
+      await expect(
+        service.remove(1, {
+          checklistId: 2,
+          title: 'Old Title',
+          status: false,
+          position: 1,
+          memberId: null,
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('체크리스트 항목 삭제 성공', async () => {
+      const mockCheckItem = {
+        id: 1,
+        checkListId: 1,
+        title: 'Old Title',
+        status: false,
+        position: 1,
+        memberId: null,
+      };
+
+      jest
+        .spyOn(mockCheckItemRepository, 'findOneBy')
+        .mockResolvedValue(mockCheckItem);
+      jest
+        .spyOn(mockCheckItemRepository, 'remove')
+        .mockResolvedValue(undefined);
+
+      await expect(
+        service.remove(1, {
+          checklistId: 1,
+          title: 'Old Title',
+          status: false,
+          position: 1,
+          memberId: null,
+        }),
+      ).resolves.toBeUndefined();
       expect(mockCheckItemRepository.remove).toHaveBeenCalledWith(
         mockCheckItem,
       );
-    });
-
-    it('존재하지 않는 체크리스트 항목', async () => {
-      const updateCheckitemDto: UpdateCheckitemDto = {
-        checklistId: 1,
-        title: 'Updated Check Item',
-        status: true,
-        position: 1,
-        memberId: 2,
-      };
-
-      mockCheckItemRepository.findOneBy.mockResolvedValue(null);
-
-      await expect(service.remove(999, updateCheckitemDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('일치하지 않는 체크리스트 아이디', async () => {
-      const updateCheckitemDto: UpdateCheckitemDto = {
-        checklistId: 2,
-        title: 'Updated Check Item',
-        status: true,
-        position: 1,
-        memberId: 2,
-      };
-      const mockCheckItem = { id: 1, checkListId: 1 };
-
-      mockCheckItemRepository.findOneBy.mockResolvedValue(mockCheckItem);
-
-      await expect(
-        service.remove(mockCheckItem.id, updateCheckitemDto),
-      ).rejects.toThrow(BadRequestException);
     });
   });
 });
