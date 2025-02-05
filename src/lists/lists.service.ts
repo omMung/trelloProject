@@ -12,6 +12,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 // import { getConnection } from 'typeorm';
 
 @Injectable() // 주입 가능
@@ -23,6 +24,8 @@ export class ListsService {
     private membersRepository: Repository<Member>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+
+    private readonly eventEmitter: EventEmitter2, // 이벤트 발생기 추가
   ) {}
 
   // dto로 받은 boardId, jwt인증 성공 시 req에 포함되어 있는 id(User)로
@@ -30,13 +33,15 @@ export class ListsService {
   private async validateUserAndMember(
     req: any,
     boardId: number,
-  ): Promise<void> {
+  ): Promise<{ user: User; members: number[] }> {
     const userId = req.user.id;
+
     // 유저 존재 검증
     const user = await this.usersRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('유저 정보가 없습니다.');
     }
+
     // 보드에 속한 멤버인지 검증
     const member = await this.membersRepository.findOne({
       where: { id: userId, boardId },
@@ -46,12 +51,27 @@ export class ListsService {
         '해당 보드에 소속된 멤버 정보가 존재하지 않습니다.',
       );
     }
+
+    // ✅ 해당 보드의 모든 멤버 조회
+    const members = await this.membersRepository.find({
+      where: { boardId },
+      select: ['id'], // 멤버 ID만 가져오기
+    });
+
+    if (!members.length) {
+      throw new NotFoundException('해당 보드에 소속된 멤버가 없습니다.');
+    }
+
+    // 모든 멤버의 ID 배열 생성
+    const memberIds = members.map((member) => member.id);
+
+    return { user, members: memberIds }; // ✅ 유저 정보 + 보드 멤버 ID 목록 반환
   }
 
   async create(createListDto: CreateListDto, req: any): Promise<List> {
     const { boardId, title } = createListDto;
 
-    await this.validateUserAndMember(req, boardId);
+    const { user, members } = await this.validateUserAndMember(req, boardId);
 
     // 같은 제목이미 존재하는지 검증
     const existingList = await this.listsRepository.findOne({
@@ -88,6 +108,14 @@ export class ListsService {
       boardId,
       position: newPosition,
       title,
+    });
+
+    // ✅ 리스트 생성 이벤트 알림 (알람 기능과 연동)
+    this.eventEmitter.emit('list.created', {
+      senderId: user.id, // 리스트를 생성한 유저 ID
+      boardId, // 해당 보드 ID
+      members, // 해당 보드의 모든 멤버 ID 배열
+      message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
     });
 
     // 리스트 저장 및 반환

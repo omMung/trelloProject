@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>알림창</title>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,7 +18,7 @@
         }
 
         .notification-container {
-            width: 300px;
+            width: 350px;
             background: white;
             padding: 20px;
             border-radius: 10px;
@@ -27,6 +28,9 @@
         .notification {
             padding: 10px;
             border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .notification:last-child {
@@ -52,27 +56,79 @@
         .clear-btn:hover {
             background: #0056b3;
         }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-size: 16px;
+        }
     </style>
 </head>
 
 <body>
     <div class="notification-container">
         <h3>나의 알림</h3>
-        <div id="notifications">
-            <div class="notification">
-                <p>새로운 카드가 할당되었습니다.</p>
-            </div>
-            <div class="notification">
-                <p>카드가 업데이트되었습니다.</p>
-            </div>
-        </div>
+        <div id="notifications"></div>
         <button class="clear-btn" onclick="clearNotifications()">알림 삭제</button>
     </div>
 
     <script>
-        function clearNotifications() {
-            document.getElementById('notifications').innerHTML = '';
+        const userId = 1; // 현재 로그인한 사용자 ID (임시)
+        const serverUrl = "https://www.yangs.site"; // ✅ 서버 주소 변경
+        const socket = io(`${serverUrl}`, { query: { userId } });
+
+        socket.on("connect", () => {
+            console.log("WebSocket 연결됨");
+        });
+
+        socket.on("receiveAlarm", (alarm) => {
+            console.log("새로운 알람:", alarm);
+            displayNotification(alarm);
+        });
+
+        async function fetchNotifications() {
+            try {
+                const response = await fetch(`${serverUrl}/alarms/${userId}`);
+                const alarms = await response.json();
+                document.getElementById("notifications").innerHTML = ""; // 초기화
+                alarms.forEach(displayNotification);
+            } catch (error) {
+                console.error("알람 가져오기 실패:", error);
+            }
         }
+
+        function displayNotification(alarm) {
+            const notificationContainer = document.getElementById("notifications");
+            const div = document.createElement("div");
+            div.classList.add("notification");
+            div.innerHTML = `
+                <p>${alarm.message}</p>
+                <button class="delete-btn" onclick="deleteNotification(${alarm.id})">✖</button>
+            `;
+            notificationContainer.appendChild(div);
+        }
+
+        async function deleteNotification(alarmId) {
+            try {
+                await fetch(`${serverUrl}/alarms/${alarmId}`, { method: "DELETE" });
+                fetchNotifications(); // 새로고침
+            } catch (error) {
+                console.error("알람 삭제 실패:", error);
+            }
+        }
+
+        async function clearNotifications() {
+            try {
+                await fetch(`${serverUrl}/alarms/${userId}`, { method: "DELETE" });
+                document.getElementById("notifications").innerHTML = ""; // UI 초기화
+            } catch (error) {
+                console.error("알람 삭제 실패:", error);
+            }
+        }
+
+        window.onload = fetchNotifications;
     </script>
 </body>
 

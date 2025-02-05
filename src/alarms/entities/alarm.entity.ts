@@ -6,6 +6,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 
 @Entity({
@@ -18,17 +19,14 @@ export class Alarm {
   @Column('int', { nullable: false })
   userId: number;
 
-  @Column('int', { nullable: false })
-  cardId: number;
-
   @Column()
-  eventId: string; // 어떤 이벤트인지
+  message: string; // 알람 메시지
 
-  @Column('varchar', { nullable: false })
-  content: string; // 알림 메시지
+  @Column({ default: false })
+  isRead: boolean; // 알람 읽음 여부
 
-  @Column('boolean', { default: false })
-  status: boolean; // 알림 읽음 상태
+  @CreateDateColumn()
+  createdAt: Date; // 생성 날짜
 
   @ManyToOne(() => User, (user) => user.alarms, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
