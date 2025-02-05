@@ -8,10 +8,11 @@ import { Card } from 'src/cards/entities/card.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
+import { Member } from 'src/members/entities/member.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CardLabel, Label, Card]),
+    TypeOrmModule.forFeature([CardLabel, Label, Card, Member]),
     JwtModule.register({}),
     UsersModule,
   ],
