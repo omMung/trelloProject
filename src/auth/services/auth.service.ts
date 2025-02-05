@@ -19,7 +19,7 @@ import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AuthService {
-  private blacklistedTokens = new Set<string>(); // 블랙리스트 저장소 (임시), 차후 redis 확장 예정?
+  // private blacklistedTokens = new Set<string>(); // 블랙리스트 저장소 (임시), 차후 redis 확장 예정?
 
   constructor(
     @InjectRepository(User)
