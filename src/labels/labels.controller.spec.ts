@@ -3,6 +3,7 @@ import { LabelsController } from './labels.controller';
 import { LabelsService } from './labels.service';
 import { CreateLabelDto } from './dto/create-label.dto';
 import { UpdateLabelDto } from './dto/update-label.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 describe('LabelsController', () => {
   let controller: LabelsController;
@@ -16,6 +17,10 @@ describe('LabelsController', () => {
     remove: jest.fn(),
   };
 
+  const mockJwtAuthGuard = {
+    canActivate: jest.fn().mockImplementation(() => true), // 항상 통과하도록 모의 구현
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LabelsController],
@@ -25,7 +30,10 @@ describe('LabelsController', () => {
           useValue: mockLabelsService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard) // JwtAuthGuard를 모의 객체로 대체
+      .useValue(mockJwtAuthGuard)
+      .compile();
 
     controller = module.get<LabelsController>(LabelsController);
     service = module.get<LabelsService>(LabelsService);
