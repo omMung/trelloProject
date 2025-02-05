@@ -12,7 +12,6 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ChecklistsService {
-  // private checkLists: CheckList[] = []; // 임시 저장소
   constructor(
     @InjectRepository(CheckList)
     private checklistRepository: Repository<CheckList>,
@@ -53,7 +52,7 @@ export class ChecklistsService {
     id: number,
     updateChecklistDto: UpdateChecklistDto,
   ): Promise<CheckList> {
-    const { cardId, title } = updateChecklistDto;
+    const { cardId, title, position } = updateChecklistDto;
 
     try {
       const checklist = await this.checklistRepository.findOneBy({ id }); // ID로 체크리스트 찾기
@@ -71,6 +70,13 @@ export class ChecklistsService {
       Object.assign(checklist, updateChecklistDto);
       return await this.checklistRepository.save(checklist);
     } catch (err) {
+      // 특정 예외를 다시 던지기
+      if (
+        err instanceof NotFoundException ||
+        err instanceof BadRequestException
+      ) {
+        throw err; // 원래의 예외를 그대로 던짐
+      }
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }
@@ -101,6 +107,13 @@ export class ChecklistsService {
         ); // 에러 처리
       }
     } catch (err) {
+      // 특정 예외를 다시 던지기
+      if (
+        err instanceof NotFoundException ||
+        err instanceof BadRequestException
+      ) {
+        throw err; // 원래의 예외를 그대로 던짐
+      }
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }
