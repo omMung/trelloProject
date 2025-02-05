@@ -1,4 +1,4 @@
-import { Injectable , NotFoundException} from '@nestjs/common';
+import { Injectable , NotFoundException , ForbiddenException} from '@nestjs/common';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetMemberDto } from './dto/get-member.dto'
 import { DeleteMemberDto } from './dto/delete-member.dto'
@@ -20,16 +20,29 @@ export class MembersService {
   ){}
 
   // 멤버 추가 
-  async create(userId ,createMemberDto: CreateMemberDto ) {
-    const {boardId} = createMemberDto
+  async create(authId: number ,createMemberDto: CreateMemberDto ) {
+    const {userId ,boardId} = createMemberDto
 
     try{
     const result_board = await this.BoardRepo.findOne({
       where: {id: boardId}
     })
 
+    const result_user = await this.UserRepo.findOne({
+      where: {id:userId},
+      select: ['name','email','phoneNumber']
+    })
+
+    if(!result_user){
+      throw new NotFoundException("해당 유저를 찾을수 없습니다")
+    }
+
     if(!result_board){
-      throw new NotFoundException("해당 보드 Id 값을 찾을수 없습니다")
+      throw new NotFoundException("해당 보드를 찾을수 없습니다")
+    }
+
+    if(result_board.userId !== authId){
+      throw new ForbiddenException("자신이 만든 보드에서만 멤버 초대가 가능합니다")
     }
 
     await this.MemberRepo.save({
@@ -37,17 +50,12 @@ export class MembersService {
       boardId,
     })
 
-    const result = await this.UserRepo.find({
-      where: {id: userId},
-      select: ['name','email','phoneNumber']
-    })
-    
     return {message: `Trello 보드(${boardId})에 유저(${userId}) 등록 성공`,
-            data: result
+            data: result_user
     }
   }
     catch (error){
-      if (error instanceof NotFoundException){
+      if (error instanceof NotFoundException || error instanceof ForbiddenException){
         throw error
       }
 
@@ -133,23 +141,33 @@ export class MembersService {
 
 
   // 멤버 삭제
-  async remove(userId: number , deleteMemberDto: DeleteMemberDto) {
+  async remove(authId: number , deleteMemberDto: DeleteMemberDto) {
     try{
-      const {boardId} = deleteMemberDto
+      const {userId ,boardId} = deleteMemberDto
+
+      const result_board = await this.BoardRepo.findOne({
+        where: {id: boardId}
+      })
   
-      const user = await this.UserRepo.findOne({
-        where: {id: userId},
+      const result_user = await this.UserRepo.findOne({
+        where: {id:userId},
         select: ['name']
       })
-
-      if(!user){
+  
+      if(!result_user){
         throw new NotFoundException("해당 유저를 찾을수 없습니다")
       }
+  
+      if(!result_board){
+        throw new NotFoundException("해당 보드를 찾을수 없습니다")
+      }
+  
+      if(result_board.userId !== authId){
+        throw new ForbiddenException("자신이 만든 보드에서만 멤버 삭제가 가능합니다")
+      }
 
-
-      const users = user.name
-      console.log(users)
-
+      const users = result_user.name
+    
       const find = await this.MemberRepo.findOne({
         where: {userId , boardId}
       })
@@ -158,16 +176,16 @@ export class MembersService {
         throw new NotFoundException("보드안에 해당 멤버를 찾을수 없습니다")
       }
       
-      await this.MemberRepo.delete({
+      const remove =await this.MemberRepo.delete({
         userId,
         boardId
       })
-      
+
       return {message: `Trello 보드(${boardId})에  멤버 '${users}' (${userId})  삭제 성공`}
       
     }
     catch(error){
-      if(error instanceof NotFoundException){
+      if(error instanceof NotFoundException || error instanceof ForbiddenException){
         throw error
       }
       else{

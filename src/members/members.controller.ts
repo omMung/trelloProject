@@ -12,9 +12,9 @@ export class MembersController {
 
   @UseGuards(JwtAuthGuard)
   @Post() // 멤버 생성
-  create(@Request() req ,@Body() createMemberDto: CreateMemberDto) {
-    const userId = req.user.id
-    return this.membersService.create(userId ,createMemberDto);
+  create(@Request() req, @Body() createMemberDto: CreateMemberDto) {
+    const authId = req.user.id
+    return this.membersService.create(authId ,createMemberDto);
   }
 
   @Get() // 멤버 전체 조회
@@ -30,7 +30,7 @@ export class MembersController {
   @UseGuards(JwtAuthGuard)
   @Delete() // 멤버 삭제
   remove(@Request() req , @Body() deleteMemberDto: DeleteMemberDto) {
-    const userId = req.user.id
-    return this.membersService.remove(userId , deleteMemberDto);
+    const authId = req.user.id
+    return this.membersService.remove(authId , deleteMemberDto);
   }
 }

@@ -3,7 +3,7 @@ import { MembersService } from './members.service';
 import { Member } from './entities/member.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { User } from 'src/users/entities/user.entity';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -47,25 +47,36 @@ describe('MembersService', () => {
 
   describe('create', () => {
     test('멤버를 성공적으로 추가할 수 있어야 한다', async () => {
-      const createMemberDto = { boardId: 1 };
+      const createMemberDto = { boardId: 1, userId: 1 }; // 수정된 형태로 테스트
       const userId = 1;
 
-      mockBoardRepo.findOne.mockResolvedValue({ id: 1 });
-      mockUserRepo.find.mockResolvedValue([{ name: 'User 1', email: 'user1@example.com' }]);
+      mockBoardRepo.findOne.mockResolvedValue({ id: 1, userId: 1 });
+      mockUserRepo.findOne.mockResolvedValue({ name: 'User 1', email: 'user1@example.com' });
       mockMemberRepo.save.mockResolvedValue({});
 
-      const result = { message: 'Trello 보드(1)에 유저(1) 등록 성공', data: [{ name: 'User 1', email: 'user1@example.com' }] };
-      
+      const result = {
+        message: 'Trello 보드(1)에 유저(1) 등록 성공',
+        data: { name: 'User 1', email: 'user1@example.com' },
+      };
+
       expect(await service.create(userId, createMemberDto)).toEqual(result);
     });
 
     test('존재하지 않는 보드일 경우 NotFoundException이 발생해야 한다', async () => {
-      const createMemberDto = { boardId: 999 };
+      const createMemberDto = { boardId: 999, userId: 1 };
       const userId = 1;
 
       mockBoardRepo.findOne.mockResolvedValue(null);
 
       await expect(service.create(userId, createMemberDto)).rejects.toThrow(NotFoundException);
+    });
+
+    test('자신이 만든 보드에서만 멤버 초대가 가능해야 한다', async () => {
+      const createMemberDto = { boardId: 1, userId: 2 };
+      const userId = 1;
+
+      mockBoardRepo.findOne.mockResolvedValue({ id: 1, userId: 2 }); // 다른 유저가 만든 보드
+      await expect(service.create(userId, createMemberDto)).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -76,8 +87,11 @@ describe('MembersService', () => {
       mockMemberRepo.find.mockResolvedValue([{ userId: 1 }, { userId: 2 }]);
       mockUserRepo.find.mockResolvedValue([{ name: 'User 1' }, { name: 'User 2' }]);
 
-      const result = { message: 'Trello 보드(1)에 멤버 조회 성공', names: [{ name: 'User 1' }, { name: 'User 2' }] };
-      
+      const result = {
+        message: 'Trello 보드(1)에 멤버 조회 성공',
+        names: [{ name: 'User 1' }, { name: 'User 2' }],
+      };
+
       expect(await service.findAll(getMemberDto)).toEqual(result);
     });
 
@@ -97,7 +111,10 @@ describe('MembersService', () => {
       mockMemberRepo.find.mockResolvedValue([{ userId: 1 }]);
       mockUserRepo.findOne.mockResolvedValue({ name: 'User 1', email: 'user1@example.com' });
 
-      const result = { message: 'Trello 보드(1)에 멤버(1) 상세 조회 성공', data: { name: 'User 1', email: 'user1@example.com' } };
+      const result = {
+        message: 'Trello 보드(1)에 멤버(1) 상세 조회 성공',
+        data: { name: 'User 1', email: 'user1@example.com' },
+      };
 
       expect(await service.findOne(memberId, detailgetMemberDto)).toEqual(result);
     });
@@ -113,7 +130,7 @@ describe('MembersService', () => {
 
   describe('remove', () => {
     test('멤버를 성공적으로 삭제할 수 있어야 한다', async () => {
-      const deleteMemberDto = { boardId: 1 };
+      const deleteMemberDto = { boardId: 1, userId: 1 };
       const userId = 1;
 
       mockUserRepo.findOne.mockResolvedValue({ name: 'User 1' });
@@ -125,7 +142,7 @@ describe('MembersService', () => {
     });
 
     test('삭제할 멤버가 없을 경우 NotFoundException이 발생해야 한다', async () => {
-      const deleteMemberDto = { boardId: 1 };
+      const deleteMemberDto = { boardId: 1, userId: 999 };
       const userId = 999;
 
       mockUserRepo.findOne.mockResolvedValue(null);

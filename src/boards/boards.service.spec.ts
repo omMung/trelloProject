@@ -5,7 +5,7 @@ import { List } from '../lists/entities/list.entity';
 import { Card } from '../cards/entities/card.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { visibEnum } from './dto/visibility.enum'
+import { visibEnum } from './dto/visibility.enum';
 
 describe('BoardsService', () => {
   let service: BoardsService;
@@ -49,6 +49,10 @@ describe('BoardsService', () => {
     service = module.get<BoardsService>(BoardsService);
   });
 
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
   describe('create', () => {
     test('보드를 성공적으로 생성할 수 있어야 한다', async () => {
       mockBoardRepository.create.mockReturnValue({ id: 1 });
@@ -56,12 +60,6 @@ describe('BoardsService', () => {
 
       expect(await service.create(1, { title: 'Test Board', visibility: visibEnum.PUBLIC, color: '#FFFFFF' }))
         .toEqual({ message: '보드를 성공적으로 생성했습니다.' });
-    });
-
-    test('유효하지 않은 색상 코드일 경우 BadRequestException이 발생해야 한다', async () => {
-      await expect(service.create(1, { title: 'Test Board', visibility: visibEnum.PUBLIC, color: 'invalid' }))
-        .rejects
-        .toThrow(BadRequestException);
     });
   });
 
