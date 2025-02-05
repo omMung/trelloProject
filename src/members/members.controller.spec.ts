@@ -67,7 +67,7 @@ describe('MembersController', () => {
       mockMembersService.findAll.mockResolvedValue(result);
 
       expect(await controller.findAll({ boardId: 1 })).toEqual(result);
-      expect(service.findAll).toHaveBeenCalledWith(1);
+      expect(service.findAll).toHaveBeenCalledWith({"boardId": 1});
     });
 
     it('보드에 해당하는 멤버가 없을 경우 Error가 발생해야 한다.', async () => {
@@ -86,7 +86,7 @@ describe('MembersController', () => {
       mockMembersService.findOne.mockResolvedValue(result);
 
       expect(await controller.findOne('1', { boardId: 1 })).toEqual(result);
-      expect(service.findOne).toHaveBeenCalledWith(1, 1);
+      expect(service.findOne).toHaveBeenCalledWith(1, { boardId: 1 });
     });
 
     it('보드에 해당하는 멤버가 없을 경우 Error가 발생해야 한다.', async () => {

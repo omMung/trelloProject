@@ -2,7 +2,7 @@ import { Injectable , NotFoundException , ForbiddenException} from '@nestjs/comm
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetMemberDto } from './dto/get-member.dto'
 import { DeleteMemberDto } from './dto/delete-member.dto'
-import  { DetailGetMemberDto } from './dto/detailget-member.dto'
+import { DetailGetMemberDto } from './dto/detailget-member.dto'
 import { Member } from './entities/member.entity'
 import { Board } from 'src/boards/entities/board.entity'
 import { User } from 'src/users/entities/user.entity';
@@ -116,7 +116,7 @@ export class MembersService {
     const userIds = members.map(value => value.userId)
     
     if (!(userIds.includes(id))){
-      throw new Error("보드에 해당하는 유저를 찾을수가 없습니다")
+      throw new NotFoundException("보드에 해당하는 유저를 찾을수가 없습니다")
     }
 
     const users = await this.UserRepo.findOne({
