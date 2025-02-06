@@ -1,7 +1,8 @@
 import {IsNotEmpty , IsNumber} from 'class-validator'
 
-export class GetMemberDto {
+export class DetailGetMemberDto {
     @IsNotEmpty()  
     @IsNumber()
     boardId: number;
 }
+
