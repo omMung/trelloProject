@@ -22,7 +22,13 @@ export class AlarmsService {
     return alarmsByUser;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} alarm`;
+  async remove(id: number) {
+    const result = await this.alarmRepository.delete(id);
+
+    if (result.affected === 0) {
+      throw new Error(`이미 존재하지 않는 알람입니다.`);
+    }
+
+    console.log(`알람 ID ${id} 삭제 완료`);
   }
 }

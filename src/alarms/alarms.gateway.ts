@@ -17,11 +17,16 @@ export class AlarmsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const userId = client.handshake.query.userId;
     if (userId) {
       client.join(`user-${userId}`);
-      console.log(`User ${userId} connected to WebSocket`);
+      console.log(`User ${client.id} 웹소켓 연결 성공`);
     }
   }
 
+  notifyUser(userId: number) {
+    this.server.to(`user-${userId}`).emit('receiveAlarm');
+    console.log(`📢 유저 ${userId}에게 새 알림 신호 전송`);
+  }
+
   handleDisconnect(client: Socket) {
-    console.log(`User disconnected: ${client.id}`);
+    console.log(`웹소켓 연결 종료: ${client.id}`);
   }
 }

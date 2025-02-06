@@ -4,7 +4,7 @@ name: TrelloProject CI/CD
 run-name: ${{ github.actor }} 님이 Github Actions를 실행했습니다.
 
 # 이 워크플로우가 어떤 이벤트에서 실행될 지 정의 (여기서는 push 이벤트 발생 시 실행)
-# on: [push]
+on: [push]
 
 jobs:
   # 1. CI Job: 빌드, 의존성 설치, 파일 확인 등의 작업 수행
@@ -57,7 +57,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production # GitHub Environments를 사용할 경우 production 환경 지정
-      # url: ${{ https://www.yangs.site/ }}  # 배포 후 URL을 출력하려면 추가 구성 가능
     steps:
       # appleboy/ssh-action을 사용하여 AWS EC2 서버에 SSH 접속 후 배포 명령어 실행
       - name: Deploy to AWS EC2
@@ -77,15 +76,5 @@ jobs:
             # 최신 코드 가져오기
             git pull origin feat/ydw/list
 
-            # 3000포트에서 실행 중인 프로세스 확인, 종료
-            RUNNING_PID=$(lsof -ti :3000)
-            if [ ! -z "$RUNNING_PID" ]; then
-              echo "기존 프로세스 종료 중... (PID: $RUNNING_PID)"
-              kill -9 $RUNNING_PID
-            fi
-
-            # 백그라운드에서 웹 서버 실행
-            echo "서버 실행 중..."
-            nohup npm run start > app.log 2>&1 &
-
-            echo "웹 서버가 백그라운드에서 실행되었습니다."
+            # 서버 재시작
+            pm2 restart trello || pm2 start dist/main.js --name "trello"

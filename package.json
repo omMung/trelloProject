@@ -30,6 +30,7 @@
     "@nestjs/passport": "^11.0.4",
     "@nestjs/platform-express": "^10.4.15",
     "@nestjs/platform-socket.io": "^10.4.15",
+    "@nestjs/serve-static": "^4.0.2",
     "@nestjs/typeorm": "^11.0.0",
     "@nestjs/websockets": "^10.4.15",
     "@types/bcrypt": "^5.0.2",
