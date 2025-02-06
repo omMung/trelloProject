@@ -21,7 +21,7 @@ export class AlarmsListener {
     members: number[];
     message: string;
   }) {
-    console.log('📢 list.created 이벤트 감지됨! (AlarmsListener)', payload);
+    console.log('list.created 이벤트 감지됨! (AlarmsListener)', payload);
 
     // senderId 제외 (자기 자신에게 알람 안 보냄)
     const membersToNotify = payload.members.filter(
@@ -29,11 +29,11 @@ export class AlarmsListener {
     );
 
     if (membersToNotify.length === 0) {
-      console.log('⚠️ 알람을 받을 멤버가 없음.');
+      console.log('알람을 받을 멤버가 없음.');
       return;
     }
 
-    console.log('📝 알람을 DB에 저장 중... 대상 멤버:', membersToNotify);
+    console.log('알람을 DB에 저장 중... 대상 멤버:', membersToNotify);
 
     // 각 멤버에 대해 알람 저장
     const alarms = membersToNotify.map((memberId) =>
@@ -47,9 +47,9 @@ export class AlarmsListener {
 
     try {
       await this.alarmRepository.save(alarms);
-      console.log('✅ 모든 알람이 성공적으로 저장됨');
+      console.log('모든 알람이 성공적으로 저장됨');
     } catch (error) {
-      console.error('❌ 알람 저장 실패:', error);
+      console.error('알람 저장 실패:', error);
     }
   }
 }
