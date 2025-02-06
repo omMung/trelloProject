@@ -52,7 +52,7 @@ export class ListsService {
       );
     }
 
-    // ✅ 해당 보드의 모든 멤버 조회
+    // 해당 보드의 모든 멤버 조회
     const members = await this.membersRepository.find({
       where: { boardId },
       select: ['id'], // 멤버 ID만 가져오기
@@ -65,14 +65,14 @@ export class ListsService {
     // 모든 멤버의 ID 배열 생성
     const memberIds = members.map((member) => member.id);
 
-    return { user, members: memberIds }; // ✅ 유저 정보 + 보드 멤버 ID 목록 반환
+    return { user, members: memberIds }; // 유저 정보 + 보드 멤버 ID 목록 반환
   }
 
   async create(createListDto: CreateListDto, req: any): Promise<List> {
     const { boardId, title } = createListDto;
     const { user, members } = await this.validateUserAndMember(req, boardId);
 
-    console.log('📢 리스트 생성 요청 받음:', { boardId, title, user, members });
+    console.log('리스트 생성 요청 받음:', { boardId, title, user, members });
 
     const existingList = await this.listsRepository.findOne({
       where: { boardId, title },

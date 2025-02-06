@@ -52,7 +52,7 @@ let ListsService = class ListsService {
     async create(createListDto, req) {
         const { boardId, title } = createListDto;
         const { user, members } = await this.validateUserAndMember(req, boardId);
-        console.log('📢 리스트 생성 요청 받음:', { boardId, title, user, members });
+        console.log('리스트 생성 요청 받음:', { boardId, title, user, members });
         const existingList = await this.listsRepository.findOne({
             where: { boardId, title },
         });

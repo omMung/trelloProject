@@ -24,30 +24,45 @@ let AlarmsListener = class AlarmsListener {
         this.alarmRepository = alarmRepository;
         this.alarmsGateway = alarmsGateway;
     }
-    async handleListCreatedEvent(payload) {
-        console.log('list.created 이벤트 감지됨! (AlarmsListener)', payload);
-        const membersToNotify = payload.members.filter((id) => id !== payload.senderId);
+    async createAndNotifyAlarms(senderId, boardId, members, message) {
+        const membersToNotify = members.filter((id) => id !== senderId);
         if (membersToNotify.length === 0) {
-            console.log('알람을 받을 멤버가 없음.');
+            console.log(`[알람] 전송할 대상이 없음 (보드 ${boardId})`);
             return;
         }
-        console.log('알람을 DB에 저장 중... 대상 멤버:', membersToNotify);
+        console.log(`[알람] 저장 중... 대상 멤버:`, membersToNotify);
         const alarms = membersToNotify.map((memberId) => this.alarmRepository.create({
             userId: memberId,
-            message: payload.message,
+            message,
             isRead: false,
             createdAt: new Date(),
         }));
         try {
             await this.alarmRepository.save(alarms);
-            console.log('모든 알람이 성공적으로 저장됨');
+            console.log(`[알람] 성공적으로 저장됨 (보드 ${boardId})`);
             membersToNotify.forEach((userId) => {
                 this.alarmsGateway.notifyUser(userId);
             });
         }
         catch (error) {
-            console.error('알람 저장 실패:', error);
+            console.error(`[알람] 저장 실패:`, error);
         }
+    }
+    async handleListCreatedEvent(payload) {
+        console.log(`[이벤트] list.created 감지됨:`, payload);
+        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
+    }
+    async handleCommentCreatedEvent(payload) {
+        console.log(`[이벤트] comment.created 감지됨:`, payload);
+        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
+    }
+    async handleCommentUpdatedEvent(payload) {
+        console.log(`[이벤트] comment.updated 감지됨:`, payload);
+        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
+    }
+    async handleCommentDeletedEvent(payload) {
+        console.log(`[이벤트] comment.deleted 감지됨:`, payload);
+        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
     }
 };
 exports.AlarmsListener = AlarmsListener;
@@ -57,6 +72,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AlarmsListener.prototype, "handleListCreatedEvent", null);
+__decorate([
+    (0, event_emitter_1.OnEvent)('comment.created'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AlarmsListener.prototype, "handleCommentCreatedEvent", null);
+__decorate([
+    (0, event_emitter_1.OnEvent)('comment.updated'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AlarmsListener.prototype, "handleCommentUpdatedEvent", null);
+__decorate([
+    (0, event_emitter_1.OnEvent)('comment.deleted'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AlarmsListener.prototype, "handleCommentDeletedEvent", null);
 exports.AlarmsListener = AlarmsListener = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(alarm_entity_1.Alarm)),
