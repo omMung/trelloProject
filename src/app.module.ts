@@ -16,7 +16,7 @@ import { CardMembersModule } from './card-members/card-members.module';
 import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
-import { FileModule } from './file/file.module';
+import { FileModule } from './files/file.module';
 import Joi from 'joi';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
