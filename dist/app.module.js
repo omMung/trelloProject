@@ -67,9 +67,8 @@ exports.AppModule = AppModule = __decorate([
             event_emitter_1.EventEmitterModule.forRoot(),
             typeorm_1.TypeOrmModule.forRootAsync(typeOrmModuleOptions),
             serve_static_1.ServeStaticModule.forRoot({
-                rootPath: (0, path_1.join)(__dirname, '..', 'public'),
+                rootPath: (0, path_1.join)(__dirname, '..', 'dist', 'public'),
                 serveRoot: '/',
-                exclude: ['/api*'],
             }),
             users_module_1.UsersModule,
             boards_module_1.BoardsModule,
