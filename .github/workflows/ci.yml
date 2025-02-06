@@ -74,7 +74,10 @@ jobs:
             cd ~/trelloProject
 
             # 최신 코드 가져오기
-            git pull origin feat/ydw/list
+            git pull origin dev
+
+            npm install 
+            npm run build
 
             # 서버 재시작
             pm2 restart trello || pm2 start dist/main.js --name "trello"
