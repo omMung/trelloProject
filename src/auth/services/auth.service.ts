@@ -19,7 +19,7 @@ import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AuthService {
-  private blacklistedTokens = new Set<string>(); // 블랙리스트 저장소 (임시), 차후 redis 확장 예정?
+  // private blacklistedTokens = new Set<string>(); // 블랙리스트 저장소 (임시), 차후 redis 확장 예정?
 
   constructor(
     @InjectRepository(User)
@@ -46,7 +46,6 @@ export class AuthService {
       text: `인증 코드: ${verifyCode}`,
     };
 
-    //await transporter.sendMail(mailOptions);
     try {
       const info = await transporter.sendMail(mailOptions);
       console.log('이메일 발송 성공:', info.response); // 발송 성공 로그

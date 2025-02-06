@@ -8,8 +8,12 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment]), UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Comment]),
+    //  JwtModule.register({}),
+    //UsersModule,
+  ],
   controllers: [CommentsController],
-  providers: [CommentsService, JwtAuthGuard],
+  providers: [CommentsService],
 })
 export class CommentsModule {}
