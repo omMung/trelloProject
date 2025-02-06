@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CheckitemsService } from './checkitems.service';
-import { Repository } from 'typeorm';
+import { Check, Repository } from 'typeorm';
 import { CheckItem } from './entities/checkitem.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreateCheckitemDto } from './dto/create-checkitem.dto';
@@ -75,6 +75,7 @@ describe('CheckitemsService', () => {
           position: 1,
           status: false,
           memberId: 1,
+          //checkList: { id: 1, cardId: 1, position: 1, title: '테스트' },
         },
         {
           id: 2,
@@ -83,8 +84,9 @@ describe('CheckitemsService', () => {
           position: 2,
           status: false,
           memberId: 2,
+          //checkList: { id: 1, cardId: 1, position: 1, title: '테스트' },
         },
-      ];
+      ] as CheckItem[];
 
       // 체크리스트가 존재하는 경우를 mock 처리
       jest.spyOn(checklistsService, 'exists').mockResolvedValue(true);
@@ -147,7 +149,7 @@ describe('CheckitemsService', () => {
         status: false,
         position: 1,
         memberId: null,
-      };
+      } as CheckItem;
 
       jest
         .spyOn(mockCheckItemRepository, 'findOneBy')
@@ -173,7 +175,7 @@ describe('CheckitemsService', () => {
         status: false,
         position: 1,
         memberId: null,
-      };
+      } as CheckItem;
 
       jest
         .spyOn(mockCheckItemRepository, 'findOneBy')
@@ -211,7 +213,7 @@ describe('CheckitemsService', () => {
         status: false,
         position: 1,
         memberId: null,
-      };
+      } as CheckItem;
 
       jest
         .spyOn(mockCheckItemRepository, 'findOneBy')
@@ -236,7 +238,7 @@ describe('CheckitemsService', () => {
         status: false,
         position: 1,
         memberId: null,
-      };
+      } as CheckItem;
 
       jest
         .spyOn(mockCheckItemRepository, 'findOneBy')

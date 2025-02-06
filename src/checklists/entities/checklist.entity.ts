@@ -32,5 +32,5 @@ export class CheckList {
   @OneToMany(() => CheckItem, (checkItem) => checkItem.checkList, {
     cascade: true,
   })
-  checkItems: CheckItem[];
+  checkItems?: CheckItem[];
 }
