@@ -27,8 +27,8 @@ let CheckitemsController = class CheckitemsController {
     async update(id, updateCheckitemDto) {
         return this.checkitemsService.update(id, updateCheckitemDto);
     }
-    async remove(id, CheckListId) {
-        return this.checkitemsService.remove(id, CheckListId);
+    async remove(id, UpdateCheckitemDto) {
+        return this.checkitemsService.remove(id, UpdateCheckitemDto);
     }
 };
 exports.CheckitemsController = CheckitemsController;
@@ -52,7 +52,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [Number, update_checkitem_dto_1.UpdateCheckitemDto]),
     __metadata("design:returntype", Promise)
 ], CheckitemsController.prototype, "remove", null);
 exports.CheckitemsController = CheckitemsController = __decorate([

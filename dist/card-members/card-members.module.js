@@ -10,11 +10,14 @@ exports.CardMembersModule = void 0;
 const common_1 = require("@nestjs/common");
 const card_members_service_1 = require("./card-members.service");
 const card_members_controller_1 = require("./card-members.controller");
+const typeorm_1 = require("@nestjs/typeorm");
+const card_member_entity_1 = require("./entities/card-member.entity");
 let CardMembersModule = class CardMembersModule {
 };
 exports.CardMembersModule = CardMembersModule;
 exports.CardMembersModule = CardMembersModule = __decorate([
     (0, common_1.Module)({
+        imports: [typeorm_1.TypeOrmModule.forFeature([card_member_entity_1.JoinMember])],
         controllers: [card_members_controller_1.CardMembersController],
         providers: [card_members_service_1.CardMembersService],
     })

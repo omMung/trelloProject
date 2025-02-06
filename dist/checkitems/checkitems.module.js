@@ -9,17 +9,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CheckitemsModule = void 0;
 const common_1 = require("@nestjs/common");
 const checkitems_service_1 = require("./checkitems.service");
+const checklists_service_1 = require("../checklists/checklists.service");
 const checkitems_controller_1 = require("./checkitems.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const checkitem_entity_1 = require("./entities/checkitem.entity");
+const checklist_entity_1 = require("../checklists/entities/checklist.entity");
 let CheckitemsModule = class CheckitemsModule {
 };
 exports.CheckitemsModule = CheckitemsModule;
 exports.CheckitemsModule = CheckitemsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([checkitem_entity_1.CheckItem])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([checkitem_entity_1.CheckItem, checklist_entity_1.CheckList])],
         controllers: [checkitems_controller_1.CheckitemsController],
-        providers: [checkitems_service_1.CheckitemsService],
+        providers: [checkitems_service_1.CheckitemsService, checklists_service_1.ChecklistsService],
     })
 ], CheckitemsModule);
 //# sourceMappingURL=checkitems.module.js.map

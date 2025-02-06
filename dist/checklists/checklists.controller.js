@@ -24,15 +24,14 @@ let ChecklistsController = class ChecklistsController {
     async create(createChecklistDto) {
         return this.checklistsService.create(createChecklistDto);
     }
-    async findAll(req) {
-        const userId = req.body.userId;
-        return this.checklistsService.findAllByUserId(userId);
+    async findAll(UpdateChecklistDto) {
+        return await this.checklistsService.findAllByCardId(UpdateChecklistDto);
     }
     async update(id, updateChecklistDto) {
         return this.checklistsService.update(id, updateChecklistDto);
     }
-    async remove(id, cardId) {
-        return this.checklistsService.remove(id, cardId);
+    async remove(id, updateChecklistDto) {
+        return this.checklistsService.remove(id, updateChecklistDto);
     }
 };
 exports.ChecklistsController = ChecklistsController;
@@ -45,9 +44,9 @@ __decorate([
 ], ChecklistsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [update_checklist_dto_1.UpdateChecklistDto]),
     __metadata("design:returntype", Promise)
 ], ChecklistsController.prototype, "findAll", null);
 __decorate([
@@ -63,7 +62,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [Number, update_checklist_dto_1.UpdateChecklistDto]),
     __metadata("design:returntype", Promise)
 ], ChecklistsController.prototype, "remove", null);
 exports.ChecklistsController = ChecklistsController = __decorate([

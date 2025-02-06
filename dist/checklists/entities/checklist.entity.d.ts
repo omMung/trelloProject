@@ -6,5 +6,5 @@ export declare class CheckList {
     position: number;
     title: string;
     card: Card;
-    checkItems: CheckItem[];
+    checkItems?: CheckItem[];
 }

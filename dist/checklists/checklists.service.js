@@ -22,40 +22,77 @@ let ChecklistsService = class ChecklistsService {
         this.checklistRepository = checklistRepository;
     }
     async create(createChecklistDto) {
+        const { cardId, title } = createChecklistDto;
         try {
-            const newChecklist = this.checklistRepository.create(createChecklistDto);
+            const cards = await this.checklistRepository.find({
+                where: { cardId },
+                select: ['position'],
+            });
+            const maxPosition = cards.length > 0 ? Math.max(...cards.map((list) => list.position)) : 0;
+            const newChecklist = this.checklistRepository.create({
+                cardId,
+                title,
+                position: maxPosition + 1,
+            });
             return await this.checklistRepository.save(newChecklist);
         }
         catch (err) {
             throw new common_1.InternalServerErrorException('서버에 오류가 발생하였습니다.');
         }
     }
-    async findAllByUserId(userId) {
-        return this.checklistRepository.find({ where: { id: userId } });
+    async findAllByCardId(updateChecklistDto) {
+        const { cardId } = updateChecklistDto;
+        return await this.checklistRepository.findBy({ cardId });
     }
     async update(id, updateChecklistDto) {
+        const { cardId, title, position } = updateChecklistDto;
         try {
             const checklist = await this.checklistRepository.findOneBy({ id });
             if (!checklist) {
                 throw new common_1.NotFoundException('체크리스트를 찾을 수 없습니다.');
             }
+            if (checklist.cardId !== cardId) {
+                throw new common_1.BadRequestException('체크리스트의 카드 ID가 일치하지 않습니다.');
+            }
             Object.assign(checklist, updateChecklistDto);
             return await this.checklistRepository.save(checklist);
         }
         catch (err) {
+            if (err instanceof common_1.NotFoundException ||
+                err instanceof common_1.BadRequestException) {
+                throw err;
+            }
             throw new common_1.InternalServerErrorException('서버에 오류가 발생하였습니다.');
         }
     }
-    async remove(id, cardId) {
+    async remove(id, updateChecklistDto) {
+        const { cardId } = updateChecklistDto;
         try {
+            const checklist = await this.checklistRepository.findOneBy({ id });
+            if (!checklist) {
+                throw new common_1.NotFoundException('체크리스트를 찾을 수 없습니다.');
+            }
+            if (checklist.cardId !== cardId) {
+                throw new common_1.BadRequestException('체크리스트의 카드 ID가 일치하지 않습니다.');
+            }
             const result = await this.checklistRepository.delete({ id });
             if (result.affected === 0) {
                 throw new common_1.NotFoundException('이 아이디에 해당하는 체크리스트가 없어용.');
             }
         }
         catch (err) {
+            if (err instanceof common_1.NotFoundException ||
+                err instanceof common_1.BadRequestException) {
+                throw err;
+            }
             throw new common_1.InternalServerErrorException('서버에 오류가 발생하였습니다.');
         }
+    }
+    async exists(checkListId) {
+        const count = await this.checklistRepository.count({
+            where: { id: checkListId },
+        });
+        return count > 0;
     }
 };
 exports.ChecklistsService = ChecklistsService;
