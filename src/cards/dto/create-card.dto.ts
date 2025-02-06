@@ -8,10 +8,10 @@ import {
 
 export class CreateCardDto {
   @IsNumber()
-  board_id: Number;
+  boardId: Number;
 
   @IsNumber()
-  list_id: Number;
+  listId: Number;
 
   @IsNotEmpty({ message: '제목을 입력해주세요.' })
   @IsString()
@@ -25,10 +25,10 @@ export class CreateCardDto {
   description?: String;
 
   @IsString()
-  startData?: String;
+  startDate?: String;
 
   @IsString()
-  dueData?: String;
+  dueDate?: String;
 
   @IsBoolean()
   status?: boolean;
