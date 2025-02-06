@@ -125,7 +125,7 @@ export class FileService {
     userId: number,
     cardId: string,
     fileName: string,
-    res: Response,
+    res: Response, //다른로드 진행을 위한 응답
   ) {
     await this.isMember(userId, +cardId);
 
@@ -137,7 +137,7 @@ export class FileService {
     });
 
     if (!file) {
-      throw new NotFoundException('파일을 찾을 수 없습니다111111111111.');
+      throw new NotFoundException('파일을 찾을 수 없습니다.');
     }
 
     const filePath = path.join(process.cwd(), 'cardfiles', fileName);
