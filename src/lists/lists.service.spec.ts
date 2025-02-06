@@ -6,6 +6,7 @@ import { List } from './entities/list.entity';
 import { Member } from '../members/entities/member.entity';
 import { User } from '../users/entities/user.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('ListsService', () => {
   let service: ListsService;
@@ -22,6 +23,7 @@ describe('ListsService', () => {
 
   const mockMemberRepository = {
     findOne: jest.fn(),
+    find: jest.fn(),
   };
 
   const mockUserRepository = {
@@ -47,10 +49,16 @@ describe('ListsService', () => {
           provide: getRepositoryToken(User),
           useValue: mockUserRepository,
         },
+        {
+          provide: EventEmitter2,
+          useValue: { emit: jest.fn() },
+        },
       ],
     }).compile();
 
     service = module.get<ListsService>(ListsService);
+
+    mockMemberRepository.find.mockResolvedValue([{ id: 1 }]);
   });
 
   afterEach(() => {

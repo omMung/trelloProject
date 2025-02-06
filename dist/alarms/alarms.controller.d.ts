@@ -6,4 +6,5 @@ export declare class AlarmsController {
     create(createAlarmDto: CreateAlarmDto): string;
     findByUserId(userId: number): Promise<import("./entities/alarm.entity").Alarm[]>;
     remove(id: string): Promise<void>;
+    removeAll(id: string): Promise<void>;
 }

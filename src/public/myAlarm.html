@@ -33,7 +33,12 @@
             font-weight: bold;
             border-radius: 5px;
             margin-bottom: 10px;
+            cursor: pointer;
             display: none;
+        }
+
+        .new-alarm-alert:hover {
+            background-color: #ffca28;
         }
 
         .notification {
@@ -52,32 +57,20 @@
             margin: 0;
         }
 
-        .clear-btn,
-        .refresh-btn {
+        .clear-btn {
             display: block;
             width: 100%;
             margin-top: 10px;
             padding: 10px;
+            background: #007bff;
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            color: white;
-        }
-
-        .clear-btn {
-            background: #007bff;
         }
 
         .clear-btn:hover {
             background: #0056b3;
-        }
-
-        .refresh-btn {
-            background: #28a745;
-        }
-
-        .refresh-btn:hover {
-            background: #218838;
         }
 
         .delete-btn {
@@ -93,21 +86,18 @@
 <body>
     <div class="notification-container">
         <h3>나의 알림</h3>
-        <div id="new-alarm-alert" class="new-alarm-alert">새로운 알림이 있습니다!</div>
+        <div id="new-alarm-alert" class="new-alarm-alert" onclick="fetchNotifications()">새로운 알림이 있습니다! (클릭하여 확인)</div>
         <div id="notifications"></div>
-        <button class="refresh-btn" onclick="fetchNotifications()">새로고침</button>
         <button class="clear-btn" onclick="clearNotifications()">알림 삭제</button>
     </div>
 
     <script>
         const userId = 1; // 현재 로그인한 사용자 ID (임시)
-        // const serverUrl = "https://www.yangs.site"; // ✅ 서버 주소
         const serverUrl = "http://localhost:3000"; // ✅ 서버 주소
         const socket = io(serverUrl, {
             query: { userId },
-            transports: ["websocket"], // ✅ 웹소켓 사용 강제
-            secure: true,  // ✅ HTTPS 지원
-            reconnection: true,  // ✅ 자동 재연결 활성화
+            transports: ["websocket"],
+            reconnection: true,
         });
 
         socket.on("connect", () => {
@@ -123,15 +113,6 @@
         async function fetchNotifications() {
             try {
                 console.log("📢 알람 가져오기 요청...");
-
-                // ✅ 버튼이 존재하는지 확인 후 조작
-                const refreshBtn = document.querySelector(".refresh-btn");
-                if (refreshBtn) {
-                    refreshBtn.disabled = true;
-                    refreshBtn.innerText = "새로고침";
-                }
-
-                // ✅ GET 요청으로 수정
                 const response = await fetch(`${serverUrl}/alarms/${userId}`);
 
                 if (!response.ok) {
@@ -141,26 +122,17 @@
                 const alarms = await response.json();
                 console.log("✅ 알람 데이터:", alarms);
 
-                // 알람 목록 UI 업데이트
                 const notificationContainer = document.getElementById("notifications");
-                notificationContainer.innerHTML = ""; // 기존 목록 초기화
+                notificationContainer.innerHTML = "";
                 alarms.forEach(displayNotification);
 
-                // 새로운 알림 알림 숨기기
-                const alertBox = document.getElementById("new-alarm-alert");
-                if (alertBox) alertBox.style.display = "none";
+                // ✅ "새로운 알림" 메시지 숨기기
+                document.getElementById("new-alarm-alert").style.display = "none";
 
             } catch (error) {
                 console.error("❌ 알람 가져오기 실패:", error);
-            } finally {
-                // ✅ 버튼이 존재하는지 확인 후 조작
-                if (refreshBtn) {
-                    refreshBtn.disabled = false;
-                    refreshBtn.innerText = "새로고침";
-                }
             }
         }
-
 
         // 📢 알림 UI 추가
         function displayNotification(alarm) {
@@ -171,7 +143,7 @@
             div.innerHTML = `
                 <p>${alarm.message}</p>
                 <small>${new Date(alarm.createdAt).toLocaleString()}</small>
-                <button class="delete-btn" onclick="deleteNotification(${alarm.id})">✖</button>
+                <button class="delete-btn" onclick="deleteNotification(${alarm.id})">삭제</button>
             `;
             notificationContainer.appendChild(div);
         }
@@ -181,7 +153,6 @@
             try {
                 console.log(`🚮 알람 삭제 요청: ID ${alarmId}`);
 
-                // 서버에 DELETE 요청 보내기
                 const response = await fetch(`${serverUrl}/alarms/${alarmId}`, { method: "DELETE" });
 
                 if (!response.ok) {
@@ -201,7 +172,6 @@
             try {
                 console.log("🚮 모든 알람 삭제 요청...");
 
-                // 서버에 DELETE 요청 보내기
                 const response = await fetch(`${serverUrl}/alarms/clear/${userId}`, { method: "DELETE" });
 
                 if (!response.ok) {
@@ -209,7 +179,7 @@
                 }
 
                 console.log("✅ 모든 알람 삭제 성공!");
-                document.getElementById("notifications").innerHTML = ""; // UI 초기화
+                document.getElementById("notifications").innerHTML = "";
 
             } catch (error) {
                 console.error("❌ 알람 삭제 실패:", error);

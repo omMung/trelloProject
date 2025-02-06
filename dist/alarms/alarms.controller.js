@@ -29,6 +29,9 @@ let AlarmsController = class AlarmsController {
     remove(id) {
         return this.alarmService.remove(+id);
     }
+    removeAll(id) {
+        return this.alarmService.remove(+id);
+    }
 };
 exports.AlarmsController = AlarmsController;
 __decorate([
@@ -52,6 +55,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AlarmsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Delete)(':userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AlarmsController.prototype, "removeAll", null);
 exports.AlarmsController = AlarmsController = __decorate([
     (0, common_1.Controller)('alarms'),
     __metadata("design:paramtypes", [alarms_service_1.AlarmsService])
