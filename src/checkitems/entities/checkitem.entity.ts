@@ -33,5 +33,5 @@ export class CheckItem {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'check_list_id' })
-  checkList?: CheckList;
+  checkList: CheckList;
 }

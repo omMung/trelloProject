@@ -16,11 +16,11 @@ export class LabelsService {
     private readonly labelRepository: Repository<Label>,
   ) {}
 
-  async create(createLabelDto: CreateLabelDto) {
-    if (!/^#([0-9A-F]{3}){1,2}$/i.test(createLabelDto.color)) {
+  async create(userId: number, title: string, color: string, boardId: number) {
+    if (!/^#([0-9A-F]{3}){1,2}$/i.test(color)) {
       throw new BadRequestException('유효한 색상 코드(#RRGGBB)를 입력하세요.');
     }
-    const label = this.labelRepository.create(createLabelDto);
+    const label = this.labelRepository.create({ title, color, boardId });
     return await this.labelRepository.save(label);
   }
 
