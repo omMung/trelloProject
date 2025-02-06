@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -16,7 +16,11 @@ import { CardMembersModule } from './card-members/card-members.module';
 import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
+import { FileModule } from './files/file.module';
+import Joi from 'joi';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { join } from 'path';
 import Joi from 'joi';
@@ -38,6 +42,7 @@ const typeOrmModuleOptions = {
   }),
   inject: [ConfigService],
 };
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -49,8 +54,11 @@ const typeOrmModuleOptions = {
         DB_PORT: Joi.number().required(),
         DB_NAME: Joi.string().required(),
         DB_SYNC: Joi.boolean().required(),
+        ACCESS_SECRET_KEY: Joi.string().required(), // 액세스 시크릿 키 검증 추가
+        ACCESS_EXPIRES_IN: Joi.string().default('1m'), // 액세스 만료시간 검증 추가
       }),
     }),
+    EventEmitterModule.forRoot(), // 이벤트 시스템 활성화
     EventEmitterModule.forRoot(), // 이벤트 시스템 활성화
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     ServeStaticModule.forRoot({
@@ -70,8 +78,12 @@ const typeOrmModuleOptions = {
     LabelsModule,
     CheckitemsModule,
     CardLabelsModule,
+    FileModule,
+    AuthModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [JwtModule, AuthModule],
 })
 export class AppModule {}

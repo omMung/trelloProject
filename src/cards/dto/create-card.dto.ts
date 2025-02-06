@@ -25,10 +25,10 @@ export class CreateCardDto {
   description?: String;
 
   @IsString()
-  startData?: String;
+  startDate?: String;
 
   @IsString()
-  dueData?: String;
+  dueDate?: String;
 
   @IsBoolean()
   status?: boolean;

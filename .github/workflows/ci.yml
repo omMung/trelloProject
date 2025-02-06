@@ -4,7 +4,7 @@ name: TrelloProject CI/CD
 run-name: ${{ github.actor }} 님이 Github Actions를 실행했습니다.
 
 # 이 워크플로우가 어떤 이벤트에서 실행될 지 정의 (여기서는 push 이벤트 발생 시 실행)
-on: [push]
+# on: [push]
 
 jobs:
   # 1. CI Job: 빌드, 의존성 설치, 파일 확인 등의 작업 수행

@@ -1,9 +1,7 @@
 import {IsNotEmpty , IsNumber} from 'class-validator'
 
 export class GetMemberDto {
-
-    @IsNotEmpty()
+    @IsNotEmpty()  
     @IsNumber()
-    boardId: number
-
+    boardId: number;
 }

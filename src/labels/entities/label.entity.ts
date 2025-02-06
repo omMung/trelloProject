@@ -1,3 +1,4 @@
+import { Board } from 'src/boards/entities/board.entity';
 import { CardLabel } from '../../card-labels/entities/card-label.entity';
 import {
   Entity,
@@ -5,6 +6,8 @@ import {
   Column,
   OneToMany,
   Unique,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({
@@ -15,6 +18,9 @@ export class Label {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  boardId: number;
+
   @Column('varchar', { nullable: false })
   color: string;
 
@@ -23,4 +29,8 @@ export class Label {
 
   @OneToMany(() => CardLabel, (cardLabel) => cardLabel.label)
   cardLabels: CardLabel[];
+
+  @ManyToOne(() => Board, (board) => board.label, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'board_id' })
+  board: Board;
 }

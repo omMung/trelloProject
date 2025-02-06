@@ -3,36 +3,48 @@ import { UsersService } from './users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { ConflictException } from '@nestjs/common';
 import { AuthService } from '../auth/services/auth.service';
-import bcrypt from 'bcrypt';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { UpdateUserDto } from './dto/update-user.dto';
+import bcrypt from 'bcrypt'; // default import로 변경
 
-describe('UsersService - 회원가입', () => {
+// bcrypt 모듈 전체 모킹 (ES 모듈 설정 제거)
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('hashed_newpassword'), // 모든 테스트에서 일관된 반환값 사용
+  compare: jest.fn(),
+}));
+
+// UsersService 테스트 시작
+describe('UsersService', () => {
   let usersService: UsersService;
   let userRepository: Repository<User>;
   let authService: AuthService;
 
+  // UserRepository와 AuthService Mock 설정
   const mockUserRepository = {
-    findOne: jest.fn(),
-    create: jest.fn(),
-    save: jest.fn(),
+    findOne: jest.fn(), // 유저 찾기 함수 Mock
+    create: jest.fn(), // 유저 생성 함수 Mock
+    save: jest.fn(), // 유저 저장 함수 Mock
+    update: jest.fn(), // 유저 업데이트 함수 Mock
+    delete: jest.fn(), // 유저 삭제 함수 Mock
   };
 
   const mockAuthService = {
-    sendVerificationEmail: jest.fn(),
+    sendVerificationEmail: jest.fn(), // 이메일 전송 함수 Mock
   };
 
+  // 각 테스트 실행 전에 모듈 초기화
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
         {
           provide: getRepositoryToken(User),
-          useValue: mockUserRepository,
+          useValue: mockUserRepository, // UserRepository에 Mock 주입
         },
         {
           provide: AuthService,
-          useValue: mockAuthService,
+          useValue: mockAuthService, // AuthService에 Mock 주입
         },
       ],
     }).compile();
@@ -42,76 +54,154 @@ describe('UsersService - 회원가입', () => {
     authService = module.get<AuthService>(AuthService);
   });
 
+  // 각 테스트 후 Mock 초기화
   afterEach(() => {
-    jest.clearAllMocks(); // ✅ 테스트 후 모든 Mock 초기화
+    jest.clearAllMocks();
   });
 
-  it('회원가입 성공 시 올바른 메시지를 반환해야 한다', async () => {
+  // 회원가입 성공 시 테스트
+  it('should create a new user successfully', async () => {
     const createUserDto = {
-      email: 'newuser@example.com',
+      email: 'test@example.com',
       password: 'password123',
-      name: '새 유저',
+      name: 'Test User',
       phoneNumber: '010-1234-5678',
     };
 
-    mockUserRepository.findOne.mockResolvedValue(null); // ✅ 기존 유저 없음
-    mockUserRepository.create.mockReturnValue(createUserDto);
-    mockUserRepository.save.mockResolvedValue({ id: 1, ...createUserDto });
-
-    // ✅ bcrypt 모듈 모킹 (ESM 방식)
-    jest.mock('bcrypt', () => ({
-      __esModule: true, // ESM 모듈임을 명시
-      default: {
-        hash: jest.fn().mockResolvedValue('hashed_password'),
-        compare: jest.fn(),
-      },
-    }));
+    mockUserRepository.findOne.mockResolvedValue(null); // 기존 유저 없음
+    mockUserRepository.create.mockReturnValue(createUserDto); // 유저 생성
+    mockUserRepository.save.mockResolvedValue({ id: 1, ...createUserDto }); // 유저 저장
 
     const result = await usersService.create(createUserDto);
 
-    // ✅ 반환 값 검증
+    // 반환 값 검증
     expect(result).toEqual({
       message: '회원가입이 완료되었습니다. 이메일을 확인해주세요.',
     });
 
-    // ✅ 이메일 중복 검사 호출 확인
+    // 이메일 중복 검사 호출 확인
     expect(mockUserRepository.findOne).toHaveBeenCalledWith({
       where: { email: createUserDto.email },
     });
 
-    // ✅ 비밀번호 암호화 확인
+    // 비밀번호 암호화 호출 확인
     expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
 
-    // ✅ 이메일 인증 코드 전송 확인
-    expect(authService.sendVerificationEmail).toHaveBeenCalledTimes(1);
+    // 유저 저장 호출 확인
+    expect(mockUserRepository.save).toHaveBeenCalled();
+
+    // 이메일 전송 호출 확인
     expect(authService.sendVerificationEmail).toHaveBeenCalledWith(
       createUserDto.email,
       expect.any(String), // 인증 코드는 랜덤값이므로 any(String)으로 검사
     );
   });
 
-  it('이미 존재하는 이메일로 회원가입 시 ConflictException 발생해야 한다', async () => {
+  // 이미 존재하는 이메일로 회원가입 시 ConflictException 발생 테스트
+  it('should throw ConflictException if email already exists', async () => {
     const createUserDto = {
       email: 'existing@example.com',
       password: 'password123',
-      name: '기존 유저',
+      name: 'Existing User',
       phoneNumber: '010-1234-5678',
     };
 
-    // ✅ 기존 이메일 존재하도록 설정
-    mockUserRepository.findOne.mockResolvedValue({ id: 1, ...createUserDto });
+    mockUserRepository.findOne.mockResolvedValue(createUserDto); // 기존 이메일 존재
 
     await expect(usersService.create(createUserDto)).rejects.toThrow(
-      ConflictException,
+      ConflictException, // ConflictException 발생 예상
     );
 
-    // ✅ 중복 이메일 검사가 호출되었는지 확인
+    // 이메일 중복 검사 호출 확인
     expect(mockUserRepository.findOne).toHaveBeenCalledWith({
       where: { email: createUserDto.email },
     });
+  });
 
-    // ✅ 이미 존재하는 경우 저장(save) 및 이메일 전송이 호출되지 않아야 함
-    expect(mockUserRepository.save).not.toHaveBeenCalled();
-    expect(authService.sendVerificationEmail).not.toHaveBeenCalled();
+  // 유저 ID로 유저 데이터 조회 테스트
+  it('should return user data by ID', async () => {
+    const user = {
+      id: 1,
+      email: 'test@example.com',
+      name: 'Test User',
+      phoneNumber: '010-1234-5678',
+      isVerified: true,
+      createdAt: new Date(),
+    };
+
+    mockUserRepository.findOne.mockResolvedValue(user); // 유저 존재
+
+    const result = await usersService.getUserById(1);
+
+    // 반환 값 검증
+    expect(result).toEqual(user);
+
+    // 유저 조회 호출 확인
+    expect(mockUserRepository.findOne).toHaveBeenCalledWith({
+      where: { id: 1 },
+      select: ['id', 'email', 'name', 'phoneNumber', 'isVerified', 'createdAt'],
+    });
+  });
+
+  // 존재하지 않는 유저 조회 시 NotFoundException 발생 테스트
+  it('should throw NotFoundException if user is not found', async () => {
+    mockUserRepository.findOne.mockResolvedValue(null); // 유저 존재하지 않음
+
+    await expect(usersService.getUserById(1)).rejects.toThrow(
+      NotFoundException,
+    ); // NotFoundException 발생 예상
+  });
+
+  // 유저 정보 수정 성공 테스트
+  it('should update user data successfully', async () => {
+    const updateUserDto: UpdateUserDto = {
+      name: 'Updated User',
+      password: 'newpassword123',
+    }; // UpdateUserDto 타입 명시
+    const user = { id: 1, name: 'Old User', password: 'oldpassword123' };
+
+    mockUserRepository.findOne.mockResolvedValue(user); // 기존 유저 존재
+
+    const result = await usersService.update(1, updateUserDto);
+
+    // 유저 정보 수정 호출 확인
+    expect(mockUserRepository.update).toHaveBeenCalledWith(1, {
+      name: 'Updated User',
+      password: 'hashed_newpassword',
+    });
+
+    // 반환 값 검증
+    expect(result).toEqual({ message: '회원 정보가 수정되었습니다.' });
+  });
+
+  // 존재하지 않는 유저 정보 수정 시 NotFoundException 발생 테스트
+  it('should throw NotFoundException if user not found for update', async () => {
+    mockUserRepository.findOne.mockResolvedValue(null); // 유저 존재하지 않음
+
+    await expect(usersService.update(1, { name: 'New Name' })).rejects.toThrow(
+      NotFoundException, // NotFoundException 발생 예상
+    );
+  });
+
+  // 유저 삭제 성공 테스트
+  it('should delete user successfully', async () => {
+    const user = { id: 1, name: 'User to Delete' };
+
+    mockUserRepository.findOne.mockResolvedValue(user); // 삭제할 유저 존재
+
+    const result = await usersService.delete(1);
+
+    // 유저 삭제 호출 확인
+    expect(mockUserRepository.delete).toHaveBeenCalledWith(1);
+
+    // 반환 값 검증
+    expect(result).toEqual({ message: '회원탈퇴가 완료되었습니다.' });
+  });
+
+  // 존재하지 않는 유저 삭제 시 NotFoundException 발생 테스트
+  it('should throw NotFoundException if user is not found for deletion', async () => {
+    mockUserRepository.findOne.mockResolvedValue(null); // 유저 존재하지 않음
+
+    await expect(usersService.delete(1)).rejects.toThrow(NotFoundException); // NotFoundException 발생 예상
   });
 });

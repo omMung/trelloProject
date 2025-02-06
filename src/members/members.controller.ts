@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request  } from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { GetMemberDto } from './dto/get-member.dto'
+import { DeleteMemberDto } from './dto/delete-member.dto'
+import  { DetailGetMemberDto } from './dto/detailget-member.dto'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('members')
 export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
-  @Post() // 멤버 추가
-  create(@Body() createMemberDto: CreateMemberDto) {
-    return this.membersService.create(createMemberDto);
+  @UseGuards(JwtAuthGuard)
+  @Post() // 멤버 생성
+  create(@Request() req, @Body() createMemberDto: CreateMemberDto) {
+    const authId = req.user.id
+    return this.membersService.create(authId ,createMemberDto);
   }
 
   @Get() // 멤버 전체 조회
@@ -18,12 +23,14 @@ export class MembersController {
   }
 
   @Get(':id') // 멤버 상세 조회
-  findOne(@Param('id') id: string , @Body() getMemberDto: GetMemberDto ) {
-    return this.membersService.findOne(+id , getMemberDto);
+  findOne(@Param('id') id: string , @Body() detailgetMemberDto: DetailGetMemberDto) {
+    return this.membersService.findOne(+id , detailgetMemberDto);
   }
 
-  @Delete(':id') // 멤버 삭제
-  remove(@Param('id') id: string , @Body() getMemberDto: GetMemberDto) {
-    return this.membersService.remove(+id , getMemberDto);
+  @UseGuards(JwtAuthGuard)
+  @Delete() // 멤버 삭제
+  remove(@Request() req , @Body() deleteMemberDto: DeleteMemberDto) {
+    const authId = req.user.id
+    return this.membersService.remove(authId , deleteMemberDto);
   }
 }

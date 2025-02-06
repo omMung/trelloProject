@@ -1,17 +1,19 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CardLabel } from './entities/card-label.entity';
-import { CreateCardLabelDto } from './dto/create-card-label.dto';
-import { UpdateCardLabelDto } from './dto/update-card-label.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Card } from '../cards/entities/card.entity';
 import { Label } from '../labels/entities/label.entity';
+import { Member } from '../members/entities/member.entity';
+import _ from 'lodash';
+import {
+  BoardMembersForbiddenException,
+  CardLabelConflictException,
+  CardLabelInternalServerErrorException,
+  CardLabelNotFoundException,
+  CardNotFoundException,
+  LabelNotFoundException,
+} from 'src/common/exceptions/card-label.exception';
 
 @Injectable()
 export class CardLabelsService {
@@ -22,63 +24,115 @@ export class CardLabelsService {
     private readonly cardRepository: Repository<Card>,
     @InjectRepository(Label)
     private readonly labelRepository: Repository<Label>,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
   ) {}
 
-  async create(createCardLabelDto: CreateCardLabelDto) {
-    try {
-      const { cardId, labelId } = createCardLabelDto;
-      const card = await this.cardRepository.findOneBy({ id: cardId });
-      if (!card) {
-        throw new BadRequestException(`해당하는 카드가 존재하지 않습니다.`);
-      }
+  async create(userId: number, cardId: number, labelId: number) {
+    const card = await this.cardRepository.findOne({
+      where: { id: cardId },
+      relations: ['list', 'list.board'],
+    });
 
-      // Label 존재 여부 확인
-      const label = await this.labelRepository.findOneBy({ id: labelId });
-      if (!label) {
-        throw new BadRequestException(`해당하는 라벨이 존재하지 않습니다.`);
-      }
-      const cardLabel = this.cardLabelRepository.create(createCardLabelDto);
+    if (!card || !card.list || !card.list.board) {
+      throw new CardNotFoundException();
+    }
+
+    const boardId = card.list.board.id;
+
+    // 보드 멤버 검증 (예외 발생)
+    await this.isUserMember(userId, boardId);
+
+    // Label 존재 여부 확인
+    const label = await this.labelRepository.findOneBy({ id: labelId });
+    if (!label) {
+      throw new LabelNotFoundException();
+    }
+    try {
+      const cardLabel = this.cardLabelRepository.create({ cardId, labelId });
       return await this.cardLabelRepository.save(cardLabel);
     } catch (err) {
-      //전역 예외 처리 필터 준비
       if (err.code === 'ER_DUP_ENTRY') {
-        //typeorm 유니크키 충돌오류
-        throw new ConflictException(`이미 지정되어 있는 라벨입니다.`);
+        throw new CardLabelConflictException();
       }
-      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
+      throw new CardLabelInternalServerErrorException();
     }
   }
 
-  async findAll() {
+  async findAll(userId: number, cardId: number) {
+    const card = await this.cardRepository.findOne({
+      where: { id: cardId },
+      relations: ['list', 'list.board'],
+    });
+
+    if (!card || !card.list || !card.list.board) {
+      throw new CardLabelNotFoundException();
+    }
+
+    const boardId = card.list.board.id;
+
+    // 보드 멤버 확인
+    await this.isUserMember(userId, boardId); // 예외 발생 시 catch로 이동
     try {
-      return await this.cardLabelRepository.find();
+      return await this.cardLabelRepository.find({
+        where: { cardId: cardId },
+      });
     } catch (err) {
-      throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
+      throw new CardLabelInternalServerErrorException();
     }
   }
 
-  async update(id: number, updateCardLabelDto: UpdateCardLabelDto) {
-    const { cardId, labelId } = updateCardLabelDto;
-    const cardLabel = await this.cardLabelRepository.findOneBy({ id: cardId });
+  //지정 라벨 업데이트
+  async update(userId: number, cardId: number, labelId: number, id: number) {
+    const card = await this.cardRepository.findOne({
+      where: { id: cardId },
+      relations: ['list', 'list.board'],
+    });
+
+    if (!card || !card.list || !card.list.board) {
+      throw new CardNotFoundException();
+    }
+
+    const boardId = card.list.board.id;
+
+    // 보드 멤버 검증 (예외 발생)
+    await this.isUserMember(userId, boardId);
+    const cardLabel = await this.cardLabelRepository.findOneBy({
+      id: id,
+    });
     if (!cardLabel) {
-      throw new NotFoundException(`해당하는 카드 라벨이 존재하지 않습니다.`);
+      throw new CardLabelNotFoundException();
     }
     const label = await this.labelRepository.findOneBy({ id: labelId });
     if (!label) {
-      throw new BadRequestException(`해당하는 라벨이 존재하지 않습니다.`);
+      throw new LabelNotFoundException();
     }
-
-    // 업데이트 진행
-    Object.assign(cardLabel, updateCardLabelDto);
-    return await this.cardLabelRepository.save(cardLabel);
+    try {
+      // 업데이트 진행
+      Object.assign(cardLabel, { cardId: cardId, labelId: labelId });
+      return await this.cardLabelRepository.save(cardLabel);
+    } catch (err) {
+      throw new CardLabelConflictException();
+    }
   }
 
   async remove(id: number) {
     const cardLabel = await this.cardLabelRepository.findOneBy({ id });
     if (!cardLabel) {
-      throw new NotFoundException(`해당하는 지정 라벨이 존재하지 않습니다.`);
+      throw new LabelNotFoundException();
     }
+
     await this.cardLabelRepository.delete(id);
     return `지정 라벨을 삭제하였습니다.`;
+  }
+
+  async isUserMember(userId: number, boardId: number): Promise<void> {
+    const member = await this.memberRepository.findOne({
+      where: { userId, boardId },
+    });
+
+    if (!member) {
+      throw new BoardMembersForbiddenException();
+    }
   }
 }

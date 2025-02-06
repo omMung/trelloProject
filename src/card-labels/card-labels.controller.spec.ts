@@ -3,93 +3,155 @@ import { CardLabelsController } from './card-labels.controller';
 import { CardLabelsService } from './card-labels.service';
 import { CreateCardLabelDto } from './dto/create-card-label.dto';
 import { UpdateCardLabelDto } from './dto/update-card-label.dto';
-import { CardLabel } from './entities/card-label.entity';
-import {
-  BadRequestException,
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('CardLabelsController', () => {
-  // 컨트롤러 테스트
-  let controller: CardLabelsController; // 컨트롤러 인스턴스
-  let service: CardLabelsService; // 서비스 인스턴스
+  let controller: CardLabelsController;
+  let service: CardLabelsService;
+
+  const mockCardLabelsService = {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+  };
 
   beforeEach(async () => {
-    // 테스트 환경 설정
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CardLabelsController],
       providers: [
         {
           provide: CardLabelsService,
-          useValue: {
-            // 서비스 모의 객체 주입
-            create: jest.fn(),
-            findAll: jest.fn(),
-            update: jest.fn(),
-            remove: jest.fn(),
-          },
+          useValue: mockCardLabelsService,
         },
       ],
-    }).compile(); // 모듈 컴파일
-    //인스턴스 생성
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) }) // JwtAuthGuard를 모의 처리
+      .compile();
+
     controller = module.get<CardLabelsController>(CardLabelsController);
     service = module.get<CardLabelsService>(CardLabelsService);
   });
-  //컨트롤러 인스턴스 생성 확인
-  it('instance check', () => {
-    expect(controller).toBeDefined();
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  // 생성 테스트
   describe('create', () => {
-    it('should create a card label', async () => {
-      const dto: CreateCardLabelDto = { cardId: 1, labelId: 2 }; // 요청 목 객체
-      const result = { id: 1, ...dto } as CardLabel; // 응답 목 객체
-      jest.spyOn(service, 'create').mockResolvedValue(result); // 서비스 목 객체 생성
+    const mockUser = { id: 1 };
+    const mockCreateCardLabelDto: CreateCardLabelDto = {
+      cardId: 1,
+      labelId: 1,
+    };
 
-      expect(await controller.create(dto)).toEqual(result); // 컨트롤러의 반환값이 result와 동일한지 확인
-      expect(service.create).toHaveBeenCalledWith(dto); //  service.create()가 dto를 인자로 호출되었는지 검증
+    it('카드 라벨 생성 성공', async () => {
+      const mockResult = { id: 1, cardId: 1, labelId: 1 };
+      mockCardLabelsService.create.mockResolvedValue(mockResult);
+
+      const result = await controller.create(
+        { user: mockUser },
+        mockCreateCardLabelDto,
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.create).toHaveBeenCalledWith(
+        mockUser.id,
+        mockCreateCardLabelDto.cardId,
+        mockCreateCardLabelDto.labelId,
+      );
+    });
+
+    it('카드 라벨 생성 실패 - 서비스에서 예외 발생', async () => {
+      mockCardLabelsService.create.mockRejectedValue(new BadRequestException());
+
+      await expect(
+        controller.create({ user: mockUser }, mockCreateCardLabelDto),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
-  // 조회 테스트
   describe('findAll', () => {
-    it('should return an array of card labels', async () => {
-      const result: CardLabel[] = [
-        Object.assign(new CardLabel(), {
-          id: 1,
-          cardId: 1,
-          labelId: 2,
-        }) as CardLabel,
-      ];
+    const mockUser = { id: 1 };
+    const mockCardId = 1;
 
-      jest.spyOn(service, 'findAll').mockResolvedValue(result as never);
+    it('카드 라벨 목록 조회 성공', async () => {
+      const mockResult = [{ id: 1, cardId: 1, labelId: 1 }];
+      mockCardLabelsService.findAll.mockResolvedValue(mockResult);
 
-      expect(await controller.findAll()).toEqual(result);
-      expect(service.findAll).toHaveBeenCalled();
+      const result = await controller.findAll(
+        { user: mockUser },
+        { cardId: mockCardId },
+      );
+
+      expect(result).toEqual(mockResult);
+      expect(service.findAll).toHaveBeenCalledWith(mockUser.id, mockCardId);
+    });
+
+    it('카드 라벨 목록 조회 실패 - 서비스에서 예외 발생', async () => {
+      mockCardLabelsService.findAll.mockRejectedValue(new NotFoundException());
+
+      await expect(
+        controller.findAll({ user: mockUser }, { cardId: mockCardId }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
-  // 업데이트 테스트
+
   describe('update', () => {
-    it('should update a card label', async () => {
-      const dto: UpdateCardLabelDto = { labelId: 3 };
-      const result = { id: 1, cardId: 1, labelId: 3 };
-      jest.spyOn(service, 'update').mockResolvedValue(result as never);
+    const mockUser = { id: 1 };
+    const mockId = '1';
+    const mockUpdateCardLabelDto: UpdateCardLabelDto = {
+      cardId: 1,
+      labelId: 2,
+    };
 
-      expect(await controller.update('1', dto)).toEqual(result);
-      expect(service.update).toHaveBeenCalledWith(1, dto);
+    it('카드 라벨 업데이트 성공', async () => {
+      const mockResult = { id: 1, cardId: 1, labelId: 2 };
+      mockCardLabelsService.update.mockResolvedValue(mockResult);
+
+      const result = await controller.update(mockId, mockUpdateCardLabelDto, {
+        user: mockUser,
+      });
+
+      expect(result).toEqual(mockResult);
+      expect(service.update).toHaveBeenCalledWith(
+        mockUser.id,
+        mockUpdateCardLabelDto.cardId,
+        mockUpdateCardLabelDto.labelId,
+        +mockId,
+      );
+    });
+
+    it('카드 라벨 업데이트 실패 - 서비스에서 예외 발생', async () => {
+      mockCardLabelsService.update.mockRejectedValue(new BadRequestException());
+
+      await expect(
+        controller.update(mockId, mockUpdateCardLabelDto, { user: mockUser }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
-  // 삭제 테스트
-  describe('remove', () => {
-    it('should remove a card label', async () => {
-      jest.spyOn(service, 'remove').mockResolvedValue({
-        message: 'Deleted',
-      } as unknown as Promise<string>);
 
-      expect(await controller.remove('1')).toEqual({ message: 'Deleted' });
-      expect(service.remove).toHaveBeenCalledWith(1);
+  describe('remove', () => {
+    const mockId = '1';
+
+    it('카드 라벨 삭제 성공', async () => {
+      mockCardLabelsService.remove.mockResolvedValue(
+        '지정 라벨을 삭제하였습니다.',
+      );
+
+      const result = await controller.remove(mockId);
+
+      expect(result).toEqual('지정 라벨을 삭제하였습니다.');
+      expect(service.remove).toHaveBeenCalledWith(+mockId);
+    });
+
+    it('카드 라벨 삭제 실패 - 서비스에서 예외 발생', async () => {
+      mockCardLabelsService.remove.mockRejectedValue(new NotFoundException());
+
+      await expect(controller.remove(mockId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
