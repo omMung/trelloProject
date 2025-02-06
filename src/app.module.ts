@@ -51,12 +51,12 @@ const typeOrmModuleOptions = {
         DB_SYNC: Joi.boolean().required(),
       }),
     }),
-    EventEmitterModule.forRoot(), // ✅ 이벤트 시스템 활성화
+    EventEmitterModule.forRoot(), // 이벤트 시스템 활성화
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-      serveRoot: '/', // ✅ 루트 URL에서 정적 파일 제공
-      exclude: ['/api*'], // ✅ API 요청 제외
+      serveRoot: '/', //  루트 URL에서 정적 파일 제공
+      exclude: ['/api*'], //  API 요청 제외
     }),
 
     UsersModule,
