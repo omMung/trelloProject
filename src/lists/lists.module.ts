@@ -1,13 +1,22 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListsService } from './lists.service';
 import { ListsController } from './lists.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { List } from './entities/list.entity'; // 엔티티 임포트
+import { List } from './entities/list.entity';
+import { Member } from '../members/entities/member.entity';
+import { User } from '../users/entities/user.entity';
+// import { EventEmitter2 } from '@nestjs/event-emitter';
+import { MembersModule } from '../members/members.module'; //  MembersModule 추가
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([List])],
+  imports: [
+    TypeOrmModule.forFeature([List, User, Member]),
+    MembersModule, // ✅ MembersModule을 import하여 MemberRepository 해결
+    UsersModule,
+  ],
   controllers: [ListsController],
   providers: [ListsService],
-  // exports: [ListsService], 다른 모듈에서 ListsService를 사용할 경우
+  exports: [TypeOrmModule],
 })
 export class ListsModule {}

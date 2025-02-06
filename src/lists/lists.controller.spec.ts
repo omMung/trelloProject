@@ -5,6 +5,7 @@ import { ListsService } from './lists.service';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 describe('ListsController', () => {
   let controller: ListsController;
@@ -26,7 +27,10 @@ describe('ListsController', () => {
           useValue: mockListsService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<ListsController>(ListsController);
     service = module.get<ListsService>(ListsService);
@@ -47,9 +51,11 @@ describe('ListsController', () => {
 
       mockListsService.create.mockResolvedValue(result);
 
-      const response = await controller.create(createListDto);
+      const dummyReq = { user: { id: 1 } };
 
-      expect(service.create).toHaveBeenCalledWith(createListDto);
+      const response = await controller.create(createListDto, dummyReq);
+
+      expect(service.create).toHaveBeenCalledWith(createListDto, dummyReq);
       expect(response).toEqual(result);
     });
   });
@@ -57,7 +63,10 @@ describe('ListsController', () => {
   describe('update', () => {
     it('리스트 업데이트 테스트', async () => {
       const id = '1';
-      const updateListDto: UpdateListDto = { title: '수정된 리스트 제목' };
+      const updateListDto: UpdateListDto = {
+        boardId: 1,
+        title: '수정된 리스트 제목',
+      };
 
       const result = {
         id: 1,
@@ -68,9 +77,11 @@ describe('ListsController', () => {
 
       mockListsService.update.mockResolvedValue(result);
 
-      const response = await controller.update(id, updateListDto);
+      const dummyReq = { user: { id: 1 } };
 
-      expect(service.update).toHaveBeenCalledWith(1, updateListDto);
+      const response = await controller.update(id, updateListDto, dummyReq);
+
+      expect(service.update).toHaveBeenCalledWith(1, updateListDto, dummyReq);
       expect(response).toEqual(result);
     });
   });
@@ -78,12 +89,17 @@ describe('ListsController', () => {
   describe('remove', () => {
     it('리스트 삭제 테스트', async () => {
       const id = '1';
-
+      const updateListDto: UpdateListDto = {
+        boardId: 1,
+        title: '수정된 리스트 제목',
+      };
       mockListsService.remove.mockResolvedValue(undefined);
 
-      const response = await controller.remove(id);
+      const dummyReq = { user: { id: 1 } };
 
-      expect(service.remove).toHaveBeenCalledWith(1);
+      const response = await controller.remove(id, updateListDto, dummyReq);
+
+      expect(service.remove).toHaveBeenCalledWith(1, updateListDto, dummyReq);
       expect(response).toBeUndefined();
     });
   });
@@ -101,10 +117,16 @@ describe('ListsController', () => {
 
       mockListsService.updatePositions.mockResolvedValue(undefined);
 
-      const response = await controller.updatePositions(updateListPositionsDto);
+      const dummyReq = { user: { id: 1 } };
+
+      const response = await controller.updatePositions(
+        updateListPositionsDto,
+        dummyReq,
+      );
 
       expect(service.updatePositions).toHaveBeenCalledWith(
         updateListPositionsDto,
+        dummyReq,
       );
       expect(response).toEqual({
         message: '리스트 위치가 성공적으로 업데이트되었습니다.',

@@ -45,9 +45,6 @@ export class Card {
   @Column('varchar', { nullable: true })
   dueDate: string;
 
-  @OneToMany(() => Alarm, (alarm) => alarm.card)
-  alarm: Alarm[];
-
   @OneToMany(() => Comment, (comment) => comment.card)
   comment: Comment[];
 

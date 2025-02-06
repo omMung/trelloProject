@@ -17,6 +17,8 @@ import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
 import { FileModule } from './files/file.module';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import Joi from 'joi';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
