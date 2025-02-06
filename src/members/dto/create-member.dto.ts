@@ -4,11 +4,10 @@ export class CreateMemberDto {
 
     @IsNotEmpty()
     @IsNumber()
-    userId: number
-
+    boardId: number
 
     @IsNotEmpty()
     @IsNumber()
-    boardId: number
+    userId: number
 
 }

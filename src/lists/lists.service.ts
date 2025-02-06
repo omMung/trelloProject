@@ -7,9 +7,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { List } from './entities/list.entity';
+import { Member } from '../members/entities/member.entity';
+import { User } from '../users/entities/user.entity';
 import { CreateListDto } from './dto/create-list.dto';
 import { UpdateListDto } from './dto/update-list.dto';
 import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 // import { getConnection } from 'typeorm';
 
 @Injectable() // 주입 가능
@@ -17,46 +20,113 @@ export class ListsService {
   constructor(
     @InjectRepository(List)
     private listsRepository: Repository<List>,
+    @InjectRepository(Member)
+    private membersRepository: Repository<Member>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+
+    private readonly eventEmitter: EventEmitter2, // 이벤트 발생기 추가
   ) {}
 
-  async create(createListDto: CreateListDto): Promise<List> {
-    const { boardId, title } = createListDto;
+  // dto로 받은 boardId, jwt인증 성공 시 req에 포함되어 있는 id(User)로
+  // 존재하는 유저인지, 그 유저가 현재 보드 멤버에 포함되어 있는지 검증하는 함수
+  private async validateUserAndMember(
+    req: any,
+    boardId: number,
+  ): Promise<{ user: User; members: number[] }> {
+    const userId = req.user.id;
 
-    // 보드 id로 리스트 조회
+    // 유저 존재 검증
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('유저 정보가 없습니다.');
+    }
+
+    // 보드에 속한 멤버인지 검증
+    const member = await this.membersRepository.findOne({
+      where: { id: userId, boardId },
+    });
+    if (!member) {
+      throw new NotFoundException(
+        '해당 보드에 소속된 멤버 정보가 존재하지 않습니다.',
+      );
+    }
+
+    // ✅ 해당 보드의 모든 멤버 조회
+    const members = await this.membersRepository.find({
+      where: { boardId },
+      select: ['id'], // 멤버 ID만 가져오기
+    });
+
+    if (!members.length) {
+      throw new NotFoundException('해당 보드에 소속된 멤버가 없습니다.');
+    }
+
+    // 모든 멤버의 ID 배열 생성
+    const memberIds = members.map((member) => member.id);
+
+    return { user, members: memberIds }; // ✅ 유저 정보 + 보드 멤버 ID 목록 반환
+  }
+
+  async create(createListDto: CreateListDto, req: any): Promise<List> {
+    const { boardId, title } = createListDto;
+    const { user, members } = await this.validateUserAndMember(req, boardId);
+
+    console.log('📢 리스트 생성 요청 받음:', { boardId, title, user, members });
+
+    const existingList = await this.listsRepository.findOne({
+      where: { boardId, title },
+    });
+    if (existingList) {
+      throw new BadRequestException('같은 제목의 리스트가 이미 존재합니다.');
+    }
+
     const lists = await this.listsRepository.find({
       where: { boardId },
       select: ['position'],
     });
-    // const lists = [
-    //   { position: 1 },
-    //   { position: 2 },
-    //   { position: 3 },
-    // ];
-
-    // 최대 포지션 찾기
     const maxPosition =
       lists.length > 0 ? Math.max(...lists.map((list) => list.position)) : 0;
-    // 1. 맵 함수를 통해 position 값만 추출한 새로운 배열 생성
-    // 2. Math.max(...arrays) : 배열의 모든 요소는 개별 인자로 전달, 그중 최대값 구함
-    // 3. 삼항연상자 형태 >> 배열 길이가 0이라면 >> 아직 리스트가 없다면 maxPosition은 0
-    // 배열 길이가 0 이상이라면 >> 기존 리스트가 있다면 maxPosition은 배열 중 position 최대값
-
-    // maxPosition에 +1 하여 최종 포지션 결정
     const newPosition = maxPosition + 1;
 
-    // 리스트 엔티티 생성
     const list = this.listsRepository.create({
       boardId,
       position: newPosition,
       title,
     });
+    const savedList = await this.listsRepository.save(list);
 
-    // 리스트 저장 및 반환
-    return this.listsRepository.save(list);
+    console.log('✅ 리스트 생성 완료:', savedList);
+
+    // 이벤트 발생
+    this.eventEmitter.emit('list.created', {
+      senderId: user.id,
+      boardId,
+      members,
+      message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
+    });
+
+    // 이벤트 발생 로그 추가
+    console.log('list.created 이벤트 발생:', {
+      senderId: user.id,
+      boardId,
+      members,
+      message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
+    });
+
+    return savedList;
   }
 
   // 리스트 업데이트(파라미터로 id 받음)
-  async update(id: number, updateListDto: UpdateListDto): Promise<List> {
+  async update(
+    id: number,
+    updateListDto: UpdateListDto,
+    req: any,
+  ): Promise<List> {
+    const { boardId } = updateListDto;
+
+    await this.validateUserAndMember(req, boardId);
+
     const list = await this.listsRepository.findOne({ where: { id } });
 
     if (!list) {
@@ -74,7 +144,15 @@ export class ListsService {
   }
 
   // 특정 리스트 삭제(파라미터로 id 받음)
-  async remove(id: number): Promise<void> {
+  async remove(
+    id: number,
+    updateListDto: UpdateListDto,
+    req: any,
+  ): Promise<void> {
+    const { boardId } = updateListDto;
+
+    await this.validateUserAndMember(req, boardId);
+
     const list = await this.listsRepository.findOne({ where: { id } });
 
     if (!list) {
@@ -89,6 +167,7 @@ export class ListsService {
   // ex) 1,2,3,4 >> O , 1,2,4 >> X
   async updatePositions(
     updateListPositionsDto: UpdateListPositionsDto,
+    req: any,
   ): Promise<void> {
     const { boardId, lists } = updateListPositionsDto;
     // const lists = [
@@ -96,6 +175,7 @@ export class ListsService {
     // { "id": 2, "position": 2 },
     // { "id": 3, "position": 3 }
     // ];
+    await this.validateUserAndMember(req, boardId);
 
     // 보드 id로 리스트 조회
     const DBLists = await this.listsRepository.find({
@@ -133,46 +213,6 @@ export class ListsService {
         throw new BadRequestException('잘못된 요청입니다');
       }
     }
-
-    // 위치 업데이트
-    // async function updateUserUsingQueryBuilder(id: number, newName: string) {
-    //   await getConnection()
-    //     .createQueryBuilder()
-    //     .update(List)
-    //     .set({ name: newName })
-    //     .where('id = :id', { id })
-    //     .execute();
-    // }
-    // const deletePromise = lists.map((list) => {
-    //   // console.log(list);
-    //   return this.listsRepository.delete(list.id);
-    // });
-
-    // await Promise.all(deletePromise);
-    // console.log(lists);
-
-    // const updatePromises = lists.map((list) => {
-    //   console.log(list);
-    //   return this.listsRepository.create({
-    //     boardId: 1,
-    //     title: 'test',
-    //     position: list.position,
-    //   });
-    // });
-
-    // await Promise.all(updatePromises);
-
-    // return this.listsRepository.save(list);
-
-    // for (let i = 0; i < lists.length; i++) {
-    //   const list = this.listsRepository.create({
-    //     boardId: 1,
-    //     title: 'test',
-    //     position: lists[i].position,
-    //   });
-    //   await this.listsRepository.save(list);
-    // }
-    // 위치 업데이트
 
     const updatePromises = lists.map((list) => {
       console.log(list);

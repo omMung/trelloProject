@@ -10,10 +10,10 @@ import { UsersModule } from 'src/users/users.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Comment]),
-    JwtModule.register({}),
-    UsersModule,
+    //  JwtModule.register({}),
+    //UsersModule,
   ],
   controllers: [CommentsController],
-  providers: [CommentsService, JwtAuthGuard],
+  providers: [CommentsService],
 })
 export class CommentsModule {}

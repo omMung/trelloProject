@@ -99,30 +99,44 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 ```
-trello
+trelloProject
 ├─ .eslintrc.js
-├─ .gitignore
 ├─ .prettierrc
 ├─ nest-cli.json
 ├─ package-lock.json
 ├─ package.json
+├─ public
+│  └─ myAlarm.html
 ├─ README.md
 ├─ src
 │  ├─ alarms
 │  │  ├─ alarms.controller.spec.ts
 │  │  ├─ alarms.controller.ts
+│  │  ├─ alarms.gateway.ts
+│  │  ├─ alarms.listener.ts
 │  │  ├─ alarms.module.ts
 │  │  ├─ alarms.service.spec.ts
 │  │  ├─ alarms.service.ts
 │  │  ├─ dto
-│  │  │  ├─ create-alarm.dto.ts
-│  │  │  └─ update-alarm.dto.ts
-│  │  └─ entities
-│  │     └─ alarm.entity.ts
+│  │  │  └─ create-alarm.dto.ts
+│  │  ├─ entities
+│  │  │  └─ alarm.entity.ts
+│  │  └─ event
+│  │     └─ alarm.events.ts
 │  ├─ app.controller.spec.ts
 │  ├─ app.controller.ts
 │  ├─ app.module.ts
 │  ├─ app.service.ts
+│  ├─ auth
+│  │  ├─ controllers
+│  │  │  └─ auth.controller.ts
+│  │  ├─ dto
+│  │  │  ├─ login.dto.ts
+│  │  │  └─ verify-email.dto.ts
+│  │  ├─ guards
+│  │  │  └─ jwt-auth.guard.ts
+│  │  └─ services
+│  │     └─ auth.service.ts
 │  ├─ boards
 │  │  ├─ boards.controller.spec.ts
 │  │  ├─ boards.controller.ts
@@ -131,10 +145,10 @@ trello
 │  │  ├─ boards.service.ts
 │  │  ├─ dto
 │  │  │  ├─ create-board.dto.ts
-│  │  │  └─ update-board.dto.ts
+│  │  │  ├─ update-board.dto.ts
+│  │  │  └─ visibility.enum.ts
 │  │  └─ entities
-│  │     ├─ board.entity.ts
-│  │     └─ visibility.enum
+│  │     └─ board.entity.ts
 │  ├─ card-labels
 │  │  ├─ card-labels.controller.spec.ts
 │  │  ├─ card-labels.controller.ts
@@ -165,6 +179,7 @@ trello
 │  │  ├─ cards.service.ts
 │  │  ├─ dto
 │  │  │  ├─ create-card.dto.ts
+│  │  │  ├─ update-card-positions.dto.ts
 │  │  │  └─ update-card.dto.ts
 │  │  └─ entities
 │  │     └─ card.entity.ts
@@ -201,6 +216,9 @@ trello
 │  │  │  └─ update-comment.dto.ts
 │  │  └─ entities
 │  │     └─ comment.entity.ts
+│  ├─ config
+│  │  ├─ data-source.ts
+│  │  └─ jwt.config.ts
 │  ├─ labels
 │  │  ├─ dto
 │  │  │  ├─ create-label.dto.ts
@@ -215,6 +233,7 @@ trello
 │  ├─ lists
 │  │  ├─ dto
 │  │  │  ├─ create-list.dto.ts
+│  │  │  ├─ update-list-positions.dto.ts
 │  │  │  └─ update-list.dto.ts
 │  │  ├─ entities
 │  │  │  └─ list.entity.ts
@@ -227,7 +246,7 @@ trello
 │  ├─ members
 │  │  ├─ dto
 │  │  │  ├─ create-member.dto.ts
-│  │  │  └─ update-member.dto.ts
+│  │  │  └─ get-member.dto.ts
 │  │  ├─ entities
 │  │  │  └─ member.entity.ts
 │  │  ├─ members.controller.spec.ts

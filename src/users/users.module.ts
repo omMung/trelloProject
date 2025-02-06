@@ -4,20 +4,12 @@ import { UsersService } from './users.service';
 import { AuthService } from '../auth/services/auth.service';
 import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from '../auth/controllers/auth.controller';
-import { jwtConstants } from '../config/jwt.config';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: jwtConstants.expiresIn },
-    }),
-  ],
-  controllers: [UsersController, AuthController],
+  imports: [TypeOrmModule.forFeature([User]), RedisModule],
+  controllers: [UsersController],
   providers: [UsersService, AuthService],
-  exports: [UsersService, AuthService],
+  exports: [UsersService],
 })
 export class UsersModule {}

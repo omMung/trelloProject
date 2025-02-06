@@ -1,0 +1,91 @@
+# 워크플로우 이름 설정
+name: TrelloProject CI/CD
+# 워크플로우 실행 시 트리거한 사용자의 이름 표시
+run-name: ${{ github.actor }} 님이 Github Actions를 실행했습니다.
+
+# 이 워크플로우가 어떤 이벤트에서 실행될 지 정의 (여기서는 push 이벤트 발생 시 실행)
+on: [push]
+
+jobs:
+  # 1. CI Job: 빌드, 의존성 설치, 파일 확인 등의 작업 수행
+  TrelloProject-CI:
+    runs-on: ubuntu-latest # 최신 Ubuntu 환경에서 실행
+    steps:
+      # 현재 워크플로우가 어떤 이벤트에 의해 트리거되었는지 출력
+      - run: echo "워크플로우가 ${{ github.event_name }} 이벤트로 인해 실행되었습니다."
+      # 현재 실행되고 있는 서버의 운영체제 정보 출력
+      - run: echo "현재 실행중인 운영체제 :${{ runner.os }}"
+      # 현재 실행 중인 브랜치와 리포지토리 이름 출력
+      - run: echo "현재 실행중인 저장소 :${{ github.repository }}, 브랜치 :${{ github.ref }} 브랜치 실행."
+
+      # GitHub의 공식 액션을 사용하여 현재 리포지토리 코드를 체크아웃
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      # 코드가 체크아웃(클론)되었음을 확인하는 메시지 출력
+      - run: echo "리포지토리 코드를 성공적으로 가져왔습니다."
+
+      # Node.js 환경 설정 (지정한 Node 버전 사용)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.12.0'
+
+      # 의존성 설치 (package-lock.json 기반으로 설치)
+      - name: Install Dependencies
+        run: npm ci
+
+      # 린트 검사
+      # - name: Run Lint
+      #   run: npm run lint
+
+      # 테스트 실행
+      # - name: Run Tests
+      #   run: npm run test:ci
+
+      # 현재 작업 디렉토리 내의 파일 목록을 나열하여 시각적으로 확인
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+
+      # 현재 CI Job의 상태를 출력 (성공 여부 확인)
+      - run: echo "현재 CI 작업 상태 :${{ job.status }}."
+
+  # 2. CD Job: CI Job이 성공한 후 자동으로 AWS EC2 서버에 배포 수행
+  TrelloProject-CD:
+    needs: TrelloProject-CI # CI Job(TrelloProject-CI)이 성공한 후 실행
+    runs-on: ubuntu-latest
+    environment:
+      name: production # GitHub Environments를 사용할 경우 production 환경 지정
+      # url: ${{ https://www.yangs.site/ }}  # 배포 후 URL을 출력하려면 추가 구성 가능
+    steps:
+      # appleboy/ssh-action을 사용하여 AWS EC2 서버에 SSH 접속 후 배포 명령어 실행
+      - name: Deploy to AWS EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          # AWS EC2 서버의 호스트명(IP 주소)은 GitHub Secrets에 저장된 값을 사용
+          host: ${{ secrets.EC2_HOST }} # 예: 13.125.224.60
+          username: ubuntu # EC2 서버 접속 사용자 (보통 ubuntu)
+          key: ${{ secrets.EC2_KEY }} # SSH 인증 키 (PEM 또는 PPK 형식)
+          port: 22 # SSH 포트 (기본 22)
+          script: |
+            echo "현재 디렉토리: $(pwd)" 
+
+            # 프로젝트 디렉토리로 이동
+            cd ~/trelloProject
+
+            # 최신 코드 가져오기
+            git pull origin feat/ydw/list
+
+            # 3000포트에서 실행 중인 프로세스 확인, 종료
+            RUNNING_PID=$(lsof -ti :3000)
+            if [ ! -z "$RUNNING_PID" ]; then
+              echo "기존 프로세스 종료 중... (PID: $RUNNING_PID)"
+              kill -9 $RUNNING_PID
+            fi
+
+            # 백그라운드에서 웹 서버 실행
+            echo "서버 실행 중..."
+            nohup npm run start > app.log 2>&1 &
+
+            echo "웹 서버가 백그라운드에서 실행되었습니다."
