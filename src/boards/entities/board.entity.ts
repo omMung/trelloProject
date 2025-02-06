@@ -13,6 +13,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { Label } from 'src/labels/entities/label.entity';
 
 @Entity({
   name: 'Board',
@@ -50,4 +51,7 @@ export class Board {
 
   @OneToMany(() => Member, (member) => member.board)
   members: Member[];
+
+  @OneToMany(() => Label, (label) => label.board)
+  label: Label[];
 }

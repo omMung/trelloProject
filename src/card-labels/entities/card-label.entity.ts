@@ -20,7 +20,7 @@ export class CardLabel {
   @Column('int', { nullable: false })
   labelId: number;
 
-  @Column('int', { nullable: false })
+  @Column('int', { name: 'card_id', nullable: false })
   cardId: number;
 
   @ManyToOne(() => Card, (card) => card.cardLabel, { onDelete: 'CASCADE' })

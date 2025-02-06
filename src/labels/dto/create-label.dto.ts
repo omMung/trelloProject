@@ -1,4 +1,10 @@
-import { IsHexColor, IsNotEmpty, IsString, Length } from 'class-validator';
+import {
+  IsHexColor,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class CreateLabelDto {
   @IsString()
@@ -9,4 +15,8 @@ export class CreateLabelDto {
   @IsString()
   @IsHexColor()
   color: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  boardId: number;
 }

@@ -16,12 +16,12 @@ import { CardMembersModule } from './card-members/card-members.module';
 import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { FileModule } from './files/file.module';
 import Joi from 'joi';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -56,6 +56,7 @@ const typeOrmModuleOptions = {
         ACCESS_EXPIRES_IN: Joi.string().default('1m'), // 액세스 만료시간 검증 추가
       }),
     }),
+    EventEmitterModule.forRoot(), // 이벤트 시스템 활성화
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     // JwtModule 등록 (글로벌 제공)
     JwtModule.registerAsync({
@@ -80,6 +81,7 @@ const typeOrmModuleOptions = {
     LabelsModule,
     CheckitemsModule,
     CardLabelsModule,
+    FileModule,
     AuthModule,
     RedisModule,
   ],
