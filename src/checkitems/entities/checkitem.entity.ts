@@ -32,6 +32,6 @@ export class CheckItem {
   @ManyToOne(() => CheckList, (checkList) => checkList.checkItems, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'checkList_id' })
+  @JoinColumn({ name: 'check_list_id' })
   checkList: CheckList;
 }

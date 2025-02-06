@@ -12,6 +12,7 @@ import { JoinMember } from 'src/card-members/entities/card-member.entity';
 import { CheckList } from 'src/checklists/entities/checklist.entity';
 import { CardLabel } from 'src/card-labels/entities/card-label.entity';
 import { List } from 'src/lists/entities/list.entity';
+import { File } from 'src/files/entities/file.entity';
 
 @Entity({
   name: 'Card',
@@ -55,6 +56,9 @@ export class Card {
 
   @OneToMany(() => CardLabel, (cardLabel) => cardLabel.card)
   cardLabel: CardLabel[];
+
+  @OneToMany(() => File, (file) => file.card)
+  files: File[];
 
   @ManyToOne(() => List, (list) => list.cards, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'list_id' })
