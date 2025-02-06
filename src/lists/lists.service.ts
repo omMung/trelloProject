@@ -44,7 +44,7 @@ export class ListsService {
 
     // 보드에 속한 멤버인지 검증
     const member = await this.membersRepository.findOne({
-      where: { id: userId, boardId },
+      where: { userId, boardId },
     });
     if (!member) {
       throw new NotFoundException(
