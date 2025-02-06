@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAlarmDto } from './dto/create-alarm.dto';
-import { UpdateAlarmDto } from './dto/update-alarm.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Alarm } from './entities/alarm.entity';
 
 @Injectable()
 export class AlarmsService {
+  constructor(
+    @InjectRepository(Alarm) private alarmRepository: Repository<Alarm>,
+  ) {}
+
   create(createAlarmDto: CreateAlarmDto) {
     return 'This action adds a new alarm';
   }
 
-  findAll() {
-    return `This action returns all alarms`;
-  }
+  async findByUserId(userId: number) {
+    const alarmsByUser = await this.alarmRepository.find({
+      where: { userId: userId },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} alarm`;
-  }
-
-  update(id: number, updateAlarmDto: UpdateAlarmDto) {
-    return `This action updates a #${id} alarm`;
+    return alarmsByUser;
   }
 
   remove(id: number) {

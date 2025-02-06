@@ -11,6 +11,6 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController, AuthController],
   providers: [UsersService, AuthService],
-  exports: [UsersService, AuthService],
+  exports: [UsersService, AuthService, JwtModule],
 })
 export class UsersModule {}
