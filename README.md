@@ -57,20 +57,6 @@
 │ ├── 📁 users
 └── 📁 test
 
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
 ## ERD 다이어그램
 🧩 [확인하기](https://drawsql.app/teams/sparta-team8/diagrams/-2)
 
