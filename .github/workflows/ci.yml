@@ -65,7 +65,7 @@ jobs:
           # AWS EC2 서버의 호스트명(IP 주소)은 GitHub Secrets에 저장된 값을 사용
           host: ${{ secrets.EC2_HOST }} # 예: 13.125.224.60
           username: ubuntu # EC2 서버 접속 사용자 (보통 ubuntu)
-          key: ${{ secrets.EC2_KEY }} # SSH 인증 키 (PEM 또는 PPK 형식)s
+          key: ${{ secrets.EC2_KEY }} # SSH 인증 키 (PEM 또는 PPK 형식)sss
           port: 22 # SSH 포트 (기본 22)
           script: |
             echo "현재 디렉토리: $(pwd)" 
