@@ -1,274 +1,101 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+## 목차
+1. [프로젝트 소개](#-프로젝트-소개-)
+2. [팀원](#팀원)
+3. [기술 스택](#기술-스택)
+4. [폴더 구조](#폴더-구조)
+5. [ERD 다이어그램](#erd-다이어그램)
+6. [프로젝트 기능](#프로젝트-기능)
+7. [설치 및 실행 방법](#-설치-및-실행-방법)
+8. [협업 및 회고](#협업-및-회고)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 프로젝트 소개 📋
+📌 Trello는 직관적인 보드와 리스트 카드를 활용해 프로젝트를 관리할 수 있는 도구 입니다.
+📌 Trello를 통해 팀원들과 협업하며 작업 진행 상황을 한눈에 확인하고 우선순위를 쉽게 조정할 수 있습니다.
+📌 Trello를 활용하면 업무를 체계적으로 정리하고 생산성을 극대화할 수 있습니다. 
 
-## Description
+## 팀원
+🫅정찬식(팀장)  
+👨‍🔬윤형근(부팀장)  
+👨‍🔬유대원(부팀장)  
+👨‍💻김호진  
+👨‍💻김동환  
+👨‍💻박양선  
+👨‍💻김용우  
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 기술 스택
+🟢Node.js  
+🚀nest.js  
+🗄️TypeOrm  
+📁GIT  
+📦GITHUB  
+🛠️AWS  
+🐬MYSQL
+🔄CI/CD
 
-## Project setup
+## 폴더 구조
+📦 trelloProject
+├── 📁 public
+├── 📁 src
+│ ├── 📁 alarms
+│ ├── 📁 auth
+│ │ ├── 📁 controllers
+│ │ ├── 📁 guards
+│ │ └── 📁 services
+│ ├── 📁 boards
+│ ├── 📁 card-labels
+│ ├── 📁 card-members
+│ ├── 📁 cards
+│ ├── 📁 checkitems
+│ ├── 📁 checklists
+│ ├── 📁 comments
+│ ├── 📁 config
+│ ├── 📁 labels
+│ ├── 📁 lists
+│ ├── 📁 members
+│ ├── 📁 users
+└── 📁 test
+  
 
-```bash
-$ npm install
-```
+## ERD 다이어그램
+🧩 [확인하기](https://drawsql.app/teams/sparta-team8/diagrams/-2)
 
-## Compile and run the project
+## 프로젝트 기능
+### 📌 1.작업을 보드와 리스트, 카드로 관리할 수 있습니다. 프로젝트를 체계적으로 정리해 보세요!
+### ✅ 2.팀원들과 협업하며 실시간으로 작업을 공유할 수 있습니다. 원하는 목적을 이루세요!
+### 🔄 3.댓글을 통해 자신의 의견을 표출할수 있습니다. 원활한 커뮤니케이션을 경험하세요!
+### 🔔 4.보안을 위해 JWT 토큰을 사용합니다. 안심하고 Trello 프로젝트를 사용하세요!
 
-```bash
-# development
-$ npm run start
+## ✏️ 설치 및 실행 방법
+### 1.레포지토리 클론
+git clone git@github.com:omMung/trelloProject.git
 
-# watch mode
-$ npm run start:dev
+### 2.패키지 설치
+npm install
 
-# production mode
-$ npm run start:prod
-```
+### 3.환경 변수 설정
+.env 파일 생성 후, DATABASE_URL , PORT 같은 환경변수 설정
 
-## Run tests
+### 4.데이터베이스 마이그레이션 실행
+npx typeorm migration:run
 
-```bash
-# unit tests
-$ npm run test
+### 5.애플리케이션 실행
+npm run start
 
-# e2e tests
-$ npm run test:e2e
+## 🤝 협업 및 회고
+### 협업 과정
+- Trello 기획 및 와이어프레임 설계
+- 타입스크립트 , Nest.js 를 사용함으로써 생산성 높은 프로젝트 생성
+- SQLdraw ,figma를 사용하여 ERD 설계 및 테이블 스키마 작성
+- 역할 분담 후 브랜치를 생성해 PR 기반 협업
+- Insomnia를 활용한 주요 기능 테스트
+- jest 를 사용하여 코드 품질 향상
+- 최종 풀 리퀘스트 후 테스트 진행
 
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-```
-trelloProject
-├─ .eslintrc.js
-├─ .prettierrc
-├─ nest-cli.json
-├─ package-lock.json
-├─ package.json
-├─ public
-│  └─ myAlarm.html
-├─ README.md
-├─ src
-│  ├─ alarms
-│  │  ├─ alarms.controller.spec.ts
-│  │  ├─ alarms.controller.ts
-│  │  ├─ alarms.gateway.ts
-│  │  ├─ alarms.listener.ts
-│  │  ├─ alarms.module.ts
-│  │  ├─ alarms.service.spec.ts
-│  │  ├─ alarms.service.ts
-│  │  ├─ dto
-│  │  │  └─ create-alarm.dto.ts
-│  │  ├─ entities
-│  │  │  └─ alarm.entity.ts
-│  │  └─ event
-│  │     └─ alarm.events.ts
-│  ├─ app.controller.spec.ts
-│  ├─ app.controller.ts
-│  ├─ app.module.ts
-│  ├─ app.service.ts
-│  ├─ auth
-│  │  ├─ controllers
-│  │  │  └─ auth.controller.ts
-│  │  ├─ dto
-│  │  │  ├─ login.dto.ts
-│  │  │  └─ verify-email.dto.ts
-│  │  ├─ guards
-│  │  │  └─ jwt-auth.guard.ts
-│  │  └─ services
-│  │     └─ auth.service.ts
-│  ├─ boards
-│  │  ├─ boards.controller.spec.ts
-│  │  ├─ boards.controller.ts
-│  │  ├─ boards.module.ts
-│  │  ├─ boards.service.spec.ts
-│  │  ├─ boards.service.ts
-│  │  ├─ dto
-│  │  │  ├─ create-board.dto.ts
-│  │  │  ├─ update-board.dto.ts
-│  │  │  └─ visibility.enum.ts
-│  │  └─ entities
-│  │     └─ board.entity.ts
-│  ├─ card-labels
-│  │  ├─ card-labels.controller.spec.ts
-│  │  ├─ card-labels.controller.ts
-│  │  ├─ card-labels.module.ts
-│  │  ├─ card-labels.service.spec.ts
-│  │  ├─ card-labels.service.ts
-│  │  ├─ dto
-│  │  │  ├─ create-card-label.dto.ts
-│  │  │  └─ update-card-label.dto.ts
-│  │  └─ entities
-│  │     └─ card-label.entity.ts
-│  ├─ card-members
-│  │  ├─ card-members.controller.spec.ts
-│  │  ├─ card-members.controller.ts
-│  │  ├─ card-members.module.ts
-│  │  ├─ card-members.service.spec.ts
-│  │  ├─ card-members.service.ts
-│  │  ├─ dto
-│  │  │  ├─ create-card-member.dto.ts
-│  │  │  └─ update-card-member.dto.ts
-│  │  └─ entities
-│  │     └─ card-member.entity.ts
-│  ├─ cards
-│  │  ├─ cards.controller.spec.ts
-│  │  ├─ cards.controller.ts
-│  │  ├─ cards.module.ts
-│  │  ├─ cards.service.spec.ts
-│  │  ├─ cards.service.ts
-│  │  ├─ dto
-│  │  │  ├─ create-card.dto.ts
-│  │  │  ├─ update-card-positions.dto.ts
-│  │  │  └─ update-card.dto.ts
-│  │  └─ entities
-│  │     └─ card.entity.ts
-│  ├─ checkitems
-│  │  ├─ checkitems.controller.spec.ts
-│  │  ├─ checkitems.controller.ts
-│  │  ├─ checkitems.module.ts
-│  │  ├─ checkitems.service.spec.ts
-│  │  ├─ checkitems.service.ts
-│  │  ├─ dto
-│  │  │  ├─ create-checkitem.dto.ts
-│  │  │  └─ update-checkitem.dto.ts
-│  │  └─ entities
-│  │     └─ checkitem.entity.ts
-│  ├─ checklists
-│  │  ├─ checklists.controller.spec.ts
-│  │  ├─ checklists.controller.ts
-│  │  ├─ checklists.module.ts
-│  │  ├─ checklists.service.spec.ts
-│  │  ├─ checklists.service.ts
-│  │  ├─ dto
-│  │  │  ├─ create-checklist.dto.ts
-│  │  │  └─ update-checklist.dto.ts
-│  │  └─ entities
-│  │     └─ checklist.entity.ts
-│  ├─ comments
-│  │  ├─ comments.controller.spec.ts
-│  │  ├─ comments.controller.ts
-│  │  ├─ comments.module.ts
-│  │  ├─ comments.service.spec.ts
-│  │  ├─ comments.service.ts
-│  │  ├─ dto
-│  │  │  ├─ create-comment.dto.ts
-│  │  │  └─ update-comment.dto.ts
-│  │  └─ entities
-│  │     └─ comment.entity.ts
-│  ├─ config
-│  │  ├─ data-source.ts
-│  │  └─ jwt.config.ts
-│  ├─ labels
-│  │  ├─ dto
-│  │  │  ├─ create-label.dto.ts
-│  │  │  └─ update-label.dto.ts
-│  │  ├─ entities
-│  │  │  └─ label.entity.ts
-│  │  ├─ labels.controller.spec.ts
-│  │  ├─ labels.controller.ts
-│  │  ├─ labels.module.ts
-│  │  ├─ labels.service.spec.ts
-│  │  └─ labels.service.ts
-│  ├─ lists
-│  │  ├─ dto
-│  │  │  ├─ create-list.dto.ts
-│  │  │  ├─ update-list-positions.dto.ts
-│  │  │  └─ update-list.dto.ts
-│  │  ├─ entities
-│  │  │  └─ list.entity.ts
-│  │  ├─ lists.controller.spec.ts
-│  │  ├─ lists.controller.ts
-│  │  ├─ lists.module.ts
-│  │  ├─ lists.service.spec.ts
-│  │  └─ lists.service.ts
-│  ├─ main.ts
-│  ├─ members
-│  │  ├─ dto
-│  │  │  ├─ create-member.dto.ts
-│  │  │  └─ get-member.dto.ts
-│  │  ├─ entities
-│  │  │  └─ member.entity.ts
-│  │  ├─ members.controller.spec.ts
-│  │  ├─ members.controller.ts
-│  │  ├─ members.module.ts
-│  │  ├─ members.service.spec.ts
-│  │  └─ members.service.ts
-│  └─ users
-│     ├─ dto
-│     │  ├─ create-user.dto.ts
-│     │  └─ update-user.dto.ts
-│     ├─ entities
-│     │  └─ user.entity.ts
-│     ├─ users.controller.spec.ts
-│     ├─ users.controller.ts
-│     ├─ users.module.ts
-│     ├─ users.service.spec.ts
-│     └─ users.service.ts
-├─ test
-│  ├─ app.e2e-spec.ts
-│  └─ jest-e2e.json
-├─ tsconfig.build.json
-└─ tsconfig.json
-
-```
+### 회고
+이번 프로젝트에서는 팀원들과 의사소통을 통해 효과적인 결과물을 내놓을 수 있었습니다.
+특히 예전에 사용하지 못한 Jest를 적극적으로 사용하며 테스트를 통해 코드 품질을 유지할 수 있었던 점이 매우 유익했습니다
+아쉬운 점으로는 프론트엔드 지식이 부족해 해당 부분을 맡지 못한 것이 아쉽습니다. 
+하지만 타입스크립트와 Nest.js를 사용하면서 생산성이 향상되었고, Jest가 얼마나 중요한지 깨닫게 되었습니다. 
+이번 경험을 통해 협업의 중요성과 각 기술 및 도구의 활용도가 얼마나 중요한지 다시 한번 느낄 수 있었습니다.
