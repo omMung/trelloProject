@@ -144,7 +144,7 @@ describe('AuthService', () => {
     expect(userRepository.save).toHaveBeenCalledWith(user);
   });
 
-  // 이메일 인증 실패 테스트 (잘못된 코드)
+  // 이메일 인증 실패 테스트 (잘못된 코드 입력 시)
   it('should throw BadRequestException if verify code is incorrect', async () => {
     const verifyEmailDto = {
       email: 'test@example.com',

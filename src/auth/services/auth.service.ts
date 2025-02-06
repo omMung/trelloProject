@@ -46,7 +46,6 @@ export class AuthService {
       text: `인증 코드: ${verifyCode}`,
     };
 
-    //await transporter.sendMail(mailOptions);
     try {
       const info = await transporter.sendMail(mailOptions);
       console.log('이메일 발송 성공:', info.response); // 발송 성공 로그
