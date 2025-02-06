@@ -20,6 +20,7 @@ exports.ChecklistsModule = ChecklistsModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([checklist_entity_1.CheckList])],
         controllers: [checklists_controller_1.ChecklistsController],
         providers: [checklists_service_1.ChecklistsService],
+        exports: [checklists_service_1.ChecklistsService],
     })
 ], ChecklistsModule);
 //# sourceMappingURL=checklists.module.js.map

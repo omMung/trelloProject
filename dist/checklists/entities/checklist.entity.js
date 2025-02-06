@@ -38,7 +38,9 @@ __decorate([
     __metadata("design:type", card_entity_1.Card)
 ], CheckList.prototype, "card", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => checkitem_entity_1.CheckItem, (checkItem) => checkItem.checkList),
+    (0, typeorm_1.OneToMany)(() => checkitem_entity_1.CheckItem, (checkItem) => checkItem.checkList, {
+        cascade: true,
+    }),
     __metadata("design:type", Array)
 ], CheckList.prototype, "checkItems", void 0);
 exports.CheckList = CheckList = __decorate([

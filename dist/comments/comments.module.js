@@ -17,9 +17,7 @@ let CommentsModule = class CommentsModule {
 exports.CommentsModule = CommentsModule;
 exports.CommentsModule = CommentsModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([comment_entity_1.Comment]),
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([comment_entity_1.Comment])],
         controllers: [comments_controller_1.CommentsController],
         providers: [comments_service_1.CommentsService],
     })

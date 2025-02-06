@@ -34,19 +34,20 @@ let ListsService = class ListsService {
             throw new common_1.NotFoundException('유저 정보가 없습니다.');
         }
         const member = await this.membersRepository.findOne({
-            where: { id: userId, boardId },
+            where: { userId, boardId },
         });
         if (!member) {
             throw new common_1.NotFoundException('해당 보드에 소속된 멤버 정보가 존재하지 않습니다.');
         }
         const members = await this.membersRepository.find({
             where: { boardId },
-            select: ['id'],
+            select: ['userId'],
         });
+        console.log('members 콘솔 내용@@@', members);
         if (!members.length) {
             throw new common_1.NotFoundException('해당 보드에 소속된 멤버가 없습니다.');
         }
-        const memberIds = members.map((member) => member.id);
+        const memberIds = members.map((member) => member.userId);
         return { user, members: memberIds };
     }
     async create(createListDto, req) {

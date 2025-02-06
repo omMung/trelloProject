@@ -18,19 +18,20 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const alarm_entity_1 = require("./entities/alarm.entity");
 const event_emitter_1 = require("@nestjs/event-emitter");
+const alarms_gateway_1 = require("./alarms.gateway");
 let AlarmsListener = class AlarmsListener {
-    constructor(alarmRepository) {
+    constructor(alarmRepository, alarmsGateway) {
         this.alarmRepository = alarmRepository;
-        console.log('✅ AlarmsListener 인스턴스 생성됨');
+        this.alarmsGateway = alarmsGateway;
     }
     async handleListCreatedEvent(payload) {
-        console.log('📢 list.created 이벤트 감지됨! (AlarmsListener)', payload);
+        console.log('list.created 이벤트 감지됨! (AlarmsListener)', payload);
         const membersToNotify = payload.members.filter((id) => id !== payload.senderId);
         if (membersToNotify.length === 0) {
-            console.log('⚠️ 알람을 받을 멤버가 없음.');
+            console.log('알람을 받을 멤버가 없음.');
             return;
         }
-        console.log('📝 알람을 DB에 저장 중... 대상 멤버:', membersToNotify);
+        console.log('알람을 DB에 저장 중... 대상 멤버:', membersToNotify);
         const alarms = membersToNotify.map((memberId) => this.alarmRepository.create({
             userId: memberId,
             message: payload.message,
@@ -39,10 +40,13 @@ let AlarmsListener = class AlarmsListener {
         }));
         try {
             await this.alarmRepository.save(alarms);
-            console.log('✅ 모든 알람이 성공적으로 저장됨');
+            console.log('모든 알람이 성공적으로 저장됨');
+            membersToNotify.forEach((userId) => {
+                this.alarmsGateway.notifyUser(userId);
+            });
         }
         catch (error) {
-            console.error('❌ 알람 저장 실패:', error);
+            console.error('알람 저장 실패:', error);
         }
     }
 };
@@ -56,6 +60,7 @@ __decorate([
 exports.AlarmsListener = AlarmsListener = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(alarm_entity_1.Alarm)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        alarms_gateway_1.AlarmsGateway])
 ], AlarmsListener);
 //# sourceMappingURL=alarms.listener.js.map

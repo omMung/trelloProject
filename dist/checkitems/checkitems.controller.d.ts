@@ -7,5 +7,5 @@ export declare class CheckitemsController {
     constructor(checkitemsService: CheckitemsService);
     create(createCheckitemDto: CreateCheckitemDto): Promise<CheckItem>;
     update(id: number, updateCheckitemDto: UpdateCheckitemDto): Promise<CheckItem>;
-    remove(id: number, CheckListId: number): Promise<void>;
+    remove(id: number, UpdateCheckitemDto: UpdateCheckitemDto): Promise<void>;
 }

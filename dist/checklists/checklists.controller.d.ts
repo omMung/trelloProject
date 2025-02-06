@@ -6,7 +6,7 @@ export declare class ChecklistsController {
     private readonly checklistsService;
     constructor(checklistsService: ChecklistsService);
     create(createChecklistDto: CreateChecklistDto): Promise<CheckList>;
-    findAll(req: any): Promise<CheckList[]>;
+    findAll(UpdateChecklistDto: UpdateChecklistDto): Promise<CheckList[]>;
     update(id: number, updateChecklistDto: UpdateChecklistDto): Promise<CheckList>;
-    remove(id: number, cardId: number): Promise<void>;
+    remove(id: number, updateChecklistDto: UpdateChecklistDto): Promise<void>;
 }

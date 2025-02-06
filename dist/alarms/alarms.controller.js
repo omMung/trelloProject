@@ -23,10 +23,13 @@ let AlarmsController = class AlarmsController {
     create(createAlarmDto) {
         return this.alarmService.create(createAlarmDto);
     }
-    findByUserId(id) {
-        return this.alarmService.findByUserId(+id);
+    findByUserId(userId) {
+        return this.alarmService.findByUserId(+userId);
     }
     remove(id) {
+        return this.alarmService.remove(+id);
+    }
+    removeAll(id) {
         return this.alarmService.remove(+id);
     }
 };
@@ -39,8 +42,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AlarmsController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)(':userId'),
+    __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
@@ -52,8 +55,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AlarmsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Delete)(':userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AlarmsController.prototype, "removeAll", null);
 exports.AlarmsController = AlarmsController = __decorate([
-    (0, common_1.Controller)('alarm'),
+    (0, common_1.Controller)('alarms'),
     __metadata("design:paramtypes", [alarms_service_1.AlarmsService])
 ], AlarmsController);
 //# sourceMappingURL=alarms.controller.js.map

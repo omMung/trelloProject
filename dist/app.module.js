@@ -29,11 +29,13 @@ const labels_module_1 = require("./labels/labels.module");
 const checkitems_module_1 = require("./checkitems/checkitems.module");
 const card_labels_module_1 = require("./card-labels/card-labels.module");
 const file_module_1 = require("./files/file.module");
-const joi_1 = __importDefault(require("joi"));
 const jwt_1 = require("@nestjs/jwt");
 const auth_module_1 = require("./auth/auth.module");
 const redis_module_1 = require("./redis/redis.module");
 const event_emitter_1 = require("@nestjs/event-emitter");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
+const joi_1 = __importDefault(require("joi"));
 const typeOrmModuleOptions = {
     useFactory: async (configService) => ({
         namingStrategy: new typeorm_naming_strategies_1.SnakeNamingStrategy(),
@@ -80,6 +82,10 @@ exports.AppModule = AppModule = __decorate([
                         expiresIn: configService.get('ACCESS_EXPIRES_IN'),
                     },
                 }),
+            }),
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, '..', 'dist', 'public'),
+                serveRoot: '/',
             }),
             users_module_1.UsersModule,
             boards_module_1.BoardsModule,

@@ -57,13 +57,13 @@ export class ListsService {
       where: { boardId },
       select: ['userId'], // 멤버들의 유저 ID만 가져오기
     });
-
+    console.log('members 콘솔 내용@@@', members);
     if (!members.length) {
       throw new NotFoundException('해당 보드에 소속된 멤버가 없습니다.');
     }
 
     // 모든 멤버의 ID 배열 생성
-    const memberIds = members.map((member) => member.id);
+    const memberIds = members.map((member) => member.userId);
 
     return { user, members: memberIds }; // ✅ 유저 정보 + 보드 멤버 ID 목록 반환
   }

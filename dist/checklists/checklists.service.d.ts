@@ -6,7 +6,8 @@ export declare class ChecklistsService {
     private checklistRepository;
     constructor(checklistRepository: Repository<CheckList>);
     create(createChecklistDto: CreateChecklistDto): Promise<CheckList>;
-    findAllByUserId(userId: number): Promise<CheckList[]>;
+    findAllByCardId(updateChecklistDto: UpdateChecklistDto): Promise<CheckList[]>;
     update(id: number, updateChecklistDto: UpdateChecklistDto): Promise<CheckList>;
-    remove(id: number, cardId: number): Promise<void>;
+    remove(id: number, updateChecklistDto: UpdateChecklistDto): Promise<void>;
+    exists(checkListId: number): Promise<boolean>;
 }
