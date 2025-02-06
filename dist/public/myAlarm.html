@@ -76,7 +76,7 @@
 
     <script>
         const userId = 1; // 현재 로그인한 사용자 ID (임시)
-        const serverUrl = "http://localhost:3000"; // ✅ 서버 주소 변경
+        const serverUrl = "https://www.yangs.site"; // ✅ 서버 주소 변경
         const socket = io(`${serverUrl}`, { query: { userId } });
 
         socket.on("connect", () => {
@@ -106,10 +106,6 @@
                 console.error("❌ 알람 가져오기 실패:", error);
             }
         }
-
-        // 페이지 로딩 시 알람 불러오기
-        window.onload = fetchNotifications;
-
 
         function displayNotification(alarm) {
             const notificationContainer = document.getElementById("notifications");
