@@ -20,6 +20,8 @@ import { CardLabelsModule } from './card-labels/card-labels.module';
 import { join } from 'path';
 import Joi from 'joi';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module';
 
 const typeOrmModuleOptions = {
   useFactory: async (
@@ -50,8 +52,8 @@ const typeOrmModuleOptions = {
         DB_PORT: Joi.number().required(),
         DB_NAME: Joi.string().required(),
         DB_SYNC: Joi.boolean().required(),
-        JWT_SECRET: Joi.string().required(), // JWT 시크릿 키 검증 추가
-        JWT_EXPIRES_IN: Joi.string().default('1h'), // JWT 만료시간 검증 추가
+        ACCESS_SECRET_KEY: Joi.string().required(), // 액세스 시크릿 키 검증 추가
+        ACCESS_EXPIRES_IN: Joi.string().default('1m'), // 액세스 만료시간 검증 추가
       }),
     }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
@@ -60,8 +62,10 @@ const typeOrmModuleOptions = {
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
+        secret: configService.get<string>('ACCESS_SECRET_KEY'),
+        signOptions: {
+          expiresIn: configService.get<string>('ACCESS_EXPIRES_IN'),
+        },
       }),
     }),
     UsersModule,
@@ -76,9 +80,11 @@ const typeOrmModuleOptions = {
     LabelsModule,
     CheckitemsModule,
     CardLabelsModule,
+    AuthModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
-  exports: [JwtModule],
+  exports: [JwtModule, AuthModule],
 })
 export class AppModule {}
