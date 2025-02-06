@@ -4,6 +4,6 @@ export declare class AlarmsController {
     private readonly alarmService;
     constructor(alarmService: AlarmsService);
     create(createAlarmDto: CreateAlarmDto): string;
-    findByUserId(id: Number): Promise<import("./entities/alarm.entity").Alarm[]>;
-    remove(id: string): string;
+    findByUserId(userId: number): Promise<import("./entities/alarm.entity").Alarm[]>;
+    remove(id: string): Promise<void>;
 }

@@ -6,5 +6,5 @@ export declare class AlarmsService {
     constructor(alarmRepository: Repository<Alarm>);
     create(createAlarmDto: CreateAlarmDto): string;
     findByUserId(userId: number): Promise<Alarm[]>;
-    remove(id: number): string;
+    remove(id: number): Promise<void>;
 }

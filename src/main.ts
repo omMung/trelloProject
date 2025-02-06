@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { readFileSync } from 'fs';
-import cors from 'cors';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +12,8 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   });
+
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   await app.listen(3000);
   console.log('🚀 서버 실행 중: http://localhost:3000');

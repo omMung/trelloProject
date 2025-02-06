@@ -10,7 +10,7 @@ import {
 import { AlarmsService } from './alarms.service';
 import { CreateAlarmDto } from './dto/create-alarm.dto';
 
-@Controller('alarm')
+@Controller('alarms')
 export class AlarmsController {
   constructor(private readonly alarmService: AlarmsService) {}
 
@@ -19,13 +19,18 @@ export class AlarmsController {
     return this.alarmService.create(createAlarmDto);
   }
 
-  @Get(':id')
-  findByUserId(@Param('id') id: Number) {
-    return this.alarmService.findByUserId(+id);
+  @Get(':userId')
+  findByUserId(@Param('userId') userId: number) {
+    return this.alarmService.findByUserId(+userId);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
+    return this.alarmService.remove(+id);
+  }
+
+  @Delete(':userId')
+  removeAll(@Param('userId') id: string) {
     return this.alarmService.remove(+id);
   }
 }
