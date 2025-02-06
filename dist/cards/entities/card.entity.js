@@ -16,6 +16,7 @@ const card_member_entity_1 = require("../../card-members/entities/card-member.en
 const checklist_entity_1 = require("../../checklists/entities/checklist.entity");
 const card_label_entity_1 = require("../../card-labels/entities/card-label.entity");
 const list_entity_1 = require("../../lists/entities/list.entity");
+const file_entity_1 = require("../../files/entities/file.entity");
 let Card = class Card {
 };
 exports.Card = Card;
@@ -71,6 +72,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => card_label_entity_1.CardLabel, (cardLabel) => cardLabel.card),
     __metadata("design:type", Array)
 ], Card.prototype, "cardLabel", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => file_entity_1.File, (file) => file.card),
+    __metadata("design:type", Array)
+], Card.prototype, "files", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => list_entity_1.List, (list) => list.cards, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'list_id' }),

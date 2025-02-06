@@ -26,7 +26,7 @@ __decorate([
 ], UpdateUserDto.prototype, "phoneNumber", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MinLength)(0),
+    (0, class_validator_1.MinLength)(6),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateUserDto.prototype, "password", void 0);

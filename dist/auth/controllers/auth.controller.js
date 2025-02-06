@@ -33,13 +33,37 @@ let AuthController = class AuthController {
     }
     async login(loginDto, res) {
         const data = await this.authService.login(loginDto);
-        res.setHeader('Authorization', `Bearer ${data.accessToken}`);
-        return res.status(200).json(data);
+        const { accessToken, refreshToken, user } = data;
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 2 * 60 * 1000,
+        });
+        return res.json({
+            message: '로그인 되었습니다.',
+        });
     }
     async logout(req) {
-        const token = req.headers.authorization.split(' ')[1];
-        await this.authService.logout(token);
+        const userId = req.user.id;
+        const accessToken = req.headers.authorization.split(' ')[1];
+        await this.authService.logout(userId, accessToken);
         return { message: '로그아웃 되었습니다.' };
+    }
+    async refreshToken(req, res) {
+        const data = await this.authService.refreshToken(req);
+        const { accessToken, refreshToken } = data;
+        res.setHeader('Authorization', `Bearer ${accessToken}`);
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 2 * 60 * 1000,
+        });
+        return res.json({
+            message: '리프레시 토큰 -> 액세스 토큰 재발급 되었습니다.',
+        });
     }
 };
 exports.AuthController = AuthController;
@@ -73,6 +97,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refreshToken", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService,

@@ -4,7 +4,7 @@ export declare class CreateCardDto {
     title: String;
     color?: String;
     description?: String;
-    startData?: String;
-    dueData?: String;
+    startDate?: String;
+    dueDate?: String;
     status?: boolean;
 }

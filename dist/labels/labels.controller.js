@@ -17,12 +17,15 @@ const common_1 = require("@nestjs/common");
 const labels_service_1 = require("./labels.service");
 const create_label_dto_1 = require("./dto/create-label.dto");
 const update_label_dto_1 = require("./dto/update-label.dto");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let LabelsController = class LabelsController {
     constructor(labelsService) {
         this.labelsService = labelsService;
     }
-    async create(createLabelDto) {
-        return this.labelsService.create(createLabelDto);
+    async create(req, createLabelDto) {
+        const user = req.user;
+        const { title, color, boardId } = createLabelDto;
+        return this.labelsService.create(user.id, title, color, boardId);
     }
     findAll() {
         return this.labelsService.findAll();
@@ -39,10 +42,12 @@ let LabelsController = class LabelsController {
 };
 exports.LabelsController = LabelsController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_label_dto_1.CreateLabelDto]),
+    __metadata("design:paramtypes", [Object, create_label_dto_1.CreateLabelDto]),
     __metadata("design:returntype", Promise)
 ], LabelsController.prototype, "create", null);
 __decorate([

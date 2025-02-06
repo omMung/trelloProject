@@ -16,6 +16,7 @@ const member_entity_1 = require("../../members/entities/member.entity");
 const user_entity_1 = require("../../users/entities/user.entity");
 const visibility_enum_1 = require("../dto/visibility.enum");
 const typeorm_1 = require("typeorm");
+const label_entity_1 = require("../../labels/entities/label.entity");
 let Board = class Board {
 };
 exports.Board = Board;
@@ -62,6 +63,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => member_entity_1.Member, (member) => member.board),
     __metadata("design:type", Array)
 ], Board.prototype, "members", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => label_entity_1.Label, (label) => label.board),
+    __metadata("design:type", Array)
+], Board.prototype, "label", void 0);
 exports.Board = Board = __decorate([
     (0, typeorm_1.Entity)({
         name: 'Board',

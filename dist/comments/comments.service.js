@@ -21,16 +21,17 @@ const common_1 = require("@nestjs/common");
 const typeorm_2 = require("@nestjs/typeorm");
 const lodash_1 = __importDefault(require("lodash"));
 const comment_entity_1 = require("./entities/comment.entity");
+const comment_exception_1 = require("../common/exceptions/comment.exception");
 let CommentsService = class CommentsService {
     constructor(commentRepository) {
         this.commentRepository = commentRepository;
     }
     async createComment(cardId, userId, content) {
         if (lodash_1.default.isEmpty(content.trim())) {
-            throw new common_1.BadRequestException('댓글 내용을 비울 수 없습니다.');
+            throw new comment_exception_1.EmptyCommentException();
         }
         if (content.length > 50) {
-            throw new common_1.BadRequestException('댓글 내용은 50자를 넘길 수 없습니다.');
+            throw new comment_exception_1.CommentLengthExceededException();
         }
         const newComment = this.commentRepository.create({
             cardId,
@@ -47,16 +48,16 @@ let CommentsService = class CommentsService {
     async getCommentById(id) {
         const comment = await this.commentRepository.findOneBy({ id });
         if (lodash_1.default.isNil(comment)) {
-            throw new common_1.NotFoundException('댓글을 찾을 수 없습니다.');
+            throw new comment_exception_1.CommentNotFoundException();
         }
         return comment;
     }
     async updateComment(id, userId, content) {
         if (lodash_1.default.isEmpty(content.trim())) {
-            throw new common_1.BadRequestException('댓글 내용을 비울 수 없습니다.');
+            throw new comment_exception_1.EmptyCommentException();
         }
         if (content.length > 50) {
-            throw new common_1.BadRequestException('댓글 내용은 50자를 넘길 수 없습니다.');
+            throw new comment_exception_1.CommentLengthExceededException();
         }
         await this.verifyComment(id, userId);
         await this.commentRepository.update({ id }, { content });
@@ -68,11 +69,9 @@ let CommentsService = class CommentsService {
         return { id, message: '삭제되었습니다.' };
     }
     async verifyComment(id, userId) {
-        const comment = await this.commentRepository.findOneBy({
-            id,
-        });
+        const comment = await this.commentRepository.findOneBy({ id });
         if (lodash_1.default.isNil(comment) || comment.userId !== userId) {
-            throw new common_1.NotFoundException('댓글을 찾을 수 없거나 수정/삭제할 권한이 없습니다.');
+            throw new comment_exception_1.CommentPermissionException();
         }
     }
 };

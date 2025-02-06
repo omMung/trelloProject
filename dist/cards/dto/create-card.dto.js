@@ -39,11 +39,11 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateCardDto.prototype, "startData", void 0);
+], CreateCardDto.prototype, "startDate", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreateCardDto.prototype, "dueData", void 0);
+], CreateCardDto.prototype, "dueDate", void 0);
 __decorate([
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)

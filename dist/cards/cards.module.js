@@ -12,14 +12,23 @@ const typeorm_1 = require("@nestjs/typeorm");
 const cards_service_1 = require("./cards.service");
 const cards_controller_1 = require("./cards.controller");
 const card_entity_1 = require("./entities/card.entity");
+const list_entity_1 = require("../lists/entities/list.entity");
+const member_entity_1 = require("../members/entities/member.entity");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const jwt_1 = require("@nestjs/jwt");
+const users_module_1 = require("../users/users.module");
 let CardsModule = class CardsModule {
 };
 exports.CardsModule = CardsModule;
 exports.CardsModule = CardsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([card_entity_1.Card])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([card_entity_1.Card, list_entity_1.List, member_entity_1.Member]),
+            jwt_1.JwtModule.register({}),
+            users_module_1.UsersModule,
+        ],
         controllers: [cards_controller_1.CardsController],
-        providers: [cards_service_1.CardsService],
+        providers: [cards_service_1.CardsService, jwt_auth_guard_1.JwtAuthGuard],
     })
 ], CardsModule);
 //# sourceMappingURL=cards.module.js.map

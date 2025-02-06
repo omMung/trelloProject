@@ -17,18 +17,26 @@ const common_1 = require("@nestjs/common");
 const card_labels_service_1 = require("./card-labels.service");
 const create_card_label_dto_1 = require("./dto/create-card-label.dto");
 const update_card_label_dto_1 = require("./dto/update-card-label.dto");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let CardLabelsController = class CardLabelsController {
     constructor(cardLabelsService) {
         this.cardLabelsService = cardLabelsService;
     }
-    create(createCardLabelDto) {
-        return this.cardLabelsService.create(createCardLabelDto);
+    async create(req, createCardLabelDto) {
+        const user = req.user;
+        const { cardId, labelId } = createCardLabelDto;
+        return this.cardLabelsService.create(user.id, cardId, labelId);
     }
-    findAll() {
-        return this.cardLabelsService.findAll();
+    findAll(req, body) {
+        const user = req.user;
+        const cardId = body.cardId;
+        console.log(cardId);
+        return this.cardLabelsService.findAll(user.id, cardId);
     }
-    update(id, updateCardLabelDto) {
-        return this.cardLabelsService.update(+id, updateCardLabelDto);
+    update(id, updateCardLabelDto, req) {
+        const user = req.user;
+        const { cardId, labelId } = updateCardLabelDto;
+        return this.cardLabelsService.update(user.id, cardId, labelId, +id);
     }
     remove(id) {
         return this.cardLabelsService.remove(+id);
@@ -36,27 +44,35 @@ let CardLabelsController = class CardLabelsController {
 };
 exports.CardLabelsController = CardLabelsController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_card_label_dto_1.CreateCardLabelDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, create_card_label_dto_1.CreateCardLabelDto]),
+    __metadata("design:returntype", Promise)
 ], CardLabelsController.prototype, "create", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], CardLabelsController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_card_label_dto_1.UpdateCardLabelDto]),
+    __metadata("design:paramtypes", [String, update_card_label_dto_1.UpdateCardLabelDto, Object]),
     __metadata("design:returntype", void 0)
 ], CardLabelsController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

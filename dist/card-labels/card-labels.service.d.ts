@@ -1,16 +1,17 @@
 import { CardLabel } from './entities/card-label.entity';
-import { CreateCardLabelDto } from './dto/create-card-label.dto';
-import { UpdateCardLabelDto } from './dto/update-card-label.dto';
 import { Repository } from 'typeorm';
 import { Card } from '../cards/entities/card.entity';
 import { Label } from '../labels/entities/label.entity';
+import { Member } from '../members/entities/member.entity';
 export declare class CardLabelsService {
     private readonly cardLabelRepository;
     private readonly cardRepository;
     private readonly labelRepository;
-    constructor(cardLabelRepository: Repository<CardLabel>, cardRepository: Repository<Card>, labelRepository: Repository<Label>);
-    create(createCardLabelDto: CreateCardLabelDto): Promise<CardLabel>;
-    findAll(): Promise<CardLabel[]>;
-    update(id: number, updateCardLabelDto: UpdateCardLabelDto): Promise<CardLabel>;
+    private readonly memberRepository;
+    constructor(cardLabelRepository: Repository<CardLabel>, cardRepository: Repository<Card>, labelRepository: Repository<Label>, memberRepository: Repository<Member>);
+    create(userId: number, cardId: number, labelId: number): Promise<CardLabel>;
+    findAll(userId: number, cardId: number): Promise<CardLabel[]>;
+    update(userId: number, cardId: number, labelId: number, id: number): Promise<CardLabel>;
     remove(id: number): Promise<string>;
+    isUserMember(userId: number, boardId: number): Promise<void>;
 }

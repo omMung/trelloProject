@@ -17,11 +17,6 @@ class CreateBoardDto {
 exports.CreateBoardDto = CreateBoardDto;
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], CreateBoardDto.prototype, "userId", void 0);
-__decorate([
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateBoardDto.prototype, "title", void 0);

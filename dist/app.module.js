@@ -28,8 +28,12 @@ const card_members_module_1 = require("./card-members/card-members.module");
 const labels_module_1 = require("./labels/labels.module");
 const checkitems_module_1 = require("./checkitems/checkitems.module");
 const card_labels_module_1 = require("./card-labels/card-labels.module");
-const serve_static_1 = require("@nestjs/serve-static");
+const file_module_1 = require("./files/file.module");
+const jwt_1 = require("@nestjs/jwt");
+const auth_module_1 = require("./auth/auth.module");
+const redis_module_1 = require("./redis/redis.module");
 const event_emitter_1 = require("@nestjs/event-emitter");
+const serve_static_1 = require("@nestjs/serve-static");
 const path_1 = require("path");
 const joi_1 = __importDefault(require("joi"));
 const typeOrmModuleOptions = {
@@ -51,6 +55,7 @@ let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
+    (0, common_1.Global)(),
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({
@@ -62,10 +67,22 @@ exports.AppModule = AppModule = __decorate([
                     DB_PORT: joi_1.default.number().required(),
                     DB_NAME: joi_1.default.string().required(),
                     DB_SYNC: joi_1.default.boolean().required(),
+                    ACCESS_SECRET_KEY: joi_1.default.string().required(),
+                    ACCESS_EXPIRES_IN: joi_1.default.string().default('1m'),
                 }),
             }),
             event_emitter_1.EventEmitterModule.forRoot(),
             typeorm_1.TypeOrmModule.forRootAsync(typeOrmModuleOptions),
+            jwt_1.JwtModule.registerAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: async (configService) => ({
+                    secret: configService.get('ACCESS_SECRET_KEY'),
+                    signOptions: {
+                        expiresIn: configService.get('ACCESS_EXPIRES_IN'),
+                    },
+                }),
+            }),
             serve_static_1.ServeStaticModule.forRoot({
                 rootPath: (0, path_1.join)(__dirname, '..', 'dist', 'public'),
                 serveRoot: '/',
@@ -82,9 +99,13 @@ exports.AppModule = AppModule = __decorate([
             labels_module_1.LabelsModule,
             checkitems_module_1.CheckitemsModule,
             card_labels_module_1.CardLabelsModule,
+            file_module_1.FileModule,
+            auth_module_1.AuthModule,
+            redis_module_1.RedisModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
+        exports: [jwt_1.JwtModule, auth_module_1.AuthModule],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

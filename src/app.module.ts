@@ -17,11 +17,11 @@ import { LabelsModule } from './labels/labels.module';
 import { CheckitemsModule } from './checkitems/checkitems.module';
 import { CardLabelsModule } from './card-labels/card-labels.module';
 import { FileModule } from './files/file.module';
-import Joi from 'joi';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import Joi from 'joi';
 
@@ -59,8 +59,17 @@ const typeOrmModuleOptions = {
       }),
     }),
     EventEmitterModule.forRoot(), // 이벤트 시스템 활성화
-    EventEmitterModule.forRoot(), // 이벤트 시스템 활성화
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('ACCESS_SECRET_KEY'),
+        signOptions: {
+          expiresIn: configService.get<string>('ACCESS_EXPIRES_IN'),
+        },
+      }),
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'dist', 'public'),
       serveRoot: '/', //  루트 URL에서 정적 파일 제공

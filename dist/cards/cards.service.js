@@ -20,10 +20,14 @@ const lodash_1 = __importDefault(require("lodash"));
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const list_entity_1 = require("../lists/entities/list.entity");
 const card_entity_1 = require("./entities/card.entity");
+const member_entity_1 = require("../members/entities/member.entity");
 let CardsService = class CardsService {
-    constructor(cardsRepository) {
+    constructor(cardsRepository, listsRepository, memberRepository) {
         this.cardsRepository = cardsRepository;
+        this.listsRepository = listsRepository;
+        this.memberRepository = memberRepository;
     }
     async findLastPosition() {
         const lastCard = await this.cardsRepository.find({
@@ -34,8 +38,20 @@ let CardsService = class CardsService {
         });
         return lastCard[0]?.position ?? 0;
     }
-    async createCard(createCardDto) {
+    async createCard(req, createCardDto) {
         const { listId, title, description, color, status } = createCardDto;
+        const verifyListId = await this.listsRepository.findOne({
+            where: { id: Number(listId) },
+        });
+        if (lodash_1.default.isNil(verifyListId)) {
+            throw new common_1.NotFoundException('리스트 아이디가 존재하지 않습니다.');
+        }
+        const userId = await this.memberRepository.findOne({
+            where: { userId: req.user.id, boardId: verifyListId.boardId },
+        });
+        if (lodash_1.default.isNil(userId)) {
+            throw new common_1.NotFoundException('보드에 소속되지 않아 생성이 불가합니다.');
+        }
         const lastPosition = await this.findLastPosition();
         const card = this.cardsRepository.create({
             listId: Number(listId),
@@ -48,12 +64,28 @@ let CardsService = class CardsService {
         await this.cardsRepository.save(card);
         return card;
     }
-    async findOne(id, listId) {
-        return await this.cardsRepository.findOneBy({ id });
+    async findOne(id, findCardDto) {
+        const byCard = await this.cardsRepository.findOneBy({ id });
+        if (findCardDto.listId !== byCard.listId) {
+            throw new common_1.NotFoundException('리스트 아이디가 존재하지 않습니다.');
+        }
+        return byCard;
     }
-    async updateCard(id, updateCardDto) {
+    async updateCard(req, id, updateCardDto) {
         const { listId, title, description, color, status } = updateCardDto;
-        await this.verifyCards(id, updateCardDto);
+        const verifyListId = await this.listsRepository.findOne({
+            where: { id: Number(listId) },
+        });
+        if (lodash_1.default.isNil(verifyListId)) {
+            throw new common_1.NotFoundException('리스트 아이디가 존재하지 않습니다.');
+        }
+        const userId = await this.memberRepository.findOne({
+            where: { userId: req.user.id, boardId: verifyListId.boardId },
+        });
+        if (lodash_1.default.isNil(userId)) {
+            throw new common_1.NotFoundException('보드에 소속되지 않아 생성이 불가합니다.');
+        }
+        await this.verifyCards(id);
         await this.cardsRepository.update({ id }, {
             listId: Number(listId),
             title: title,
@@ -62,15 +94,28 @@ let CardsService = class CardsService {
             status,
         });
     }
-    async deleteCard(id, listId) {
+    async deleteCard(req, id, deleteCardDto) {
+        const verifyListId = await this.listsRepository.findOne({
+            where: { id: Number(deleteCardDto.listId) },
+        });
+        if (lodash_1.default.isNil(verifyListId)) {
+            throw new common_1.NotFoundException('리스트 아이디가 존재하지 않습니다.');
+        }
+        const userId = await this.memberRepository.findOne({
+            where: { userId: req.user.id, boardId: verifyListId.boardId },
+        });
+        if (lodash_1.default.isNil(userId)) {
+            throw new common_1.NotFoundException('보드에 소속되지 않아 생성이 불가합니다.');
+        }
+        await this.verifyCards(id);
         await this.cardsRepository.delete({ id });
     }
-    async verifyCards(id, updateCardDto) {
+    async verifyCards(id) {
         const pickCard = await this.cardsRepository.findOneBy({
             id,
         });
-        if (lodash_1.default.isNil(pickCard) || pickCard.listId !== updateCardDto.listId) {
-            throw new common_1.NotFoundException('메시지를 찾을 수 없거나 수정/삭제할 권한이 없습니다.');
+        if (lodash_1.default.isNil(pickCard)) {
+            throw new common_1.NotFoundException('해당 카드를 찾을 수 없습니다.');
         }
     }
     async updatePositions(updateCardPositionsDto) {
@@ -104,6 +149,10 @@ exports.CardsService = CardsService;
 exports.CardsService = CardsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(card_entity_1.Card)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(list_entity_1.List)),
+    __param(2, (0, typeorm_1.InjectRepository)(member_entity_1.Member)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], CardsService);
 //# sourceMappingURL=cards.service.js.map

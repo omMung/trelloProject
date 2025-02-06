@@ -18,21 +18,24 @@ const cards_service_1 = require("./cards.service");
 const create_card_dto_1 = require("./dto/create-card.dto");
 const update_card_dto_1 = require("./dto/update-card.dto");
 const update_card_positions_dto_1 = require("./dto/update-card-positions.dto");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const find_card_dto_1 = require("./dto/find-card.dto");
+const delete_card_dto_1 = require("./dto/delete-card.dto");
 let CardsController = class CardsController {
     constructor(cardsService) {
         this.cardsService = cardsService;
     }
-    async createCard(createCardDto) {
-        return await this.cardsService.createCard(createCardDto);
+    async createCard(req, createCardDto) {
+        return await this.cardsService.createCard(req, createCardDto);
     }
-    findOne(id, listId) {
-        return this.cardsService.findOne(+id, listId);
+    findOne(id, findCardDto) {
+        return this.cardsService.findOne(+id, findCardDto);
     }
-    updateCard(id, updateCardDto) {
-        return this.cardsService.updateCard(+id, updateCardDto);
+    updateCard(req, id, updateCardDto) {
+        return this.cardsService.updateCard(req, +id, updateCardDto);
     }
-    deleteCard(id, listId) {
-        return this.cardsService.deleteCard(+id, listId);
+    deleteCard(req, id, deleteCardDto) {
+        return this.cardsService.deleteCard(req, +id, deleteCardDto);
     }
     async updatePositions(UpdateCardPositionsDto) {
         await this.cardsService.updatePositions(UpdateCardPositionsDto);
@@ -41,10 +44,12 @@ let CardsController = class CardsController {
 };
 exports.CardsController = CardsController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_card_dto_1.CreateCardDto]),
+    __metadata("design:paramtypes", [Object, create_card_dto_1.CreateCardDto]),
     __metadata("design:returntype", Promise)
 ], CardsController.prototype, "createCard", null);
 __decorate([
@@ -52,23 +57,25 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:paramtypes", [String, find_card_dto_1.FindCardDto]),
     __metadata("design:returntype", void 0)
 ], CardsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_card_dto_1.UpdateCardDto]),
+    __metadata("design:paramtypes", [Object, String, update_card_dto_1.UpdateCardDto]),
     __metadata("design:returntype", void 0)
 ], CardsController.prototype, "updateCard", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)('list_id')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:paramtypes", [Object, String, delete_card_dto_1.DeleteCardDto]),
     __metadata("design:returntype", void 0)
 ], CardsController.prototype, "deleteCard", null);
 __decorate([
