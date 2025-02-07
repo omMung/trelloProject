@@ -55,7 +55,7 @@ export class ListsService {
     // 해당 보드의 모든 멤버 조회
     const members = await this.membersRepository.find({
       where: { boardId },
-      select: ['id'], // 멤버 ID만 가져오기
+      select: ['userId'], // 멤버 ID만 가져오기
     });
 
     if (!members.length) {
