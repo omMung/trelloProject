@@ -80,4 +80,9 @@ jobs:
             npm run build
 
             # 서버 재시작
+<<<<<<< HEAD
+            pm2 restart trello || pm2 start dist/main.js --name "trello"
+          # pm2 restart trello || pm2 start npm --name "trello" -- start
+=======
             pm2 restart trello || pm2 start npm --name "trello" -- start
+>>>>>>> dev

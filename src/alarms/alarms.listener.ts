@@ -62,9 +62,9 @@ export class AlarmsListener {
     'comment.deleted',
   ];
 
-  @OnEvent('*') // 모든 이벤트 감지
+  @OnEvent('list.created') // 모든 이벤트 감지
   async handleDynamicEvent(
-    event: string,
+    //event: string,
     payload: {
       senderId: number;
       boardId: number;
@@ -73,14 +73,76 @@ export class AlarmsListener {
     },
   ) {
     // SUPPORTED_EVENTS에 포함되는 조건이 true라면 감지
-    if (this.SUPPORTED_EVENTS.includes(event)) {
-      console.log(`[이벤트] ${event} 감지됨:`, payload);
-      await this.createAndNotifyAlarms(
-        payload.senderId,
-        payload.boardId,
-        payload.members,
-        payload.message,
-      );
-    }
+    // if (this.SUPPORTED_EVENTS.includes(event)) {
+
+    await this.createAndNotifyAlarms(
+      payload.senderId,
+      payload.boardId,
+      payload.members,
+      payload.message,
+    );
+    // }
+  }
+  @OnEvent('comment.created') // 모든 이벤트 감지
+  async handleDynamicEvent2(
+    //event: string,
+    payload: {
+      senderId: number;
+      boardId: number;
+      members: number[];
+      message: string;
+    },
+  ) {
+    // SUPPORTED_EVENTS에 포함되는 조건이 true라면 감지
+    // if (this.SUPPORTED_EVENTS.includes(event)) {
+
+    await this.createAndNotifyAlarms(
+      payload.senderId,
+      payload.boardId,
+      payload.members,
+      payload.message,
+    );
+    // }
+  }
+  @OnEvent('comment.updated') // 모든 이벤트 감지
+  async handleDynamicEvent3(
+    //event: string,
+    payload: {
+      senderId: number;
+      boardId: number;
+      members: number[];
+      message: string;
+    },
+  ) {
+    // SUPPORTED_EVENTS에 포함되는 조건이 true라면 감지
+    // if (this.SUPPORTED_EVENTS.includes(event)) {
+
+    await this.createAndNotifyAlarms(
+      payload.senderId,
+      payload.boardId,
+      payload.members,
+      payload.message,
+    );
+    // }
+  }
+  @OnEvent('comment.deleted') // 모든 이벤트 감지
+  async handleDynamicEvent4(
+    //event: string,
+    payload: {
+      senderId: number;
+      boardId: number;
+      members: number[];
+      message: string;
+    },
+  ) {
+    // SUPPORTED_EVENTS에 포함되는 조건이 true라면 감지
+    // if (this.SUPPORTED_EVENTS.includes(event)) {
+
+    await this.createAndNotifyAlarms(
+      payload.senderId,
+      payload.boardId,
+      payload.members,
+      payload.message,
+    );
   }
 }

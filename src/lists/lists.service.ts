@@ -99,12 +99,14 @@ export class ListsService {
     console.log('리스트 생성 완료:', savedList);
 
     // 이벤트 발생
-    this.eventEmitter.emit('list.created', {
+    const emitResult = this.eventEmitter.emit('list.created', {
       senderId: user.id,
       boardId,
       members,
       message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
     });
+
+    console.log('@@@@@@@@@@에미터 호출 확인', emitResult);
 
     // 이벤트 발생 로그 추가
     console.log('list.created 이벤트 발생:', {
