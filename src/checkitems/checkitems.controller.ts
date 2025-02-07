@@ -23,6 +23,16 @@ export class CheckitemsController {
     return this.checkitemsService.create(createCheckitemDto);
   }
 
+  // @Get()
+  // findAll() {
+  //   return this.checkitemsService.findAll();
+  // }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.checkitemsService.findOne(+id);
+  // }
+
   @Patch(':id')
   async update(
     @Param('id') id: number,
@@ -34,8 +44,8 @@ export class CheckitemsController {
   @Delete(':id')
   async remove(
     @Param('id') id: number,
-    @Body() UpdateCheckitemDto: UpdateCheckitemDto,
+    @Body() CheckListId: number,
   ): Promise<void> {
-    return this.checkitemsService.remove(id, UpdateCheckitemDto);
+    return this.checkitemsService.remove(id, CheckListId);
   }
 }

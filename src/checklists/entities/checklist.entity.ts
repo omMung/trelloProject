@@ -29,8 +29,6 @@ export class CheckList {
   @JoinColumn({ name: 'card_id' })
   card: Card;
 
-  @OneToMany(() => CheckItem, (checkItem) => checkItem.checkList, {
-    cascade: true,
-  })
-  checkItems?: CheckItem[];
+  @OneToMany(() => CheckItem, (checkItem) => checkItem.checkList)
+  checkItems: CheckItem[];
 }

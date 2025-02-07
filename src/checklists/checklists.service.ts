@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -12,6 +11,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ChecklistsService {
+  // private checkLists: CheckList[] = []; // 임시 저장소
   constructor(
     @InjectRepository(CheckList)
     private checklistRepository: Repository<CheckList>,
@@ -19,22 +19,8 @@ export class ChecklistsService {
 
   // 체크리스트 생성 메서드
   async create(createChecklistDto: CreateChecklistDto): Promise<CheckList> {
-    const { cardId, title } = createChecklistDto;
-
     try {
-      const cards = await this.checklistRepository.find({
-        where: { cardId },
-        select: ['position'],
-      });
-      // 최대 포지션 찾기
-      const maxPosition =
-        cards.length > 0 ? Math.max(...cards.map((list) => list.position)) : 0;
-
-      const newChecklist = this.checklistRepository.create({
-        cardId,
-        title,
-        position: maxPosition + 1,
-      });
+      const newChecklist = this.checklistRepository.create(createChecklistDto);
       return await this.checklistRepository.save(newChecklist);
     } catch (err) {
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
@@ -42,9 +28,8 @@ export class ChecklistsService {
   }
 
   //체크리스트 조회 메서드
-  async findAllByCardId(updateChecklistDto: UpdateChecklistDto) {
-    const { cardId } = updateChecklistDto;
-    return await this.checklistRepository.findBy({ cardId });
+  async findAllByUserId(userId: number): Promise<CheckList[]> {
+    return this.checklistRepository.find({ where: { id: userId } });
   }
 
   // 체크리스트 업데이트 메서드
@@ -52,53 +37,25 @@ export class ChecklistsService {
     id: number,
     updateChecklistDto: UpdateChecklistDto,
   ): Promise<CheckList> {
-    const { cardId, title, position } = updateChecklistDto;
-
     try {
       const checklist = await this.checklistRepository.findOneBy({ id }); // ID로 체크리스트 찾기
       if (!checklist) {
         throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
       }
-      //카드id 검증
-      if (checklist.cardId !== cardId) {
-        throw new BadRequestException(
-          '체크리스트의 카드 ID가 일치하지 않습니다.',
-        );
-      }
+      //카드id 검증 필요
 
       // 업데이트
       Object.assign(checklist, updateChecklistDto);
       return await this.checklistRepository.save(checklist);
     } catch (err) {
-      // 특정 예외를 다시 던지기
-      if (
-        err instanceof NotFoundException ||
-        err instanceof BadRequestException
-      ) {
-        throw err; // 원래의 예외를 그대로 던짐
-      }
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
   }
 
   // 체크리스트 삭제 메서드
-  async remove(
-    id: number,
-    updateChecklistDto: UpdateChecklistDto,
-  ): Promise<void> {
-    const { cardId } = updateChecklistDto;
-
+  async remove(id: number, cardId: number): Promise<void> {
     try {
-      const checklist = await this.checklistRepository.findOneBy({ id }); // ID로 체크리스트 찾기
-      if (!checklist) {
-        throw new NotFoundException('체크리스트를 찾을 수 없습니다.'); // 에러 처리
-      }
-      //카드id 검증
-      if (checklist.cardId !== cardId) {
-        throw new BadRequestException(
-          '체크리스트의 카드 ID가 일치하지 않습니다.',
-        );
-      }
+      //카드id 검증 필요
 
       const result = await this.checklistRepository.delete({ id }); // 카드 ID로 체크리스트 삭제
       if (result.affected === 0) {
@@ -107,21 +64,7 @@ export class ChecklistsService {
         ); // 에러 처리
       }
     } catch (err) {
-      // 특정 예외를 다시 던지기
-      if (
-        err instanceof NotFoundException ||
-        err instanceof BadRequestException
-      ) {
-        throw err; // 원래의 예외를 그대로 던짐
-      }
       throw new InternalServerErrorException('서버에 오류가 발생하였습니다.');
     }
-  }
-
-  async exists(checkListId: number): Promise<boolean> {
-    const count = await this.checklistRepository.count({
-      where: { id: checkListId },
-    });
-    return count > 0;
   }
 }

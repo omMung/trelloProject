@@ -44,7 +44,7 @@ export class ListsService {
 
     // 보드에 속한 멤버인지 검증
     const member = await this.membersRepository.findOne({
-      where: { userId, boardId },
+      where: { id: userId, boardId },
     });
     if (!member) {
       throw new NotFoundException(
@@ -52,27 +52,27 @@ export class ListsService {
       );
     }
 
-    // ✅ 해당 보드의 모든 멤버 조회
+    // 해당 보드의 모든 멤버 조회
     const members = await this.membersRepository.find({
       where: { boardId },
-      select: ['userId'], // 멤버들의 유저 ID만 가져오기
+      select: ['id'], // 멤버 ID만 가져오기
     });
-    console.log('members 콘솔 내용@@@', members);
+
     if (!members.length) {
       throw new NotFoundException('해당 보드에 소속된 멤버가 없습니다.');
     }
 
     // 모든 멤버의 ID 배열 생성
-    const memberIds = members.map((member) => member.userId);
+    const memberIds = members.map((member) => member.id);
 
-    return { user, members: memberIds }; // ✅ 유저 정보 + 보드 멤버 ID 목록 반환
+    return { user, members: memberIds }; // 유저 정보 + 보드 멤버 ID 목록 반환
   }
 
   async create(createListDto: CreateListDto, req: any): Promise<List> {
     const { boardId, title } = createListDto;
     const { user, members } = await this.validateUserAndMember(req, boardId);
 
-    console.log('📢 리스트 생성 요청 받음:', { boardId, title, user, members });
+    console.log('리스트 생성 요청 받음:', { boardId, title, user, members });
 
     const existingList = await this.listsRepository.findOne({
       where: { boardId, title },
@@ -96,7 +96,7 @@ export class ListsService {
     });
     const savedList = await this.listsRepository.save(list);
 
-    console.log('✅ 리스트 생성 완료:', savedList);
+    console.log('리스트 생성 완료:', savedList);
 
     // 이벤트 발생
     this.eventEmitter.emit('list.created', {

@@ -8,7 +8,7 @@ import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
   cors: { origin: 'https://www.yangs.site', credentials: true },
-}) // ✅ CORS 설정 추가
+}) // CORS 설정 추가
 export class AlarmsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
