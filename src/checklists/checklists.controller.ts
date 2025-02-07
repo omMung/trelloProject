@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Request,
   Patch,
   Param,
   Delete,
@@ -25,15 +24,9 @@ export class ChecklistsController {
   }
 
   @Get()
-  async findAll(@Request() req): Promise<CheckList[]> {
-    const userId = req.body.userId; // 리퀘스트 바디에서 유저 ID 추출
-    return this.checklistsService.findAllByUserId(userId); // 서비스에서 유저 ID로 체크리스트 조회
+  async findAll(@Body() UpdateChecklistDto: UpdateChecklistDto) {
+    return await this.checklistsService.findAllByCardId(UpdateChecklistDto); // 서비스에서 카드 ID로 체크리스트 조회
   }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.checklistsService.findOne(+id);
-  // }
 
   @Patch(':id')
   async update(
@@ -44,7 +37,10 @@ export class ChecklistsController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number, @Body() cardId: number): Promise<void> {
-    return this.checklistsService.remove(id, cardId);
+  async remove(
+    @Param('id') id: number,
+    @Body() updateChecklistDto: UpdateChecklistDto,
+  ): Promise<void> {
+    return this.checklistsService.remove(id, updateChecklistDto);
   }
 }
