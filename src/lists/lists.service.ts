@@ -44,7 +44,7 @@ export class ListsService {
 
     // 보드에 속한 멤버인지 검증
     const member = await this.membersRepository.findOne({
-      where: { id: userId, boardId },
+      where: { userId, boardId },
     });
     if (!member) {
       throw new NotFoundException(
@@ -63,7 +63,7 @@ export class ListsService {
     }
 
     // 모든 멤버의 ID 배열 생성
-    const memberIds = members.map((member) => member.id);
+    const memberIds = members.map((member) => member.userId);
 
     return { user, members: memberIds }; // 유저 정보 + 보드 멤버 ID 목록 반환
   }
