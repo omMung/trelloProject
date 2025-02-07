@@ -6,25 +6,8 @@ export declare class AlarmsListener {
     private readonly alarmsGateway;
     constructor(alarmRepository: Repository<Alarm>, alarmsGateway: AlarmsGateway);
     private createAndNotifyAlarms;
-    handleListCreatedEvent(payload: {
-        senderId: number;
-        boardId: number;
-        members: number[];
-        message: string;
-    }): Promise<void>;
-    handleCommentCreatedEvent(payload: {
-        senderId: number;
-        boardId: number;
-        members: number[];
-        message: string;
-    }): Promise<void>;
-    handleCommentUpdatedEvent(payload: {
-        senderId: number;
-        boardId: number;
-        members: number[];
-        message: string;
-    }): Promise<void>;
-    handleCommentDeletedEvent(payload: {
+    private readonly SUPPORTED_EVENTS;
+    handleDynamicEvent(event: string, payload: {
         senderId: number;
         boardId: number;
         members: number[];

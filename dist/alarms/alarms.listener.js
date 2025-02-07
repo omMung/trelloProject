@@ -23,6 +23,12 @@ let AlarmsListener = class AlarmsListener {
     constructor(alarmRepository, alarmsGateway) {
         this.alarmRepository = alarmRepository;
         this.alarmsGateway = alarmsGateway;
+        this.SUPPORTED_EVENTS = [
+            'list.created',
+            'comment.created',
+            'comment.updated',
+            'comment.deleted',
+        ];
     }
     async createAndNotifyAlarms(senderId, boardId, members, message) {
         const membersToNotify = members.filter((id) => id !== senderId);
@@ -48,48 +54,20 @@ let AlarmsListener = class AlarmsListener {
             console.error(`[알람] 저장 실패:`, error);
         }
     }
-    async handleListCreatedEvent(payload) {
-        console.log(`[이벤트] list.created 감지됨:`, payload);
-        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
-    }
-    async handleCommentCreatedEvent(payload) {
-        console.log(`[이벤트] comment.created 감지됨:`, payload);
-        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
-    }
-    async handleCommentUpdatedEvent(payload) {
-        console.log(`[이벤트] comment.updated 감지됨:`, payload);
-        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
-    }
-    async handleCommentDeletedEvent(payload) {
-        console.log(`[이벤트] comment.deleted 감지됨:`, payload);
-        await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
+    async handleDynamicEvent(event, payload) {
+        if (this.SUPPORTED_EVENTS.includes(event)) {
+            console.log(`[이벤트] ${event} 감지됨:`, payload);
+            await this.createAndNotifyAlarms(payload.senderId, payload.boardId, payload.members, payload.message);
+        }
     }
 };
 exports.AlarmsListener = AlarmsListener;
 __decorate([
-    (0, event_emitter_1.OnEvent)('list.created'),
+    (0, event_emitter_1.OnEvent)('*'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
-], AlarmsListener.prototype, "handleListCreatedEvent", null);
-__decorate([
-    (0, event_emitter_1.OnEvent)('comment.created'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AlarmsListener.prototype, "handleCommentCreatedEvent", null);
-__decorate([
-    (0, event_emitter_1.OnEvent)('comment.updated'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AlarmsListener.prototype, "handleCommentUpdatedEvent", null);
-__decorate([
-    (0, event_emitter_1.OnEvent)('comment.deleted'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AlarmsListener.prototype, "handleCommentDeletedEvent", null);
+], AlarmsListener.prototype, "handleDynamicEvent", null);
 exports.AlarmsListener = AlarmsListener = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(alarm_entity_1.Alarm)),
