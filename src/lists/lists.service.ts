@@ -96,7 +96,7 @@ export class ListsService {
     });
     const savedList = await this.listsRepository.save(list);
 
-    console.log('✅ 리스트 생성 완료:', savedList);
+    console.log('리스트 생성 완료:', savedList);
 
     // 이벤트 발생
     this.eventEmitter.emit('list.created', {
