@@ -25,7 +25,7 @@ __decorate([
     __metadata("design:type", Number)
 ], CardLabel.prototype, "labelId", void 0);
 __decorate([
-    (0, typeorm_1.Column)('int', { nullable: false }),
+    (0, typeorm_1.Column)('int', { name: 'card_id', nullable: false }),
     __metadata("design:type", Number)
 ], CardLabel.prototype, "cardId", void 0);
 __decorate([

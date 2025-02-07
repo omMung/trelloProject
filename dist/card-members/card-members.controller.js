@@ -16,61 +16,54 @@ exports.CardMembersController = void 0;
 const common_1 = require("@nestjs/common");
 const card_members_service_1 = require("./card-members.service");
 const create_card_member_dto_1 = require("./dto/create-card-member.dto");
-const update_card_member_dto_1 = require("./dto/update-card-member.dto");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let CardMembersController = class CardMembersController {
     constructor(cardMembersService) {
         this.cardMembersService = cardMembersService;
     }
-    create(createCardMemberDto) {
-        return this.cardMembersService.create(createCardMemberDto);
+    create(req, createCardMemberDto) {
+        const authId = req.user.id;
+        const { userId, cardId } = createCardMemberDto;
+        return this.cardMembersService.create(authId, userId, cardId);
     }
-    findAll() {
-        return this.cardMembersService.findAll();
+    findAll(req, body) {
+        const authId = req.user.id;
+        const cardId = body.cardId;
+        return this.cardMembersService.findAll(authId, cardId);
     }
-    findOne(id) {
-        return this.cardMembersService.findOne(+id);
-    }
-    update(id, updateCardMemberDto) {
-        return this.cardMembersService.update(+id, updateCardMemberDto);
-    }
-    remove(id) {
-        return this.cardMembersService.remove(+id);
+    remove(req, body, userId) {
+        const authId = req.user.id;
+        const cardId = body.cardId;
+        return this.cardMembersService.remove(authId, cardId, +userId);
     }
 };
 exports.CardMembersController = CardMembersController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_card_member_dto_1.CreateCardMemberDto]),
+    __metadata("design:paramtypes", [Object, create_card_member_dto_1.CreateCardMemberDto]),
     __metadata("design:returntype", void 0)
 ], CardMembersController.prototype, "create", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], CardMembersController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CardMembersController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_card_member_dto_1.UpdateCardMemberDto]),
-    __metadata("design:returntype", void 0)
-], CardMembersController.prototype, "update", null);
-__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, Object, String]),
     __metadata("design:returntype", void 0)
 ], CardMembersController.prototype, "remove", null);
 exports.CardMembersController = CardMembersController = __decorate([

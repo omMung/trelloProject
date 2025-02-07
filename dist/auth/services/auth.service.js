@@ -23,11 +23,14 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("../../users/entities/user.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const config_1 = require("@nestjs/config");
+const redis_service_1 = require("../../redis/redis.service");
 let AuthService = class AuthService {
-    constructor(jwtService, userRepository) {
-        this.jwtService = jwtService;
+    constructor(userRepository, jwtService, redisService, configService) {
         this.userRepository = userRepository;
-        this.blacklistedTokens = new Set();
+        this.jwtService = jwtService;
+        this.redisService = redisService;
+        this.configService = configService;
     }
     async sendVerificationEmail(email, verifyCode) {
         const transporter = nodemailer_1.default.createTransport({
@@ -68,9 +71,18 @@ let AuthService = class AuthService {
     async login(loginDto) {
         const user = await this.validateUser(loginDto.email, loginDto.password);
         const payload = { sub: user.id, email: user.email };
-        const token = this.jwtService.sign(payload);
+        const accessToken = this.jwtService.sign(payload, {
+            secret: this.configService.get('ACCESS_SECRET_KEY'),
+            expiresIn: this.configService.get('ACCESS_EXPIRES_IN', '1m'),
+        });
+        const refreshToken = this.jwtService.sign({ sub: user.id }, {
+            secret: this.configService.get('REFRESH_SECRET_KEY'),
+            expiresIn: '2m',
+        });
+        await this.redisService.set(`refresh:${user.id}`, refreshToken, 2 * 60);
         return {
-            accessToken: token,
+            accessToken,
+            refreshToken,
             user: {
                 id: user.id,
                 email: user.email,
@@ -92,18 +104,55 @@ let AuthService = class AuthService {
         await this.userRepository.save(user);
         return { message: '이메일 인증이 완료되었습니다.' };
     }
-    async logout(token) {
-        this.blacklistedTokens.add(token);
+    async logout(userId, accessToken) {
+        await this.redisService.del(`refresh:${userId}`);
+        const decoded = this.jwtService.decode(accessToken);
+        const expiresIn = decoded.exp - Math.floor(Date.now() / 1000);
+        await this.redisService.set(`blacklist:${accessToken}`, 'blacklisted', expiresIn);
     }
     async isTokenBlacklisted(token) {
-        return this.blacklistedTokens.has(token);
+        const result = await this.redisService.get(`blacklist:${token}`);
+        return !!result;
+    }
+    async validateRefreshToken(userId, refreshToken) {
+        const storedToken = await this.redisService.get(`refresh:${userId}`);
+        return storedToken === refreshToken;
+    }
+    async refreshToken(req) {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            throw new common_1.UnauthorizedException('리프레시 토큰이 제공되지 않았습니다.');
+        }
+        const payload = this.jwtService.verify(refreshToken, {
+            secret: this.configService.get('REFRESH_SECRET_KEY'),
+        });
+        const userId = payload.sub;
+        const isValid = await this.validateRefreshToken(userId, refreshToken);
+        if (!isValid) {
+            throw new common_1.UnauthorizedException('유효하지 않은 리프레시 토큰입니다.');
+        }
+        const newAccessToken = this.jwtService.sign({ sub: userId }, {
+            secret: this.configService.get('ACCESS_SECRET_KEY'),
+            expiresIn: '1m',
+        });
+        const newRefreshToken = this.jwtService.sign({ sub: userId }, {
+            secret: this.configService.get('REFRESH_SECRET_KEY'),
+            expiresIn: '2m',
+        });
+        await this.redisService.set(`refresh:${userId}`, newRefreshToken, 2 * 60);
+        return {
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+        };
     }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [jwt_1.JwtService,
-        typeorm_1.Repository])
+    __param(0, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        jwt_1.JwtService,
+        redis_service_1.RedisService,
+        config_1.ConfigService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

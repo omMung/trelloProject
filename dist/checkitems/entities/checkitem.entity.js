@@ -43,7 +43,7 @@ __decorate([
     (0, typeorm_1.ManyToOne)(() => checklist_entity_1.CheckList, (checkList) => checkList.checkItems, {
         onDelete: 'CASCADE',
     }),
-    (0, typeorm_1.JoinColumn)({ name: 'checkList_id' }),
+    (0, typeorm_1.JoinColumn)({ name: 'check_list_id' }),
     __metadata("design:type", checklist_entity_1.CheckList)
 ], CheckItem.prototype, "checkList", void 0);
 exports.CheckItem = CheckItem = __decorate([

@@ -9,24 +9,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommentsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const jwt_1 = require("@nestjs/jwt");
 const comments_service_1 = require("./comments.service");
 const comments_controller_1 = require("./comments.controller");
 const comment_entity_1 = require("./entities/comment.entity");
-const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
-const users_module_1 = require("../users/users.module");
+const member_entity_1 = require("../members/entities/member.entity");
+const user_entity_1 = require("../users/entities/user.entity");
+const card_entity_1 = require("../cards/entities/card.entity");
 let CommentsModule = class CommentsModule {
 };
 exports.CommentsModule = CommentsModule;
 exports.CommentsModule = CommentsModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([comment_entity_1.Comment]),
-            jwt_1.JwtModule.register({}),
-            users_module_1.UsersModule,
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([comment_entity_1.Comment, member_entity_1.Member, user_entity_1.User, card_entity_1.Card])],
         controllers: [comments_controller_1.CommentsController],
-        providers: [comments_service_1.CommentsService, jwt_auth_guard_1.JwtAuthGuard],
+        providers: [comments_service_1.CommentsService],
     })
 ], CommentsModule);
 //# sourceMappingURL=comments.module.js.map

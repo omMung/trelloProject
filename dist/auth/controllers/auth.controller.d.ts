@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthService } from '../services/auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -18,4 +18,5 @@ export declare class AuthController {
     logout(req: any): Promise<{
         message: string;
     }>;
+    refreshToken(req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
 }

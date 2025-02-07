@@ -1,9 +1,10 @@
 import { CreateAlarmDto } from './dto/create-alarm.dto';
-import { UpdateAlarmDto } from './dto/update-alarm.dto';
+import { Repository } from 'typeorm';
+import { Alarm } from './entities/alarm.entity';
 export declare class AlarmsService {
+    private alarmRepository;
+    constructor(alarmRepository: Repository<Alarm>);
     create(createAlarmDto: CreateAlarmDto): string;
-    findAll(): string;
-    findOne(id: number): string;
-    update(id: number, updateAlarmDto: UpdateAlarmDto): string;
-    remove(id: number): string;
+    findByUserId(userId: number): Promise<Alarm[]>;
+    remove(id: number): Promise<void>;
 }

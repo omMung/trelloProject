@@ -18,52 +18,62 @@ const lists_service_1 = require("./lists.service");
 const create_list_dto_1 = require("./dto/create-list.dto");
 const update_list_dto_1 = require("./dto/update-list.dto");
 const update_list_positions_dto_1 = require("./dto/update-list-positions.dto");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let ListsController = class ListsController {
     constructor(listsService) {
         this.listsService = listsService;
     }
-    async create(createListDto) {
-        return this.listsService.create(createListDto);
+    async create(createListDto, req) {
+        return this.listsService.create(createListDto, req);
     }
-    async update(id, updateListDto) {
-        return this.listsService.update(+id, updateListDto);
+    async update(id, updateListDto, req) {
+        return this.listsService.update(+id, updateListDto, req);
     }
-    async remove(id) {
-        return this.listsService.remove(+id);
+    async remove(id, updateListDto, req) {
+        return this.listsService.remove(+id, updateListDto, req);
     }
-    async updatePositions(updateListPositionsDto) {
-        await this.listsService.updatePositions(updateListPositionsDto);
+    async updatePositions(updateListPositionsDto, req) {
+        await this.listsService.updatePositions(updateListPositionsDto, req);
         return { message: '리스트 위치가 성공적으로 업데이트되었습니다.' };
     }
 };
 exports.ListsController = ListsController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_list_dto_1.CreateListDto]),
+    __metadata("design:paramtypes", [create_list_dto_1.CreateListDto, Object]),
     __metadata("design:returntype", Promise)
 ], ListsController.prototype, "create", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_list_dto_1.UpdateListDto]),
+    __metadata("design:paramtypes", [String, update_list_dto_1.UpdateListDto, Object]),
     __metadata("design:returntype", Promise)
 ], ListsController.prototype, "update", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, update_list_dto_1.UpdateListDto, Object]),
     __metadata("design:returntype", Promise)
 ], ListsController.prototype, "remove", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [update_list_positions_dto_1.UpdateListPositionsDto]),
+    __metadata("design:paramtypes", [update_list_positions_dto_1.UpdateListPositionsDto, Object]),
     __metadata("design:returntype", Promise)
 ], ListsController.prototype, "updatePositions", null);
 exports.ListsController = ListsController = __decorate([

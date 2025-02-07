@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Label = void 0;
+const board_entity_1 = require("../../boards/entities/board.entity");
 const card_label_entity_1 = require("../../card-labels/entities/card-label.entity");
 const typeorm_1 = require("typeorm");
 let Label = class Label {
@@ -19,6 +20,10 @@ __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Label.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Label.prototype, "boardId", void 0);
 __decorate([
     (0, typeorm_1.Column)('varchar', { nullable: false }),
     __metadata("design:type", String)
@@ -31,6 +36,11 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => card_label_entity_1.CardLabel, (cardLabel) => cardLabel.label),
     __metadata("design:type", Array)
 ], Label.prototype, "cardLabels", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => board_entity_1.Board, (board) => board.label, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'board_id' }),
+    __metadata("design:type", board_entity_1.Board)
+], Label.prototype, "board", void 0);
 exports.Label = Label = __decorate([
     (0, typeorm_1.Entity)({
         name: 'Label',

@@ -14,12 +14,13 @@ const card_labels_service_1 = require("./card-labels.service");
 const card_labels_controller_1 = require("./card-labels.controller");
 const label_entity_1 = require("../labels/entities/label.entity");
 const card_entity_1 = require("../cards/entities/card.entity");
+const member_entity_1 = require("../members/entities/member.entity");
 let CardLabelsModule = class CardLabelsModule {
 };
 exports.CardLabelsModule = CardLabelsModule;
 exports.CardLabelsModule = CardLabelsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([card_label_entity_1.CardLabel, label_entity_1.Label, card_entity_1.Card])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([card_label_entity_1.CardLabel, label_entity_1.Label, card_entity_1.Card, member_entity_1.Member])],
         controllers: [card_labels_controller_1.CardLabelsController],
         providers: [card_labels_service_1.CardLabelsService],
     })

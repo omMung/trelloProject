@@ -4,7 +4,7 @@ import { UpdateLabelDto } from './dto/update-label.dto';
 export declare class LabelsController {
     private readonly labelsService;
     constructor(labelsService: LabelsService);
-    create(createLabelDto: CreateLabelDto): Promise<import("./entities/label.entity").Label>;
+    create(req: any, createLabelDto: CreateLabelDto): Promise<import("./entities/label.entity").Label>;
     findAll(): Promise<import("./entities/label.entity").Label[]>;
     findOne(id: string): Promise<import("./entities/label.entity").Label>;
     update(id: string, updateLabelDto: UpdateLabelDto): Promise<import("./entities/label.entity").Label>;

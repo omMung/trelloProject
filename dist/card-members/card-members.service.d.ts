@@ -1,9 +1,13 @@
-import { CreateCardMemberDto } from './dto/create-card-member.dto';
-import { UpdateCardMemberDto } from './dto/update-card-member.dto';
+import { JoinMember } from './entities/card-member.entity';
+import { Repository } from 'typeorm';
 export declare class CardMembersService {
-    create(createCardMemberDto: CreateCardMemberDto): string;
-    findAll(): string;
+    private joinMemberRepository;
+    constructor(joinMemberRepository: Repository<JoinMember>);
+    create(authId: number, userId: number, cardId: number): Promise<{
+        userId: number;
+        cardId: number;
+    } & JoinMember>;
+    findAll(authId: number, cardId: number): Promise<JoinMember[]>;
     findOne(id: number): string;
-    update(id: number, updateCardMemberDto: UpdateCardMemberDto): string;
-    remove(id: number): string;
+    remove(authId: number, cardId: number, userId: number): Promise<string>;
 }

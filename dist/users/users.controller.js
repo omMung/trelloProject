@@ -30,7 +30,6 @@ let UsersController = class UsersController {
         return this.usersService.update(userId, updateUserDto);
     }
     async deleteMyAccount(req) {
-        console.log('@@@@@@@@@@@');
         const userId = req.user.id;
         return this.usersService.delete(userId);
     }

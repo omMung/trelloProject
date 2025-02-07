@@ -25,4 +25,9 @@ __decorate([
     (0, class_validator_1.IsHexColor)(),
     __metadata("design:type", String)
 ], CreateLabelDto.prototype, "color", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateLabelDto.prototype, "boardId", void 0);
 //# sourceMappingURL=create-label.dto.js.map

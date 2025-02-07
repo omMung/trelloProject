@@ -16,25 +16,21 @@ exports.AlarmsController = void 0;
 const common_1 = require("@nestjs/common");
 const alarms_service_1 = require("./alarms.service");
 const create_alarm_dto_1 = require("./dto/create-alarm.dto");
-const update_alarm_dto_1 = require("./dto/update-alarm.dto");
 let AlarmsController = class AlarmsController {
-    constructor(alarmsService) {
-        this.alarmsService = alarmsService;
+    constructor(alarmService) {
+        this.alarmService = alarmService;
     }
     create(createAlarmDto) {
-        return this.alarmsService.create(createAlarmDto);
+        return this.alarmService.create(createAlarmDto);
     }
-    findAll() {
-        return this.alarmsService.findAll();
-    }
-    findOne(id) {
-        return this.alarmsService.findOne(+id);
-    }
-    update(id, updateAlarmDto) {
-        return this.alarmsService.update(+id, updateAlarmDto);
+    findByUserId(userId) {
+        return this.alarmService.findByUserId(+userId);
     }
     remove(id) {
-        return this.alarmsService.remove(+id);
+        return this.alarmService.remove(+id);
+    }
+    removeAll(id) {
+        return this.alarmService.remove(+id);
     }
 };
 exports.AlarmsController = AlarmsController;
@@ -46,26 +42,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AlarmsController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)(':userId'),
+    __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
-], AlarmsController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], AlarmsController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_alarm_dto_1.UpdateAlarmDto]),
-    __metadata("design:returntype", void 0)
-], AlarmsController.prototype, "update", null);
+], AlarmsController.prototype, "findByUserId", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -73,6 +55,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AlarmsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Delete)(':userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AlarmsController.prototype, "removeAll", null);
 exports.AlarmsController = AlarmsController = __decorate([
     (0, common_1.Controller)('alarms'),
     __metadata("design:paramtypes", [alarms_service_1.AlarmsService])

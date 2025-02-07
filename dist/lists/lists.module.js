@@ -8,18 +8,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListsModule = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
 const lists_service_1 = require("./lists.service");
 const lists_controller_1 = require("./lists.controller");
-const typeorm_1 = require("@nestjs/typeorm");
 const list_entity_1 = require("./entities/list.entity");
+const member_entity_1 = require("../members/entities/member.entity");
+const user_entity_1 = require("../users/entities/user.entity");
+const members_module_1 = require("../members/members.module");
+const users_module_1 = require("../users/users.module");
 let ListsModule = class ListsModule {
 };
 exports.ListsModule = ListsModule;
 exports.ListsModule = ListsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([list_entity_1.List])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([list_entity_1.List, user_entity_1.User, member_entity_1.Member]),
+            members_module_1.MembersModule,
+            users_module_1.UsersModule,
+        ],
         controllers: [lists_controller_1.ListsController],
         providers: [lists_service_1.ListsService],
+        exports: [typeorm_1.TypeOrmModule],
     })
 ], ListsModule);
 //# sourceMappingURL=lists.module.js.map

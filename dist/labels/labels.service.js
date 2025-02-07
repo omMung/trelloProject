@@ -21,11 +21,11 @@ let LabelsService = class LabelsService {
     constructor(labelRepository) {
         this.labelRepository = labelRepository;
     }
-    async create(createLabelDto) {
-        if (!/^#([0-9A-F]{3}){1,2}$/i.test(createLabelDto.color)) {
+    async create(userId, title, color, boardId) {
+        if (!/^#([0-9A-F]{3}){1,2}$/i.test(color)) {
             throw new common_1.BadRequestException('유효한 색상 코드(#RRGGBB)를 입력하세요.');
         }
-        const label = this.labelRepository.create(createLabelDto);
+        const label = this.labelRepository.create({ title, color, boardId });
         return await this.labelRepository.save(label);
     }
     async findAll() {

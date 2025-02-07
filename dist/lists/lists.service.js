@@ -17,12 +17,48 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const list_entity_1 = require("./entities/list.entity");
+const member_entity_1 = require("../members/entities/member.entity");
+const user_entity_1 = require("../users/entities/user.entity");
+const event_emitter_1 = require("@nestjs/event-emitter");
 let ListsService = class ListsService {
-    constructor(listsRepository) {
+    constructor(listsRepository, membersRepository, usersRepository, eventEmitter) {
         this.listsRepository = listsRepository;
+        this.membersRepository = membersRepository;
+        this.usersRepository = usersRepository;
+        this.eventEmitter = eventEmitter;
     }
-    async create(createListDto) {
+    async validateUserAndMember(req, boardId) {
+        const userId = req.user.id;
+        const user = await this.usersRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new common_1.NotFoundException('유저 정보가 없습니다.');
+        }
+        const member = await this.membersRepository.findOne({
+            where: { id: userId, boardId },
+        });
+        if (!member) {
+            throw new common_1.NotFoundException('해당 보드에 소속된 멤버 정보가 존재하지 않습니다.');
+        }
+        const members = await this.membersRepository.find({
+            where: { boardId },
+            select: ['id'],
+        });
+        if (!members.length) {
+            throw new common_1.NotFoundException('해당 보드에 소속된 멤버가 없습니다.');
+        }
+        const memberIds = members.map((member) => member.id);
+        return { user, members: memberIds };
+    }
+    async create(createListDto, req) {
         const { boardId, title } = createListDto;
+        const { user, members } = await this.validateUserAndMember(req, boardId);
+        console.log('리스트 생성 요청 받음:', { boardId, title, user, members });
+        const existingList = await this.listsRepository.findOne({
+            where: { boardId, title },
+        });
+        if (existingList) {
+            throw new common_1.BadRequestException('같은 제목의 리스트가 이미 존재합니다.');
+        }
         const lists = await this.listsRepository.find({
             where: { boardId },
             select: ['position'],
@@ -34,9 +70,25 @@ let ListsService = class ListsService {
             position: newPosition,
             title,
         });
-        return this.listsRepository.save(list);
+        const savedList = await this.listsRepository.save(list);
+        console.log('리스트 생성 완료:', savedList);
+        this.eventEmitter.emit('list.created', {
+            senderId: user.id,
+            boardId,
+            members,
+            message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
+        });
+        console.log('list.created 이벤트 발생:', {
+            senderId: user.id,
+            boardId,
+            members,
+            message: `(${user.name})님이 새로운 리스트를 생성하였습니다.`,
+        });
+        return savedList;
     }
-    async update(id, updateListDto) {
+    async update(id, updateListDto, req) {
+        const { boardId } = updateListDto;
+        await this.validateUserAndMember(req, boardId);
         const list = await this.listsRepository.findOne({ where: { id } });
         if (!list) {
             throw new common_1.NotFoundException(`리스트를 찾을 수 없습니다.`);
@@ -47,15 +99,18 @@ let ListsService = class ListsService {
         }
         return this.listsRepository.save(list);
     }
-    async remove(id) {
+    async remove(id, updateListDto, req) {
+        const { boardId } = updateListDto;
+        await this.validateUserAndMember(req, boardId);
         const list = await this.listsRepository.findOne({ where: { id } });
         if (!list) {
             throw new common_1.NotFoundException(`List with ID ${id} not found`);
         }
         await this.listsRepository.remove(list);
     }
-    async updatePositions(updateListPositionsDto) {
+    async updatePositions(updateListPositionsDto, req) {
         const { boardId, lists } = updateListPositionsDto;
+        await this.validateUserAndMember(req, boardId);
         const DBLists = await this.listsRepository.find({
             where: { boardId },
             select: ['id', 'position'],
@@ -85,6 +140,11 @@ exports.ListsService = ListsService;
 exports.ListsService = ListsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(list_entity_1.List)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(member_entity_1.Member)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        event_emitter_1.EventEmitter2])
 ], ListsService);
 //# sourceMappingURL=lists.service.js.map

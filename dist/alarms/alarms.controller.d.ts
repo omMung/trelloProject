@@ -1,12 +1,10 @@
 import { AlarmsService } from './alarms.service';
 import { CreateAlarmDto } from './dto/create-alarm.dto';
-import { UpdateAlarmDto } from './dto/update-alarm.dto';
 export declare class AlarmsController {
-    private readonly alarmsService;
-    constructor(alarmsService: AlarmsService);
+    private readonly alarmService;
+    constructor(alarmService: AlarmsService);
     create(createAlarmDto: CreateAlarmDto): string;
-    findAll(): string;
-    findOne(id: string): string;
-    update(id: string, updateAlarmDto: UpdateAlarmDto): string;
-    remove(id: string): string;
+    findByUserId(userId: number): Promise<import("./entities/alarm.entity").Alarm[]>;
+    remove(id: string): Promise<void>;
+    removeAll(id: string): Promise<void>;
 }

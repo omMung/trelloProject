@@ -5,28 +5,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardMembersService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const card_member_entity_1 = require("./entities/card-member.entity");
+const typeorm_2 = require("typeorm");
 let CardMembersService = class CardMembersService {
-    create(createCardMemberDto) {
-        return 'This action adds a new cardMember';
+    constructor(joinMemberRepository) {
+        this.joinMemberRepository = joinMemberRepository;
     }
-    findAll() {
-        return `This action returns all cardMembers`;
+    async create(authId, userId, cardId) {
+        return await this.joinMemberRepository.save({
+            userId,
+            cardId,
+        });
+    }
+    async findAll(authId, cardId) {
+        return await this.joinMemberRepository.find({
+            where: { cardId: cardId },
+        });
     }
     findOne(id) {
         return `This action returns a #${id} cardMember`;
     }
-    update(id, updateCardMemberDto) {
-        return `This action updates a #${id} cardMember`;
-    }
-    remove(id) {
-        return `This action removes a #${id} cardMember`;
+    async remove(authId, cardId, userId) {
+        await this.joinMemberRepository.delete({ cardId, userId });
+        return `카드 멤버 지정이 해제 되었습니다.`;
     }
 };
 exports.CardMembersService = CardMembersService;
 exports.CardMembersService = CardMembersService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(card_member_entity_1.JoinMember)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], CardMembersService);
 //# sourceMappingURL=card-members.service.js.map

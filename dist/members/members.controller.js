@@ -17,29 +17,36 @@ const common_1 = require("@nestjs/common");
 const members_service_1 = require("./members.service");
 const create_member_dto_1 = require("./dto/create-member.dto");
 const get_member_dto_1 = require("./dto/get-member.dto");
+const delete_member_dto_1 = require("./dto/delete-member.dto");
+const detailget_member_dto_1 = require("./dto/detailget-member.dto");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let MembersController = class MembersController {
     constructor(membersService) {
         this.membersService = membersService;
     }
-    create(createMemberDto) {
-        return this.membersService.create(createMemberDto);
+    create(req, createMemberDto) {
+        const authId = req.user.id;
+        return this.membersService.create(authId, createMemberDto);
     }
     findAll(getMemberDto) {
         return this.membersService.findAll(getMemberDto);
     }
-    findOne(id, getMemberDto) {
-        return this.membersService.findOne(+id, getMemberDto);
+    findOne(id, detailgetMemberDto) {
+        return this.membersService.findOne(+id, detailgetMemberDto);
     }
-    remove(id, getMemberDto) {
-        return this.membersService.remove(+id, getMemberDto);
+    remove(req, deleteMemberDto) {
+        const authId = req.user.id;
+        return this.membersService.remove(authId, deleteMemberDto);
     }
 };
 exports.MembersController = MembersController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_member_dto_1.CreateMemberDto]),
+    __metadata("design:paramtypes", [Object, create_member_dto_1.CreateMemberDto]),
     __metadata("design:returntype", void 0)
 ], MembersController.prototype, "create", null);
 __decorate([
@@ -54,15 +61,16 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, get_member_dto_1.GetMemberDto]),
+    __metadata("design:paramtypes", [String, detailget_member_dto_1.DetailGetMemberDto]),
     __metadata("design:returntype", void 0)
 ], MembersController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Delete)(),
+    __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, get_member_dto_1.GetMemberDto]),
+    __metadata("design:paramtypes", [Object, delete_member_dto_1.DeleteMemberDto]),
     __metadata("design:returntype", void 0)
 ], MembersController.prototype, "remove", null);
 exports.MembersController = MembersController = __decorate([

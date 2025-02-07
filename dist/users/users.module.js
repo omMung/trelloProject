@@ -13,16 +13,16 @@ const users_service_1 = require("./users.service");
 const auth_service_1 = require("../auth/services/auth.service");
 const users_controller_1 = require("./users.controller");
 const user_entity_1 = require("./entities/user.entity");
-const auth_controller_1 = require("../auth/controllers/auth.controller");
+const redis_module_1 = require("../redis/redis.module");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
-        controllers: [users_controller_1.UsersController, auth_controller_1.AuthController],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]), redis_module_1.RedisModule],
+        controllers: [users_controller_1.UsersController],
         providers: [users_service_1.UsersService, auth_service_1.AuthService],
-        exports: [users_service_1.UsersService, auth_service_1.AuthService],
+        exports: [users_service_1.UsersService],
     })
 ], UsersModule);
 //# sourceMappingURL=users.module.js.map

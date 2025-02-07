@@ -19,11 +19,10 @@ let MembersModule = class MembersModule {
 exports.MembersModule = MembersModule;
 exports.MembersModule = MembersModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([member_entity_1.Member, board_entity_1.Board, user_entity_1.User])
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([member_entity_1.Member, board_entity_1.Board, user_entity_1.User])],
         controllers: [members_controller_1.MembersController],
         providers: [members_service_1.MembersService],
+        exports: [typeorm_1.TypeOrmModule],
     })
 ], MembersModule);
 //# sourceMappingURL=members.module.js.map

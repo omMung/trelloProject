@@ -5,10 +5,10 @@ import { UpdateListPositionsDto } from './dto/update-list-positions.dto';
 export declare class ListsController {
     private readonly listsService;
     constructor(listsService: ListsService);
-    create(createListDto: CreateListDto): Promise<import("./entities/list.entity").List>;
-    update(id: string, updateListDto: UpdateListDto): Promise<import("./entities/list.entity").List>;
-    remove(id: string): Promise<void>;
-    updatePositions(updateListPositionsDto: UpdateListPositionsDto): Promise<{
+    create(createListDto: CreateListDto, req: any): Promise<import("./entities/list.entity").List>;
+    update(id: string, updateListDto: UpdateListDto, req: any): Promise<import("./entities/list.entity").List>;
+    remove(id: string, updateListDto: UpdateListDto, req: any): Promise<void>;
+    updatePositions(updateListPositionsDto: UpdateListPositionsDto, req: any): Promise<{
         message: string;
     }>;
 }
