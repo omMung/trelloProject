@@ -92,8 +92,8 @@
     </div>
 
     <script>
-        const userId = 1; // 현재 로그인한 사용자 ID (임시)
-        const serverUrl = "http://localhost:3000"; // ✅ 서버 주소
+        const userId = 6; // 현재 로그인한 사용자 ID (임시)
+        const serverUrl = "https://yangs.site"; //  서버 주소
         const socket = io(serverUrl, {
             query: { userId },
             transports: ["websocket"],
@@ -101,18 +101,18 @@
         });
 
         socket.on("connect", () => {
-            console.log("✅ WebSocket 연결됨");
+            console.log(" WebSocket 연결됨");
         });
 
         socket.on("receiveAlarm", () => {
-            console.log("📢 새로운 알람이 도착했습니다!");
+            console.log(" 새로운 알람이 도착했습니다!");
             document.getElementById("new-alarm-alert").style.display = "block";
         });
 
         // 📢 알림 목록 불러오기
         async function fetchNotifications() {
             try {
-                console.log("📢 알람 가져오기 요청...");
+                console.log(" 알람 가져오기 요청...");
                 const response = await fetch(`${serverUrl}/alarms/${userId}`);
 
                 if (!response.ok) {
@@ -120,21 +120,21 @@
                 }
 
                 const alarms = await response.json();
-                console.log("✅ 알람 데이터:", alarms);
+                console.log(" 알람 데이터:", alarms);
 
                 const notificationContainer = document.getElementById("notifications");
                 notificationContainer.innerHTML = "";
                 alarms.forEach(displayNotification);
 
-                // ✅ "새로운 알림" 메시지 숨기기
+                //  "새로운 알림" 메시지 숨기기
                 document.getElementById("new-alarm-alert").style.display = "none";
 
             } catch (error) {
-                console.error("❌ 알람 가져오기 실패:", error);
+                console.error(" 알람 가져오기 실패:", error);
             }
         }
 
-        // 📢 알림 UI 추가
+        //  알림 UI 추가
         function displayNotification(alarm) {
             const notificationContainer = document.getElementById("notifications");
             const div = document.createElement("div");
@@ -148,10 +148,10 @@
             notificationContainer.appendChild(div);
         }
 
-        // 📢 개별 알람 삭제
+        //  개별 알람 삭제
         async function deleteNotification(alarmId) {
             try {
-                console.log(`🚮 알람 삭제 요청: ID ${alarmId}`);
+                console.log(` 알람 삭제 요청: ID ${alarmId}`);
 
                 const response = await fetch(`${serverUrl}/alarms/${alarmId}`, { method: "DELETE" });
 
@@ -167,10 +167,10 @@
             }
         }
 
-        // 📢 모든 알람 삭제
+        //  모든 알람 삭제
         async function clearNotifications() {
             try {
-                console.log("🚮 모든 알람 삭제 요청...");
+                console.log(" 모든 알람 삭제 요청...");
 
                 const response = await fetch(`${serverUrl}/alarms/clear/${userId}`, { method: "DELETE" });
 
@@ -178,11 +178,11 @@
                     throw new Error(`서버 응답 오류: ${response.status} ${response.statusText}`);
                 }
 
-                console.log("✅ 모든 알람 삭제 성공!");
+                console.log(" 모든 알람 삭제 성공!");
                 document.getElementById("notifications").innerHTML = "";
 
             } catch (error) {
-                console.error("❌ 알람 삭제 실패:", error);
+                console.error(" 알람 삭제 실패:", error);
             }
         }
 
