@@ -44,7 +44,7 @@ export class ListsService {
 
     // 보드에 속한 멤버인지 검증
     const member = await this.membersRepository.findOne({
-      where: { id: userId, boardId },
+      where: { userId, boardId },
     });
     if (!member) {
       throw new NotFoundException(
@@ -55,7 +55,7 @@ export class ListsService {
     // 해당 보드의 모든 멤버 조회
     const members = await this.membersRepository.find({
       where: { boardId },
-      select: ['id'], // 멤버 ID만 가져오기
+      select: ['userId'], // 멤버 ID만 가져오기
     });
 
     if (!members.length) {
@@ -63,7 +63,7 @@ export class ListsService {
     }
 
     // 모든 멤버의 ID 배열 생성
-    const memberIds = members.map((member) => member.id);
+    const memberIds = members.map((member) => member.userId);
 
     return { user, members: memberIds }; // 유저 정보 + 보드 멤버 ID 목록 반환
   }
@@ -99,7 +99,7 @@ export class ListsService {
     console.log('리스트 생성 완료:', savedList);
 
     // 이벤트 발생
-    this.eventEmitter.emit('list.created', {
+    this.eventEmitter.emitAsync('list.created', {
       senderId: user.id,
       boardId,
       members,

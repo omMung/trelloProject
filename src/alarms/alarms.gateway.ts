@@ -1,3 +1,4 @@
+// alarms.gateway.ts
 import {
   WebSocketGateway,
   WebSocketServer,

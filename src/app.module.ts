@@ -1,3 +1,4 @@
+// app.module.ts
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -58,7 +59,10 @@ const typeOrmModuleOptions = {
         ACCESS_EXPIRES_IN: Joi.string().default('1m'), // 액세스 만료시간 검증 추가
       }),
     }),
-    EventEmitterModule.forRoot(), // 이벤트 시스템 활성화
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+    }),
     TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     JwtModule.registerAsync({
       imports: [ConfigModule],

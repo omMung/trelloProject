@@ -1,3 +1,4 @@
+// alarms.listeners.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -62,9 +63,9 @@ export class AlarmsListener {
     'comment.deleted',
   ];
 
-  @OnEvent('*') // 모든 이벤트 감지
+  @OnEvent('*')
   async handleDynamicEvent(
-    event: string,
+    event: string | string[],
     payload: {
       senderId: number;
       boardId: number;
@@ -72,9 +73,15 @@ export class AlarmsListener {
       message: string;
     },
   ) {
-    // SUPPORTED_EVENTS에 포함되는 조건이 true라면 감지
-    if (this.SUPPORTED_EVENTS.includes(event)) {
-      console.log(`[이벤트] ${event} 감지됨:`, payload);
+    console.log('=== [디버그] 이벤트 수신 ===');
+    console.log('원본 event:', event);
+    console.log('payload:', payload);
+
+    const eventName = Array.isArray(event) ? event.join('.') : event;
+    console.log('변환된 eventName:', eventName);
+
+    if (this.SUPPORTED_EVENTS.includes(eventName)) {
+      console.log('[알림] SUPPORTED_EVENTS에 포함되어 있음:', eventName);
       await this.createAndNotifyAlarms(
         payload.senderId,
         payload.boardId,
